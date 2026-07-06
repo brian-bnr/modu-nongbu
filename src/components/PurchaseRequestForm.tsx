@@ -13,9 +13,9 @@ export function PurchaseRequestForm({ productId }: { productId: string }) {
 
   if (state.status === "success") {
     return (
-      <div className="rounded-lg border border-green-600/30 bg-green-50 p-4 text-sm dark:bg-green-900/20">
-        <p className="font-medium text-green-800 dark:text-green-300">구매요청이 접수되었습니다.</p>
-        <p className="mt-1 text-green-700 dark:text-green-400">
+      <div className="rounded-lg border border-brand-600/30 bg-brand-50 p-4 text-sm dark:bg-brand-900/20">
+        <p className="font-medium text-brand-800 dark:text-brand-300">구매요청이 접수되었습니다.</p>
+        <p className="mt-1 text-brand-700 dark:text-brand-400">
           요청번호: {state.requestId}
         </p>
         <p className="mt-2 text-black/60 dark:text-white/60">
@@ -95,7 +95,7 @@ export function PurchaseRequestForm({ productId }: { productId: string }) {
       <button
         type="submit"
         disabled={isPending}
-        className="w-full rounded-md bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800 disabled:opacity-60"
+        className="w-full rounded-md bg-brand-700 px-4 py-2 text-sm font-medium text-white hover:bg-brand-800 disabled:opacity-60"
       >
         {isPending ? "요청 접수 중..." : "구매요청 보내기"}
       </button>

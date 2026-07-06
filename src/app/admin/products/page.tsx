@@ -17,7 +17,7 @@ export default async function AdminProductsPage() {
         <h1 className="text-2xl font-bold">농산물 관리</h1>
         <Link
           href="/admin/products/new"
-          className="rounded-md bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800"
+          className="rounded-md bg-brand-700 px-4 py-2 text-sm font-medium text-white hover:bg-brand-800"
         >
           + 농산물 등록
         </Link>
@@ -58,7 +58,7 @@ export default async function AdminProductsPage() {
                     <div className="flex items-center gap-3">
                       <Link
                         href={`/admin/products/${product.id}/edit`}
-                        className="text-sm text-green-700 hover:underline dark:text-green-400"
+                        className="text-sm text-brand-700 hover:underline dark:text-brand-400"
                       >
                         수정
                       </Link>

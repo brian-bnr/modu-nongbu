@@ -41,7 +41,7 @@ export default async function AdminOrderDetailPage({
             <p className="mt-2">
               <Link
                 href={`/admin/products/${request.product.id}/edit`}
-                className="text-green-700 hover:underline dark:text-green-400"
+                className="text-brand-700 hover:underline dark:text-brand-400"
               >
                 {request.product.name}
               </Link>{" "}

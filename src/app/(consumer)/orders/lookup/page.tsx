@@ -24,7 +24,7 @@ export default async function OrderLookupPage({
     : [];
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
       <h1 className="text-2xl font-bold">주문 조회</h1>
       <p className="mt-1 text-sm text-black/50 dark:text-white/50">
         구매요청 시 입력한 이름과 연락처로 진행 상황을 확인할 수 있습니다.
@@ -47,7 +47,7 @@ export default async function OrderLookupPage({
         />
         <button
           type="submit"
-          className="rounded-md bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800"
+          className="rounded-md bg-brand-700 px-4 py-2 text-sm font-medium text-white hover:bg-brand-800"
         >
           조회
         </button>

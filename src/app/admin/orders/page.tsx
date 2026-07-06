@@ -40,7 +40,7 @@ export default async function AdminOrdersPage({
         <Link
           href="/admin/orders"
           className={`rounded-full px-3 py-1 ${
-            !isValidStatus ? "bg-green-700 text-white" : "bg-black/5 dark:bg-white/10"
+            !isValidStatus ? "bg-brand-700 text-white" : "bg-black/5 dark:bg-white/10"
           }`}
         >
           전체
@@ -50,7 +50,7 @@ export default async function AdminOrdersPage({
             key={s}
             href={`/admin/orders?status=${s}`}
             className={`rounded-full px-3 py-1 ${
-              status === s ? "bg-green-700 text-white" : "bg-black/5 dark:bg-white/10"
+              status === s ? "bg-brand-700 text-white" : "bg-black/5 dark:bg-white/10"
             }`}
           >
             {REQUEST_STATUS_LABEL[s]}
@@ -82,7 +82,7 @@ export default async function AdminOrdersPage({
                   <td className="py-2 pr-4">
                     <Link
                       href={`/admin/orders/${request.id}`}
-                      className="font-medium text-green-700 hover:underline dark:text-green-400"
+                      className="font-medium text-brand-700 hover:underline dark:text-brand-400"
                     >
                       {request.customerName}
                     </Link>

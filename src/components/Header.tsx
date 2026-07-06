@@ -8,9 +8,13 @@ const NAV_LINKS = [
 
 export function Header() {
   return (
-    <header className="border-b border-black/10 dark:border-white/10">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
-        <Link href="/" className="text-lg font-bold text-green-700 dark:text-green-400">
+    <header className="border-b border-brand-100 dark:border-white/10">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-8">
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-2xl font-bold text-brand-700 dark:text-brand-400"
+        >
+          <span aria-hidden>🌱</span>
           모두의농부
         </Link>
         <nav className="flex items-center gap-4 text-sm">

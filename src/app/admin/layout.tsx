@@ -23,7 +23,7 @@ export default async function AdminLayout({
     <div className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-black/10 pb-4 dark:border-white/10">
         <div className="flex items-center gap-6">
-          <span className="font-bold text-green-700 dark:text-green-400">모두의농부 관리자</span>
+          <span className="font-bold text-brand-700 dark:text-brand-400">모두의농부 관리자</span>
           <nav className="flex gap-4 text-sm">
             {NAV_LINKS.map((link) => (
               <Link key={link.href} href={link.href} className="hover:underline">

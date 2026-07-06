@@ -19,8 +19,16 @@ export default async function FarmDetailPage({
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
-      <p className="text-sm text-black/50 dark:text-white/50">
+    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
+      <div className="aspect-[16/6] w-full overflow-hidden rounded-2xl bg-brand-50 dark:bg-brand-900/30">
+        {farm.imageUrl ? (
+          <img src={farm.imageUrl} alt={farm.name} className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-6xl">🚜</div>
+        )}
+      </div>
+
+      <p className="mt-5 text-sm text-black/50 dark:text-white/50">
         {farm.region}
         {farm.regionDetail ? ` · ${farm.regionDetail}` : ""}
       </p>
@@ -33,13 +41,13 @@ export default async function FarmDetailPage({
         <p className="font-medium">농가 문의</p>
         <p className="mt-2 text-black/70 dark:text-white/70">담당자: {farm.contactName}</p>
         <div className="mt-2 flex flex-wrap gap-3">
-          <a href={`tel:${farm.contactPhone}`} className="text-green-700 hover:underline dark:text-green-400">
+          <a href={`tel:${farm.contactPhone}`} className="text-brand-700 hover:underline dark:text-brand-400">
             📞 {farm.contactPhone}
           </a>
           {farm.contactEmail && (
             <a
               href={`mailto:${farm.contactEmail}`}
-              className="text-green-700 hover:underline dark:text-green-400"
+              className="text-brand-700 hover:underline dark:text-brand-400"
             >
               ✉️ {farm.contactEmail}
             </a>

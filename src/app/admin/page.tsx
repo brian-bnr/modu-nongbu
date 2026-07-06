@@ -22,7 +22,7 @@ export default async function AdminDashboardPage() {
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-lg border border-black/10 p-4 dark:border-white/10">
           <p className="text-sm text-black/50 dark:text-white/50">신규 구매요청</p>
-          <p className="mt-1 text-2xl font-bold text-green-700 dark:text-green-400">
+          <p className="mt-1 text-2xl font-bold text-brand-700 dark:text-brand-400">
             {newRequestCount}
           </p>
         </div>
@@ -38,7 +38,7 @@ export default async function AdminDashboardPage() {
 
       <div className="mt-10 flex items-center justify-between">
         <h2 className="text-lg font-semibold">최근 구매요청</h2>
-        <Link href="/admin/orders" className="text-sm text-green-700 hover:underline dark:text-green-400">
+        <Link href="/admin/orders" className="text-sm text-brand-700 hover:underline dark:text-brand-400">
           전체 보기 →
         </Link>
       </div>
@@ -52,7 +52,7 @@ export default async function AdminDashboardPage() {
             <li key={request.id}>
               <Link
                 href={`/admin/orders/${request.id}`}
-                className="flex items-center justify-between gap-4 rounded-lg border border-black/10 p-3 text-sm hover:border-green-600 dark:border-white/10"
+                className="flex items-center justify-between gap-4 rounded-lg border border-black/10 p-3 text-sm hover:border-brand-600 dark:border-white/10"
               >
                 <div>
                   <p className="font-medium">
