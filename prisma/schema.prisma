@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Farm {
+  id            String    @id @default(cuid())
+  name          String
+  region        String
+  regionDetail  String?
+  description   String?
+  contactName   String
+  contactPhone  String
+  contactEmail  String?
+  imageUrl      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  products      Product[]
+  purchaseRequests PurchaseRequest[]
+}
+
+enum StockStatus {
+  AVAILABLE
+  SOLD_OUT
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  farmId      String
+  farm        Farm        @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  name        String
+  category    String
+  price       Int
+  unit        String
+  description String?
+  imageUrl    String?
+  stockStatus StockStatus @default(AVAILABLE)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  purchaseRequests PurchaseRequest[]
+
+  @@index([farmId])
+  @@index([category])
+}
+
+enum RequestStatus {
+  REQUESTED
+  CONFIRMED
+  PAYMENT_PENDING
+  PAID
+  SHIPPED
+  COMPLETED
+  CANCELLED
+}
+
+model PurchaseRequest {
+  id            String        @id @default(cuid())
+  productId     String
+  product       Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  farmId        String
+  farm          Farm          @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  customerName  String
+  customerPhone String
+  customerEmail String?
+  quantity      Int
+  message       String?
+  status        RequestStatus @default(REQUESTED)
+  adminNote     String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([productId])
+  @@index([farmId])
+  @@index([customerPhone])
+}
