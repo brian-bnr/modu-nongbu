@@ -142,7 +142,7 @@ export default async function HomePage() {
               아직 등록된 농가가 없습니다.
             </p>
           ) : (
-            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="mt-4 grid grid-cols-1 gap-0 sm:grid-cols-4 sm:gap-4">
               {farms.map((farm) => (
                 <FarmCard key={farm.id} farm={farm} />
               ))}
@@ -183,7 +183,7 @@ export default async function HomePage() {
               아직 등록된 농산물이 없습니다.
             </p>
           ) : (
-            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+            <div className="mt-4 grid grid-cols-1 gap-0 sm:grid-cols-3 sm:gap-4">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}

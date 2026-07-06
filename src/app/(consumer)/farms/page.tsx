@@ -63,7 +63,7 @@ export default async function FarmsPage({
           조건에 맞는 농가가 없습니다.
         </p>
       ) : (
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-6 grid grid-cols-1 gap-0 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
           {farms.map((farm) => (
             <FarmCard key={farm.id} farm={farm} />
           ))}

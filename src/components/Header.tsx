@@ -18,14 +18,16 @@ export function Header() {
           모두의농부
         </Link>
         <nav className="flex items-center gap-4 text-sm">
-          {NAV_LINKS.map((link) => (
-            <Link key={link.href} href={link.href} className="hover:underline">
-              {link.label}
-            </Link>
-          ))}
+          <div className="hidden items-center gap-4 sm:flex">
+            {NAV_LINKS.map((link) => (
+              <Link key={link.href} href={link.href} className="hover:underline">
+                {link.label}
+              </Link>
+            ))}
+          </div>
           <Link
             href="/admin"
-            className="rounded-md border border-black/10 px-3 py-1.5 hover:bg-black/5 dark:border-white/20 dark:hover:bg-white/10"
+            className="hidden rounded-md border border-black/10 px-3 py-1.5 hover:bg-black/5 sm:block dark:border-white/20 dark:hover:bg-white/10"
           >
             운영자
           </Link>
