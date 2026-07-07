@@ -40,6 +40,9 @@ yarn-error.log*
 /prisma/*.db
 /prisma/*.db-journal
 
+# local tools (e.g. cloudflared, downloaded on demand)
+/.tools
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

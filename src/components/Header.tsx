@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const NAV_LINKS = [
@@ -14,7 +15,7 @@ export function Header() {
           href="/"
           className="flex items-center gap-2 text-2xl font-bold text-brand-700 dark:text-brand-400"
         >
-          <span aria-hidden>🌱</span>
+          <Image src="/logo-icon.png" alt="" width={34} height={34} quality={100} />
           모두의농부
         </Link>
         <nav className="flex items-center gap-4 text-sm">
