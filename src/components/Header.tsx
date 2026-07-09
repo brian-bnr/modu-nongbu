@@ -45,7 +45,7 @@ export async function Header() {
               >
                 <button
                   type="submit"
-                  className="hidden text-sm text-black/60 hover:underline sm:block dark:text-white/60"
+                  className="text-sm text-black/60 hover:underline dark:text-white/60"
                 >
                   로그아웃
                 </button>

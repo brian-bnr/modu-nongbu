@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { auth, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export default async function MyPage() {
@@ -16,7 +16,22 @@ export default async function MyPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-8">
-      <h1 className="text-2xl font-bold">마이페이지</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">마이페이지</h1>
+        <form
+          action={async () => {
+            "use server";
+            await signOut({ redirectTo: "/" });
+          }}
+        >
+          <button
+            type="submit"
+            className="text-sm text-black/60 hover:underline dark:text-white/60"
+          >
+            로그아웃
+          </button>
+        </form>
+      </div>
 
       <div className="mt-4 rounded-lg border border-black/10 p-4 text-sm dark:border-white/10">
         <p className="font-medium">{user.name}</p>

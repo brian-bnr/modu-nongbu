@@ -9,7 +9,7 @@ const ENTRY_CARDS = [
     emoji: "🥬",
     title: "농산물을 판매하고 싶어요",
     subtitle: "농민",
-    desc: "직접 키운 농산물을 등록하고 소비자에게 바로 판매해보세요.",
+    desc: "내가 키운 농산물을 직접 판매해요.",
     classes:
       "bg-brand-50 border-brand-200 text-brand-900 dark:bg-brand-900/20 dark:border-brand-800 dark:text-brand-100",
   },
@@ -18,7 +18,7 @@ const ENTRY_CARDS = [
     emoji: "🛒",
     title: "농산물을 구매하고 싶어요",
     subtitle: "소비자",
-    desc: "믿을 수 있는 농민에게 신선한 농산물을 직접 구매해보세요.",
+    desc: "농민에게 직접 구매해요.",
     classes:
       "bg-orange-50 border-orange-200 text-orange-900 dark:bg-orange-900/30 dark:border-orange-800 dark:text-orange-100",
   },
@@ -27,7 +27,7 @@ const ENTRY_CARDS = [
     emoji: "🧑‍🌾",
     title: "일손이 필요해요",
     subtitle: "농가",
-    desc: "바쁜 농번기, 필요한 일손을 빠르게 구해보세요.",
+    desc: "필요한 일손을 빠르게 구해요.",
     classes:
       "bg-blue-50 border-blue-200 text-blue-900 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-100",
   },
@@ -36,7 +36,7 @@ const ENTRY_CARDS = [
     emoji: "🙋",
     title: "일을 하고 싶어요",
     subtitle: "도시인 · 작업자",
-    desc: "체력에 자신 있다면 근처 농가에서 일해보세요.",
+    desc: "근처 농가에서 일자리를 찾아요.",
     classes:
       "bg-purple-50 border-purple-200 text-purple-900 dark:bg-purple-900/20 dark:border-purple-800 dark:text-purple-100",
   },
@@ -65,22 +65,22 @@ export default async function HomePage() {
             alt="황금빛 저녁, 넓게 펼쳐진 농경지"
             className="h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#fffaf0] via-[#fffaf0]/60 to-transparent sm:bg-gradient-to-r sm:from-[#fffaf0] sm:via-[#fffaf0]/55 sm:to-transparent" />
           <div className="absolute inset-0 flex items-end sm:items-center">
-            <div className="mx-auto w-full max-w-7xl px-4 pb-6 sm:px-8 sm:pb-0">
-              <div className="max-w-xl rounded-3xl bg-[#fffaf0]/90 p-6 shadow-xl backdrop-blur-sm sm:p-8 dark:bg-black/60">
+            <div className="mx-auto w-full max-w-7xl px-4 pb-8 sm:px-8 sm:pb-0">
+              <div className="max-w-xl">
                 <span className="inline-flex items-center rounded-full bg-brand-600 px-3 py-1 text-xs font-medium text-white">
                   농업에 필요한 모든 연결을 한곳에서
                 </span>
-                <h1 className="mt-4 text-4xl font-bold tracking-tight text-brand-900 sm:text-5xl lg:text-6xl dark:text-brand-50">
+                <h1 className="mt-4 text-4xl font-bold tracking-tight text-brand-900 sm:text-5xl lg:text-6xl">
                   모두의농부
                 </h1>
-                <p className="mt-4 text-base text-brand-900/80 sm:text-lg dark:text-brand-100/90">
+                <p className="mt-4 text-base text-brand-900/80 sm:text-lg">
                   씨를 뿌리는 손길부터 밥상 위에 오르기까지,
                   <br />
                   대한민국 농업의 모든 연결이 이어지는 곳입니다.
                 </p>
-                <p className="mt-3 text-sm text-brand-900/60 dark:text-brand-100/70">
+                <p className="mt-3 text-sm text-brand-900/60">
                   지금 나는 무엇을 하려는 사람인가요? 아래에서 바로 시작해보세요.
                 </p>
               </div>
