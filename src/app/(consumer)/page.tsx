@@ -49,21 +49,24 @@ const SOON_CARDS = [
   { href: "/info", emoji: "📰", title: "정보" },
 ];
 
-const VALUE_PROPS = [
+const HOW_IT_WORKS = [
   {
-    emoji: "🤝",
-    title: "중간 유통 없는 직거래",
-    desc: "농민과 소비자, 농가와 일손이 중간 상인 없이 직접 연결됩니다.",
+    step: "1",
+    emoji: "📝",
+    title: "회원가입",
+    desc: "이메일과 연락처만 있으면 1분 만에 가입 완료돼요.",
   },
   {
-    emoji: "⚡",
-    title: "빠른 연결",
-    desc: "글을 올리면 관심 있는 분이 바로 문의를 보내드려요.",
+    step: "2",
+    emoji: "🔍",
+    title: "둘러보거나 글쓰기",
+    desc: "원하는 글을 찾아보거나, 직접 글을 올려보세요.",
   },
   {
-    emoji: "🔒",
-    title: "믿을 수 있는 회원",
-    desc: "회원가입 기반이라 누가 글을 올렸는지 확인하고 거래할 수 있어요.",
+    step: "3",
+    emoji: "💬",
+    title: "문의하고 연결되기",
+    desc: "관심 있는 글에 문의를 보내면 서로 연락처가 전달돼요.",
   },
 ];
 
@@ -77,9 +80,9 @@ export default async function HomePage() {
   return (
     <div>
       <section className="relative w-full overflow-hidden bg-gradient-to-br from-accent-50 via-brand-50 to-brand-100 dark:from-brand-900/50 dark:via-brand-900/30 dark:to-accent-700/20">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-8 sm:py-16 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-12">
-          <ScrollReveal className="text-center lg:text-left">
-            <span className="inline-flex items-center rounded-full bg-brand-600 px-3 py-1 text-xs font-medium text-white">
+        <div className="mx-auto grid max-w-7xl justify-center gap-8 px-4 py-12 sm:px-8 sm:py-16 lg:grid-cols-[420px_1fr] lg:justify-start lg:gap-10">
+          <ScrollReveal className="text-center lg:flex lg:flex-col lg:justify-center lg:text-left">
+            <span className="inline-flex items-center rounded-full bg-brand-600 px-3 py-1 text-xs font-medium text-white lg:self-start">
               농업에 필요한 모든 연결을 한곳에서
             </span>
             <h1 className="mt-4 text-3xl font-bold tracking-tight text-brand-900 sm:text-4xl lg:text-5xl dark:text-brand-50">
@@ -146,17 +149,19 @@ export default async function HomePage() {
         </section>
 
         <section className="mt-12">
-          <div className="grid gap-4 sm:grid-cols-3">
-            {VALUE_PROPS.map((item, i) => (
+          <h2 className="text-center text-xl font-semibold">이렇게 이용해보세요</h2>
+          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            {HOW_IT_WORKS.map((item, i) => (
               <ScrollReveal key={item.title} delay={i * 100}>
-                <div className="flex h-full items-start gap-3 rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-xl dark:bg-brand-900/30">
+                <div className="relative h-full rounded-2xl border border-black/5 bg-white p-5 text-center shadow-sm dark:border-white/10 dark:bg-white/5">
+                  <span className="absolute left-4 top-4 text-xs font-semibold text-brand-600/60 dark:text-brand-400/60">
+                    STEP {item.step}
+                  </span>
+                  <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-2xl dark:bg-brand-900/30">
                     {item.emoji}
                   </span>
-                  <div>
-                    <p className="font-semibold">{item.title}</p>
-                    <p className="mt-1 text-sm text-black/60 dark:text-white/60">{item.desc}</p>
-                  </div>
+                  <p className="mt-3 font-semibold">{item.title}</p>
+                  <p className="mt-1 text-sm text-black/60 dark:text-white/60">{item.desc}</p>
                 </div>
               </ScrollReveal>
             ))}
