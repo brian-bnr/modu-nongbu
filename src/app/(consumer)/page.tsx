@@ -48,28 +48,97 @@ const SOON_CARDS = [
   { href: "/info", emoji: "📰", title: "정보" },
 ];
 
+const VALUE_PROPS = [
+  {
+    emoji: "🤝",
+    title: "중간 유통 없는 직거래",
+    desc: "농민과 소비자, 농가와 일손이 중간 상인 없이 직접 연결됩니다.",
+  },
+  {
+    emoji: "⚡",
+    title: "빠른 연결",
+    desc: "글을 올리면 관심 있는 분이 바로 문의를 보내드려요.",
+  },
+  {
+    emoji: "🔒",
+    title: "믿을 수 있는 회원",
+    desc: "회원가입 기반이라 누가 글을 올렸는지 확인하고 거래할 수 있어요.",
+  },
+];
+
 export default async function HomePage() {
-  const recentPosts = await prisma.post.findMany({
-    take: 8,
-    orderBy: { createdAt: "desc" },
-    include: { author: true },
-  });
+  const [recentPosts, userCount, postCount, regions] = await Promise.all([
+    prisma.post.findMany({
+      take: 8,
+      orderBy: { createdAt: "desc" },
+      include: { author: true },
+    }),
+    prisma.user.count(),
+    prisma.post.count(),
+    prisma.post.findMany({ select: { region: true }, distinct: ["region"] }),
+  ]);
+
+  const stats = [
+    { label: "가입 회원", value: userCount },
+    { label: "등록된 글", value: postCount },
+    { label: "활동 지역", value: regions.length },
+  ];
 
   return (
     <div>
       <section className="relative w-full overflow-hidden bg-gradient-to-br from-accent-50 via-brand-50 to-brand-100 dark:from-brand-900/50 dark:via-brand-900/30 dark:to-accent-700/20">
-        <div className="mx-auto max-w-3xl px-4 py-12 text-center sm:px-8 sm:py-16">
-          <span className="inline-flex items-center rounded-full bg-brand-600 px-3 py-1 text-xs font-medium text-white">
-            농업에 필요한 모든 연결을 한곳에서
-          </span>
-          <h1 className="mt-4 text-3xl font-bold text-brand-900 sm:text-4xl dark:text-brand-50">
-            모두의농부
-          </h1>
-          <p className="mt-3 text-brand-900/70 dark:text-brand-100/80">
-            지금 나는 무엇을 하려는 사람인가요?
-            <br />
-            아래에서 바로 시작해보세요.
-          </p>
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-8 sm:py-16 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-12">
+          <div className="text-center lg:text-left">
+            <span className="inline-flex items-center rounded-full bg-brand-600 px-3 py-1 text-xs font-medium text-white">
+              농업에 필요한 모든 연결을 한곳에서
+            </span>
+            <h1 className="mt-4 text-3xl font-bold tracking-tight text-brand-900 sm:text-4xl lg:text-5xl dark:text-brand-50">
+              모두의농부
+            </h1>
+            <p className="mt-3 text-brand-900/70 dark:text-brand-100/80">
+              지금 나는 무엇을 하려는 사람인가요?
+              <br />
+              아래에서 바로 시작해보세요.
+            </p>
+
+            <dl className="mt-8 flex justify-center gap-6 lg:justify-start lg:gap-10">
+              {stats.map((stat) => (
+                <div key={stat.label}>
+                  <dt className="text-xs text-brand-900/60 dark:text-brand-100/60">
+                    {stat.label}
+                  </dt>
+                  <dd className="mt-0.5 text-2xl font-bold text-brand-800 dark:text-brand-100">
+                    {stat.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          <div className="relative hidden aspect-[4/3] w-full lg:block">
+            <div className="absolute inset-0 translate-x-4 translate-y-4 overflow-hidden rounded-3xl shadow-lg">
+              <img
+                src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80"
+                alt="농장 전경"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="absolute left-0 top-0 h-40 w-52 overflow-hidden rounded-2xl border-4 border-accent-50 shadow-xl dark:border-brand-900">
+              <img
+                src="https://images.unsplash.com/photo-1590779033100-9f60a05a013d?w=800&q=80"
+                alt="신선한 채소"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+
+          <div className="mx-auto aspect-[16/9] w-full max-w-md overflow-hidden rounded-2xl shadow-lg lg:hidden">
+            <img
+              src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80"
+              alt="농장 전경"
+              className="h-full w-full object-cover"
+            />
+          </div>
         </div>
       </section>
 
@@ -80,7 +149,7 @@ export default async function HomePage() {
               <Link
                 key={card.href}
                 href={card.href}
-                className={`flex flex-col items-center justify-center gap-2 rounded-2xl border px-3 py-8 text-center transition hover:-translate-y-0.5 hover:shadow-md sm:px-5 sm:py-10 ${card.classes}`}
+                className={`flex flex-col items-center justify-center gap-2 rounded-2xl border px-3 py-8 text-center transition duration-200 hover:-translate-y-1 hover:shadow-lg sm:px-5 sm:py-10 ${card.classes}`}
               >
                 <span className="text-3xl sm:text-4xl">{card.emoji}</span>
                 <span className="whitespace-nowrap text-[11px] font-semibold sm:text-base">
@@ -95,6 +164,25 @@ export default async function HomePage() {
           </div>
         </section>
 
+        <section className="mt-12">
+          <div className="grid gap-4 sm:grid-cols-3">
+            {VALUE_PROPS.map((item) => (
+              <div
+                key={item.title}
+                className="flex items-start gap-3 rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5"
+              >
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-xl dark:bg-brand-900/30">
+                  {item.emoji}
+                </span>
+                <div>
+                  <p className="font-semibold">{item.title}</p>
+                  <p className="mt-1 text-sm text-black/60 dark:text-white/60">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <section className="mt-12 rounded-3xl bg-black/[0.02] px-6 py-8 sm:px-10 dark:bg-white/5">
           <h2 className="text-xl font-semibold">곧 만나요</h2>
           <p className="mt-1 text-sm text-black/50 dark:text-white/50">
@@ -105,7 +193,7 @@ export default async function HomePage() {
               <Link
                 key={card.href}
                 href={card.href}
-                className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-black/10 bg-white/60 p-5 text-center text-black/50 transition hover:border-black/20 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white/50 dark:hover:bg-white/10"
+                className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-black/10 bg-white/60 p-5 text-center text-black/50 transition duration-200 hover:border-black/20 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white/50 dark:hover:bg-white/10"
               >
                 <span className="text-3xl">{card.emoji}</span>
                 <span className="text-sm font-medium">{card.title}</span>
