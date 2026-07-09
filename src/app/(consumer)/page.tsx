@@ -49,27 +49,6 @@ const SOON_CARDS = [
   { href: "/info", emoji: "📰", title: "정보" },
 ];
 
-const HOW_IT_WORKS = [
-  {
-    step: "1",
-    emoji: "📝",
-    title: "회원가입",
-    desc: "이메일과 연락처만 있으면 1분 만에 가입 완료돼요.",
-  },
-  {
-    step: "2",
-    emoji: "🔍",
-    title: "둘러보거나 글쓰기",
-    desc: "원하는 글을 찾아보거나, 직접 글을 올려보세요.",
-  },
-  {
-    step: "3",
-    emoji: "💬",
-    title: "문의하고 연결되기",
-    desc: "관심 있는 글에 문의를 보내면 서로 연락처가 전달돼요.",
-  },
-];
-
 export default async function HomePage() {
   const recentPosts = await prisma.post.findMany({
     take: 8,
@@ -143,26 +122,6 @@ export default async function HomePage() {
                     {card.desc}
                   </p>
                 </Link>
-              </ScrollReveal>
-            ))}
-          </div>
-        </section>
-
-        <section className="mt-12">
-          <h2 className="text-center text-xl font-semibold">이렇게 이용해보세요</h2>
-          <div className="mt-6 grid gap-4 sm:grid-cols-3">
-            {HOW_IT_WORKS.map((item, i) => (
-              <ScrollReveal key={item.title} delay={i * 100}>
-                <div className="relative h-full rounded-2xl border border-black/5 bg-white p-5 text-center shadow-sm dark:border-white/10 dark:bg-white/5">
-                  <span className="absolute left-4 top-4 text-xs font-semibold text-brand-600/60 dark:text-brand-400/60">
-                    STEP {item.step}
-                  </span>
-                  <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-2xl dark:bg-brand-900/30">
-                    {item.emoji}
-                  </span>
-                  <p className="mt-3 font-semibold">{item.title}</p>
-                  <p className="mt-1 text-sm text-black/60 dark:text-white/60">{item.desc}</p>
-                </div>
               </ScrollReveal>
             ))}
           </div>
