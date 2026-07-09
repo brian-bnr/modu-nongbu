@@ -58,50 +58,35 @@ export default async function HomePage() {
 
   return (
     <div>
-      <section className="relative w-full overflow-hidden bg-gradient-to-br from-accent-50 via-brand-50 to-brand-100 dark:from-brand-900/50 dark:via-brand-900/30 dark:to-accent-700/20">
-        <div className="mx-auto grid max-w-7xl justify-center gap-8 px-4 py-12 sm:px-8 sm:py-16 lg:grid-cols-[420px_1fr] lg:justify-start lg:gap-10">
-          <ScrollReveal className="text-center lg:flex lg:flex-col lg:justify-center lg:text-left">
-            <span className="inline-flex items-center rounded-full bg-brand-600 px-3 py-1 text-xs font-medium text-white lg:self-start">
-              농업에 필요한 모든 연결을 한곳에서
-            </span>
-            <h1 className="mt-4 text-3xl font-bold tracking-tight text-brand-900 sm:text-4xl lg:text-5xl dark:text-brand-50">
-              모두의농부
-            </h1>
-            <p className="mt-3 text-brand-900/70 dark:text-brand-100/80">
-              지금 나는 무엇을 하려는 사람인가요?
-              <br />
-              아래에서 바로 시작해보세요.
-            </p>
-          </ScrollReveal>
-
-          <ScrollReveal delay={150} className="relative hidden aspect-[4/3] w-full lg:block">
-            <div className="group absolute inset-0 translate-x-4 translate-y-4 overflow-hidden rounded-3xl shadow-lg">
-              <img
-                src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80"
-                alt="농장 전경"
-                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-              />
+      <section className="relative w-full overflow-hidden">
+        <ScrollReveal className="group relative h-[480px] w-full sm:h-[560px] lg:h-[640px]">
+          <img
+            src="https://images.unsplash.com/photo-1560493676-04071c5f467b?w=2000&q=80"
+            alt="황금빛 저녁, 넓게 펼쳐진 농경지"
+            className="h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
+          <div className="absolute inset-0 flex items-end sm:items-center">
+            <div className="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-8 sm:pb-0">
+              <div className="max-w-xl text-white">
+                <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur-sm ring-1 ring-white/30">
+                  농업에 필요한 모든 연결을 한곳에서
+                </span>
+                <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+                  모두의농부
+                </h1>
+                <p className="mt-4 text-base text-white/90 sm:text-lg">
+                  씨를 뿌리는 손길부터 밥상 위에 오르기까지,
+                  <br />
+                  대한민국 농업의 모든 연결이 이어지는 곳입니다.
+                </p>
+                <p className="mt-3 text-sm text-white/70">
+                  지금 나는 무엇을 하려는 사람인가요? 아래에서 바로 시작해보세요.
+                </p>
+              </div>
             </div>
-            <div className="group absolute left-0 top-0 h-40 w-52 overflow-hidden rounded-2xl border-4 border-accent-50 shadow-xl dark:border-brand-900">
-              <img
-                src="https://images.unsplash.com/photo-1590779033100-9f60a05a013d?w=800&q=80"
-                alt="신선한 채소"
-                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-              />
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal
-            delay={150}
-            className="group mx-auto aspect-[16/9] w-full max-w-md overflow-hidden rounded-2xl shadow-lg lg:hidden"
-          >
-            <img
-              src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80"
-              alt="농장 전경"
-              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-            />
-          </ScrollReveal>
-        </div>
+          </div>
+        </ScrollReveal>
       </section>
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
