@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import type { PostType } from "@prisma/client";
 import { createInquiry, type InquiryActionState } from "@/lib/actions/inquiry";
 
@@ -17,6 +17,8 @@ const SHOW_QUANTITY = new Set<PostType>(["SELL_PRODUCT", "BUY_PRODUCT"]);
 
 export function InquiryForm({ postId, postType }: { postId: string; postType: PostType }) {
   const [state, formAction, isPending] = useActionState(createInquiry, initialState);
+  const [quantity, setQuantity] = useState("1");
+  const [message, setMessage] = useState("");
 
   if (state.status === "success") {
     return (
@@ -41,7 +43,8 @@ export function InquiryForm({ postId, postType }: { postId: string; postType: Po
             type="number"
             name="quantity"
             min={1}
-            defaultValue={1}
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
             className="mt-1 w-full rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
           />
           {state.errors?.quantity && (
@@ -56,6 +59,8 @@ export function InquiryForm({ postId, postType }: { postId: string; postType: Po
           name="message"
           rows={3}
           placeholder="희망 일정, 문의사항 등을 남겨주세요."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           className="mt-1 w-full rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
         />
       </div>

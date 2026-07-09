@@ -65,22 +65,23 @@ export default async function HomePage() {
             alt="황금빛 저녁, 넓게 펼쳐진 농경지"
             className="h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/35" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/10 to-transparent" />
           <div className="absolute inset-0 flex items-end sm:items-center">
             <div className="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-8 sm:pb-0">
-              <div className="max-w-xl text-white">
-                <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur-sm ring-1 ring-white/30">
+              <div className="max-w-xl text-white [text-shadow:0_2px_16px_rgba(0,0,0,0.65)]">
+                <span className="inline-flex items-center rounded-full bg-black/30 px-3 py-1 text-xs font-medium backdrop-blur-sm ring-1 ring-white/40">
                   농업에 필요한 모든 연결을 한곳에서
                 </span>
                 <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
                   모두의농부
                 </h1>
-                <p className="mt-4 text-base text-white/90 sm:text-lg">
+                <p className="mt-4 text-base text-white sm:text-lg">
                   씨를 뿌리는 손길부터 밥상 위에 오르기까지,
                   <br />
                   대한민국 농업의 모든 연결이 이어지는 곳입니다.
                 </p>
-                <p className="mt-3 text-sm text-white/70">
+                <p className="mt-3 text-sm text-white/90">
                   지금 나는 무엇을 하려는 사람인가요? 아래에서 바로 시작해보세요.
                 </p>
               </div>

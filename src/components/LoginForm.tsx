@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 export type LoginActionState = {
   error?: string;
@@ -18,6 +18,7 @@ export function LoginForm({
   children?: React.ReactNode;
 }) {
   const [state, formAction, isPending] = useActionState(action, initialState);
+  const [email, setEmail] = useState("");
 
   return (
     <form action={formAction} className="space-y-4">
@@ -28,6 +29,8 @@ export function LoginForm({
           name="email"
           type="email"
           required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="mt-1 w-full rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
         />
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import type { Post, PostType } from "@prisma/client";
 
 export type PostActionState = {
@@ -34,6 +34,19 @@ export function PostForm({
   const fieldClass =
     "mt-1 w-full rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent";
 
+  const [postType, setPostType] = useState(
+    post?.postType ?? defaultType ?? allowedTypes[0].value
+  );
+  const [title, setTitle] = useState(post?.title ?? "");
+  const [category, setCategory] = useState(post?.category ?? "");
+  const [unit, setUnit] = useState(post?.unit ?? "");
+  const [price, setPrice] = useState(post?.price != null ? String(post.price) : "");
+  const [region, setRegion] = useState(post?.region ?? "");
+  const [regionDetail, setRegionDetail] = useState(post?.regionDetail ?? "");
+  const [description, setDescription] = useState(post?.description ?? "");
+  const [imageUrl, setImageUrl] = useState(post?.imageUrl ?? "");
+  const [status, setStatus] = useState(post?.status ?? "OPEN");
+
   return (
     <form action={formAction} className="max-w-lg space-y-4">
       {allowedTypes.length > 1 ? (
@@ -41,7 +54,8 @@ export function PostForm({
           <label className="block text-sm font-medium">글 종류</label>
           <select
             name="postType"
-            defaultValue={post?.postType ?? defaultType}
+            value={postType}
+            onChange={(e) => setPostType(e.target.value as PostType)}
             className={fieldClass}
           >
             {allowedTypes.map((t) => (
@@ -52,16 +66,17 @@ export function PostForm({
           </select>
         </div>
       ) : (
-        <input
-          type="hidden"
-          name="postType"
-          value={post?.postType ?? defaultType ?? allowedTypes[0].value}
-        />
+        <input type="hidden" name="postType" value={postType} />
       )}
 
       <div>
         <label className="block text-sm font-medium">제목</label>
-        <input name="title" defaultValue={post?.title} className={fieldClass} />
+        <input
+          name="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className={fieldClass}
+        />
         {state.errors?.title && <p className="mt-1 text-xs text-red-600">{state.errors.title[0]}</p>}
       </div>
 
@@ -70,7 +85,8 @@ export function PostForm({
           <label className="block text-sm font-medium">{categoryLabel} (선택)</label>
           <input
             name="category"
-            defaultValue={post?.category ?? ""}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
             placeholder={categoryPlaceholder}
             className={fieldClass}
           />
@@ -79,7 +95,8 @@ export function PostForm({
           <label className="block text-sm font-medium">{unitLabel} (선택)</label>
           <input
             name="unit"
-            defaultValue={post?.unit ?? ""}
+            value={unit}
+            onChange={(e) => setUnit(e.target.value)}
             placeholder={unitPlaceholder}
             className={fieldClass}
           />
@@ -92,7 +109,8 @@ export function PostForm({
           type="number"
           name="price"
           min={0}
-          defaultValue={post?.price ?? undefined}
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
           className={fieldClass}
         />
         {state.errors?.price && <p className="mt-1 text-xs text-red-600">{state.errors.price[0]}</p>}
@@ -101,14 +119,24 @@ export function PostForm({
       <div className="flex gap-3">
         <div className="flex-1">
           <label className="block text-sm font-medium">지역 (시/도)</label>
-          <input name="region" defaultValue={post?.region} className={fieldClass} />
+          <input
+            name="region"
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
+            className={fieldClass}
+          />
           {state.errors?.region && (
             <p className="mt-1 text-xs text-red-600">{state.errors.region[0]}</p>
           )}
         </div>
         <div className="flex-1">
           <label className="block text-sm font-medium">상세지역 (선택)</label>
-          <input name="regionDetail" defaultValue={post?.regionDetail ?? ""} className={fieldClass} />
+          <input
+            name="regionDetail"
+            value={regionDetail}
+            onChange={(e) => setRegionDetail(e.target.value)}
+            className={fieldClass}
+          />
         </div>
       </div>
 
@@ -116,7 +144,8 @@ export function PostForm({
         <label className="block text-sm font-medium">설명 (선택)</label>
         <textarea
           name="description"
-          defaultValue={post?.description ?? ""}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           rows={4}
           className={fieldClass}
         />
@@ -124,7 +153,12 @@ export function PostForm({
 
       <div>
         <label className="block text-sm font-medium">이미지 URL (선택)</label>
-        <input name="imageUrl" defaultValue={post?.imageUrl ?? ""} className={fieldClass} />
+        <input
+          name="imageUrl"
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          className={fieldClass}
+        />
         {state.errors?.imageUrl && (
           <p className="mt-1 text-xs text-red-600">{state.errors.imageUrl[0]}</p>
         )}
@@ -133,7 +167,12 @@ export function PostForm({
       {post && (
         <div>
           <label className="block text-sm font-medium">상태</label>
-          <select name="status" defaultValue={post.status} className={fieldClass}>
+          <select
+            name="status"
+            value={status}
+            onChange={(e) => setStatus(e.target.value as "OPEN" | "CLOSED")}
+            className={fieldClass}
+          >
             <option value="OPEN">진행중</option>
             <option value="CLOSED">마감</option>
           </select>
