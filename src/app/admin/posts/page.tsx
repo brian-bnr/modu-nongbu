@@ -59,24 +59,25 @@ export default async function AdminPostsPage({
       {posts.length === 0 ? (
         <p className="mt-8 text-sm text-black/50 dark:text-white/50">등록된 글이 없습니다.</p>
       ) : (
-        <ul className="mt-6 space-y-2">
+        <ul className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {posts.map((post) => (
             <li key={post.id}>
               <Link
                 href={`/admin/posts/${post.id}`}
-                className="flex items-center justify-between gap-4 rounded-lg border border-black/10 p-3 text-sm hover:border-brand-600 dark:border-white/10"
+                className="flex h-full flex-col justify-between gap-2 rounded-lg border border-black/10 p-3 text-sm hover:border-brand-600 dark:border-white/10"
               >
+                <div className="flex items-start justify-between gap-2">
+                  <p className="font-medium">{post.title}</p>
+                  <Badge variant={POST_STATUS_VARIANT[post.status]}>
+                    {POST_STATUS_LABEL[post.status]}
+                  </Badge>
+                </div>
                 <div>
-                  <p className="font-medium">
-                    {post.title} · {post.author.name}
-                  </p>
-                  <p className="text-xs text-black/40 dark:text-white/40">
+                  <p className="text-xs text-black/50 dark:text-white/50">{post.author.name}</p>
+                  <p className="mt-0.5 text-xs text-black/40 dark:text-white/40">
                     {POST_TYPE_LABEL[post.postType]} · {formatDate(post.createdAt)}
                   </p>
                 </div>
-                <Badge variant={POST_STATUS_VARIANT[post.status]}>
-                  {POST_STATUS_LABEL[post.status]}
-                </Badge>
               </Link>
             </li>
           ))}

@@ -54,24 +54,25 @@ export default async function AdminInquiriesPage({
       {inquiries.length === 0 ? (
         <p className="mt-8 text-sm text-black/50 dark:text-white/50">해당하는 문의가 없습니다.</p>
       ) : (
-        <ul className="mt-6 space-y-2">
+        <ul className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {inquiries.map((inquiry) => (
             <li key={inquiry.id}>
               <Link
                 href={`/admin/inquiries/${inquiry.id}`}
-                className="flex items-center justify-between gap-4 rounded-lg border border-black/10 p-3 text-sm hover:border-brand-600 dark:border-white/10"
+                className="flex h-full flex-col justify-between gap-2 rounded-lg border border-black/10 p-3 text-sm hover:border-brand-600 dark:border-white/10"
               >
+                <div className="flex items-start justify-between gap-2">
+                  <p className="font-medium">{inquiry.post.title}</p>
+                  <Badge variant={INQUIRY_STATUS_VARIANT[inquiry.status]}>
+                    {INQUIRY_STATUS_LABEL[inquiry.status]}
+                  </Badge>
+                </div>
                 <div>
-                  <p className="font-medium">
-                    {inquiry.user.name} · {inquiry.post.title}
-                  </p>
-                  <p className="text-xs text-black/40 dark:text-white/40">
+                  <p className="text-xs text-black/50 dark:text-white/50">{inquiry.user.name}</p>
+                  <p className="mt-0.5 text-xs text-black/40 dark:text-white/40">
                     {formatDate(inquiry.createdAt)}
                   </p>
                 </div>
-                <Badge variant={INQUIRY_STATUS_VARIANT[inquiry.status]}>
-                  {INQUIRY_STATUS_LABEL[inquiry.status]}
-                </Badge>
               </Link>
             </li>
           ))}

@@ -20,7 +20,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+    <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-8 border-b border-black/10 pb-4 dark:border-white/10">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link

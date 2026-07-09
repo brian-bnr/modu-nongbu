@@ -19,21 +19,20 @@ export default async function AdminUsersPage() {
       {users.length === 0 ? (
         <p className="mt-8 text-sm text-black/50 dark:text-white/50">가입한 회원이 없습니다.</p>
       ) : (
-        <ul className="mt-6 space-y-2">
+        <ul className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {users.map((user) => {
             const isNew = now - user.createdAt.getTime() < NEW_USER_WINDOW_MS;
             return (
               <li key={user.id}>
                 <Link
                   href={`/admin/users/${user.id}`}
-                  className="block rounded-lg border border-black/10 p-3 text-sm hover:border-brand-600 dark:border-white/10"
+                  className="block h-full rounded-lg border border-black/10 p-3 text-sm hover:border-brand-600 dark:border-white/10"
                 >
                   <div className="flex items-center gap-2">
-                    <p className="font-medium">
-                      {user.name} · {user.email}
-                    </p>
+                    <p className="font-medium">{user.name}</p>
                     {isNew && <Badge variant="amber">신규</Badge>}
                   </div>
+                  <p className="mt-1 text-black/50 dark:text-white/50">{user.email}</p>
                   <p className="mt-1 text-black/50 dark:text-white/50">
                     {user.phone} {user.region ? `· ${user.region}` : ""}
                   </p>
