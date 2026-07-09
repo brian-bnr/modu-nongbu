@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Admin {
@@ -14,74 +15,80 @@ model Admin {
   createdAt    DateTime @default(now())
 }
 
-model Farm {
-  id            String    @id @default(cuid())
-  name          String
-  region        String
-  regionDetail  String?
-  description   String?
-  contactName   String
-  contactPhone  String
-  contactEmail  String?
-  imageUrl      String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  products      Product[]
-  purchaseRequests PurchaseRequest[]
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  phone        String
+  email        String   @unique
+  passwordHash String
+  region       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  posts     Post[]
+  inquiries Inquiry[]
 }
 
-enum StockStatus {
-  AVAILABLE
-  SOLD_OUT
+enum PostType {
+  SELL_PRODUCT
+  BUY_PRODUCT
+  FIND_WORKER
+  LOOKING_FOR_WORK
+  RENT_MACHINE
+  NEED_MACHINE
+  DRONE_REQUEST
+  DRONE_SERVICE
 }
 
-model Product {
-  id          String      @id @default(cuid())
-  farmId      String
-  farm        Farm        @relation(fields: [farmId], references: [id], onDelete: Cascade)
-  name        String
-  category    String
-  price       Int
-  unit        String
-  description String?
-  imageUrl    String?
-  stockStatus StockStatus @default(AVAILABLE)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  purchaseRequests PurchaseRequest[]
-
-  @@index([farmId])
-  @@index([category])
+enum PostStatus {
+  OPEN
+  CLOSED
 }
 
-enum RequestStatus {
+model Post {
+  id           String     @id @default(cuid())
+  postType     PostType
+  authorId     String
+  author       User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  title        String
+  category     String?
+  description  String?
+  price        Int?
+  unit         String?
+  region       String
+  regionDetail String?
+  imageUrl     String?
+  status       PostStatus @default(OPEN)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  inquiries Inquiry[]
+
+  @@index([postType])
+  @@index([authorId])
+  @@index([region])
+}
+
+enum InquiryStatus {
   REQUESTED
-  CONFIRMED
-  PAYMENT_PENDING
-  PAID
-  SHIPPED
+  ACCEPTED
   COMPLETED
   CANCELLED
 }
 
-model PurchaseRequest {
-  id            String        @id @default(cuid())
-  productId     String
-  product       Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
-  farmId        String
-  farm          Farm          @relation(fields: [farmId], references: [id], onDelete: Cascade)
-  customerName  String
-  customerPhone String
-  customerEmail String?
-  quantity      Int
-  message       String?
-  status        RequestStatus @default(REQUESTED)
-  adminNote     String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+model Inquiry {
+  id        String        @id @default(cuid())
+  postId    String
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String?
+  quantity  Int?
+  status    InquiryStatus @default(REQUESTED)
+  adminNote String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
-  @@index([productId])
-  @@index([farmId])
-  @@index([customerPhone])
+  @@index([postId])
+  @@index([userId])
 }

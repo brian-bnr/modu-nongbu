@@ -1,15 +1,27 @@
 "use client";
 
 import { useActionState } from "react";
-import { loginAction, type LoginActionState } from "@/app/admin/login/actions";
+
+export type LoginActionState = {
+  error?: string;
+};
 
 const initialState: LoginActionState = {};
 
-export function LoginForm() {
-  const [state, formAction, isPending] = useActionState(loginAction, initialState);
+export function LoginForm({
+  action,
+  submitLabel = "로그인",
+  children,
+}: {
+  action: (state: LoginActionState, formData: FormData) => Promise<LoginActionState>;
+  submitLabel?: string;
+  children?: React.ReactNode;
+}) {
+  const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
     <form action={formAction} className="space-y-4">
+      {children}
       <div>
         <label className="block text-sm font-medium">이메일</label>
         <input
@@ -34,7 +46,7 @@ export function LoginForm() {
         disabled={isPending}
         className="w-full rounded-md bg-brand-700 px-4 py-2 text-sm font-medium text-white hover:bg-brand-800 disabled:opacity-60"
       >
-        {isPending ? "로그인 중..." : "로그인"}
+        {isPending ? `${submitLabel} 중...` : submitLabel}
       </button>
     </form>
   );

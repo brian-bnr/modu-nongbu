@@ -3,20 +3,24 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const TABS = [
+const BASE_TABS = [
   { href: "/", label: "홈", icon: "🏠" },
-  { href: "/farms", label: "농가", icon: "🚜" },
   { href: "/products", label: "농산물", icon: "🥬" },
-  { href: "/orders/lookup", label: "주문조회", icon: "📦" },
-  { href: "/admin", label: "운영자", icon: "👤" },
+  { href: "/jobs", label: "일자리", icon: "🧑‍🌾" },
 ];
 
-export function MobileTabBar() {
+export function MobileTabBar({ loggedIn }: { loggedIn: boolean }) {
   const pathname = usePathname();
+  const tabs = [
+    ...BASE_TABS,
+    loggedIn
+      ? { href: "/my", label: "마이", icon: "👤" }
+      : { href: "/login", label: "로그인", icon: "👤" },
+  ];
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 flex border-t border-black/10 bg-white pb-[env(safe-area-inset-bottom)] sm:hidden dark:border-white/10 dark:bg-neutral-900">
-      {TABS.map((tab) => {
+      {tabs.map((tab) => {
         const active = tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href);
         return (
           <Link

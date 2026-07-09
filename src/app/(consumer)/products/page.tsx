@@ -1,92 +1,28 @@
-import { prisma } from "@/lib/prisma";
-import { ProductCard } from "@/components/ProductCard";
+import type { PostType } from "@prisma/client";
+import { PostListingPage } from "@/components/PostListingPage";
 
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; category?: string; region?: string }>;
+  searchParams: Promise<{ type?: string; q?: string; category?: string; region?: string }>;
 }) {
-  const { q, category, region } = await searchParams;
-
-  const [products, categories, regions] = await Promise.all([
-    prisma.product.findMany({
-      where: {
-        AND: [
-          q ? { name: { contains: q } } : {},
-          category ? { category } : {},
-          region ? { farm: { region } } : {},
-        ],
-      },
-      orderBy: { createdAt: "desc" },
-      include: { farm: true },
-    }),
-    prisma.product.findMany({
-      select: { category: true },
-      distinct: ["category"],
-      orderBy: { category: "asc" },
-    }),
-    prisma.farm.findMany({
-      select: { region: true },
-      distinct: ["region"],
-      orderBy: { region: "asc" },
-    }),
-  ]);
+  const { type, q, category, region } = await searchParams;
+  const activeType: PostType = type === "BUY_PRODUCT" ? "BUY_PRODUCT" : "SELL_PRODUCT";
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
-      <h1 className="text-2xl font-bold">농산물</h1>
-
-      <form method="get" className="mt-6 flex flex-wrap gap-2">
-        <input
-          type="text"
-          name="q"
-          defaultValue={q}
-          placeholder="농산물 이름 검색"
-          className="w-56 rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
-        />
-        <select
-          name="category"
-          defaultValue={category ?? ""}
-          className="rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
-        >
-          <option value="">전체 카테고리</option>
-          {categories.map((c) => (
-            <option key={c.category} value={c.category}>
-              {c.category}
-            </option>
-          ))}
-        </select>
-        <select
-          name="region"
-          defaultValue={region ?? ""}
-          className="rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
-        >
-          <option value="">전체 지역</option>
-          {regions.map((r) => (
-            <option key={r.region} value={r.region}>
-              {r.region}
-            </option>
-          ))}
-        </select>
-        <button
-          type="submit"
-          className="rounded-md bg-brand-700 px-4 py-2 text-sm font-medium text-white hover:bg-brand-800"
-        >
-          검색
-        </button>
-      </form>
-
-      {products.length === 0 ? (
-        <p className="mt-8 text-sm text-black/50 dark:text-white/50">
-          조건에 맞는 농산물이 없습니다.
-        </p>
-      ) : (
-        <div className="mt-6 grid grid-cols-1 gap-0 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      )}
-    </div>
+    <PostListingPage
+      heading="농산물"
+      description="농민이 올린 판매 글, 소비자가 올린 구매 글을 한곳에서 확인하세요."
+      basePath="/products"
+      newHref={`/products/new?type=${activeType}`}
+      activeType={activeType}
+      tabs={[
+        { type: "SELL_PRODUCT", label: "팔아요" },
+        { type: "BUY_PRODUCT", label: "구해요" },
+      ]}
+      q={q}
+      category={category}
+      region={region}
+    />
   );
 }

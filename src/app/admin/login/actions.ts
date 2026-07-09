@@ -12,7 +12,7 @@ export async function loginAction(
   formData: FormData
 ): Promise<LoginActionState> {
   try {
-    await signIn("credentials", {
+    await signIn("admin", {
       email: formData.get("email"),
       password: formData.get("password"),
       redirectTo: "/admin",

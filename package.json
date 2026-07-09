@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "postinstall": "prisma generate",
     "cap:sync": "cap sync android",
     "cap:open": "cap open android"
   },
