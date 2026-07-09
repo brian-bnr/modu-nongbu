@@ -44,7 +44,7 @@ const ENTRY_CARDS = [
 
 const SOON_CARDS = [
   { href: "/machines", emoji: "🚜", title: "농기계" },
-  { href: "/drones", emoji: "🚁", title: "드론" },
+  { href: "/drones", emoji: "🚁", title: "드론(방제 방역)" },
   { href: "/services", emoji: "🛠️", title: "농업서비스" },
   { href: "/info", emoji: "📰", title: "정보" },
 ];
