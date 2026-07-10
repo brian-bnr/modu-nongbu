@@ -9,19 +9,30 @@ import {
 } from "@/lib/format";
 
 export default async function AdminDashboardPage() {
-  const [userCount, postCount, newInquiryCount, postsByType, recentInquiries] = await Promise.all([
-    prisma.user.count(),
-    prisma.post.count(),
-    prisma.inquiry.count({ where: { status: "REQUESTED" } }),
-    prisma.post.groupBy({ by: ["postType"], _count: true }),
-    prisma.inquiry.findMany({
-      take: 10,
-      orderBy: { createdAt: "desc" },
-      include: { post: true, user: true },
-    }),
-  ]);
+  const todayStr = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
+
+  const [userCount, postCount, newInquiryCount, todayVisitorCount, postsByType, recentInquiries] =
+    await Promise.all([
+      prisma.user.count(),
+      prisma.post.count(),
+      prisma.inquiry.count({ where: { status: "REQUESTED" } }),
+      prisma.visit.count({ where: { visitDate: todayStr } }),
+      prisma.post.groupBy({ by: ["postType"], _count: true }),
+      prisma.inquiry.findMany({
+        take: 10,
+        orderBy: { createdAt: "desc" },
+        include: { post: true, user: true },
+      }),
+    ]);
 
   const statCards = [
+    {
+      href: null,
+      icon: "👀",
+      label: "오늘 방문자",
+      value: todayVisitorCount,
+      accent: "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
+    },
     {
       href: "/admin/inquiries?status=REQUESTED",
       icon: "📩",
@@ -49,25 +60,46 @@ export default async function AdminDashboardPage() {
     <div>
       <h1 className="text-2xl font-bold">대시보드</h1>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
-        {statCards.map((stat) => (
-          <Link
-            key={stat.href}
-            href={stat.href}
-            className="group flex items-center gap-3 rounded-xl border border-black/10 p-3 transition hover:-translate-y-0.5 hover:border-transparent hover:shadow-md dark:border-white/10"
-          >
-            <span
-              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm ${stat.accent}`}
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {statCards.map((stat) => {
+          const cardBody = (
+            <>
+              <span
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm ${stat.accent}`}
+              >
+                {stat.icon}
+              </span>
+              <p className="flex-1 text-sm text-black/50 dark:text-white/50">{stat.label}</p>
+              <p className="text-xl font-bold">{stat.value}</p>
+              {stat.href && (
+                <span className="text-black/20 transition group-hover:translate-x-0.5 group-hover:text-black/40 dark:text-white/20 dark:group-hover:text-white/40">
+                  →
+                </span>
+              )}
+            </>
+          );
+
+          if (!stat.href) {
+            return (
+              <div
+                key={stat.label}
+                className="flex items-center gap-3 rounded-xl border border-black/10 p-3 dark:border-white/10"
+              >
+                {cardBody}
+              </div>
+            );
+          }
+
+          return (
+            <Link
+              key={stat.label}
+              href={stat.href}
+              className="group flex items-center gap-3 rounded-xl border border-black/10 p-3 transition hover:-translate-y-0.5 hover:border-transparent hover:shadow-md dark:border-white/10"
             >
-              {stat.icon}
-            </span>
-            <p className="flex-1 text-sm text-black/50 dark:text-white/50">{stat.label}</p>
-            <p className="text-xl font-bold">{stat.value}</p>
-            <span className="text-black/20 transition group-hover:translate-x-0.5 group-hover:text-black/40 dark:text-white/20 dark:group-hover:text-white/40">
-              →
-            </span>
-          </Link>
-        ))}
+              {cardBody}
+            </Link>
+          );
+        })}
       </div>
 
       <div className="mt-8">
