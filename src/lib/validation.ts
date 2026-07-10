@@ -51,6 +51,11 @@ export const inquirySchema = z.object({
   quantity: optionalInt,
 });
 
+export const inquiryUpdateSchema = z.object({
+  message: z.string().max(1000).optional().or(z.literal("")),
+  quantity: optionalInt,
+});
+
 export const inquiryStatusUpdateSchema = z.object({
   inquiryId: z.string().min(1),
   status: z.enum(["REQUESTED", "ACCEPTED", "COMPLETED", "CANCELLED"]),

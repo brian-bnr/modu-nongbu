@@ -55,6 +55,14 @@ export default async function MyInquiriesPage() {
                         {inquiry.message}
                       </p>
                     )}
+                    {inquiry.status === "REQUESTED" && (
+                      <Link
+                        href={`/my/inquiries/${inquiry.id}/edit`}
+                        className="mt-2 inline-block text-xs text-brand-700 hover:underline dark:text-brand-400"
+                      >
+                        문의 수정
+                      </Link>
+                    )}
                   </div>
                   <Badge variant={INQUIRY_STATUS_VARIANT[inquiry.status]}>
                     {INQUIRY_STATUS_LABEL[inquiry.status]}
