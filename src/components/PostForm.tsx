@@ -1,7 +1,10 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { upload } from "@vercel/blob/client";
 import type { Post, PostType } from "@prisma/client";
+
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 
 export type PostActionState = {
   errors?: Record<string, string[] | undefined>;
@@ -46,6 +49,37 @@ export function PostForm({
   const [description, setDescription] = useState(post?.description ?? "");
   const [imageUrl, setImageUrl] = useState(post?.imageUrl ?? "");
   const [status, setStatus] = useState(post?.status ?? "OPEN");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setUploadError("이미지 파일만 업로드할 수 있습니다.");
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      setUploadError("이미지 용량은 10MB 이하여야 합니다.");
+      return;
+    }
+
+    setUploading(true);
+    setUploadError("");
+    try {
+      const blob = await upload(file.name, file, {
+        access: "public",
+        handleUploadUrl: "/api/upload",
+      });
+      setImageUrl(blob.url);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "업로드에 실패했습니다.");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   return (
     <form action={formAction} className="max-w-lg space-y-4">
@@ -152,13 +186,37 @@ export function PostForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium">이미지 URL (선택)</label>
-        <input
-          name="imageUrl"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          className={fieldClass}
-        />
+        <label className="block text-sm font-medium">이미지 (선택)</label>
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            alt=""
+            className="mt-2 h-32 w-32 rounded-md border border-black/10 object-cover dark:border-white/20"
+          />
+        )}
+        <div className="mt-2 flex items-center gap-3">
+          <label className="cursor-pointer rounded-md border border-black/10 px-3 py-2 text-sm hover:bg-black/5 dark:border-white/20 dark:hover:bg-white/10">
+            {uploading ? "업로드 중..." : imageUrl ? "다른 사진 선택" : "사진 선택"}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              disabled={uploading}
+              className="hidden"
+            />
+          </label>
+          {imageUrl && !uploading && (
+            <button
+              type="button"
+              onClick={() => setImageUrl("")}
+              className="text-xs text-black/50 hover:underline dark:text-white/50"
+            >
+              제거
+            </button>
+          )}
+        </div>
+        {uploadError && <p className="mt-1 text-xs text-red-600">{uploadError}</p>}
+        <input type="hidden" name="imageUrl" value={imageUrl} />
         {state.errors?.imageUrl && (
           <p className="mt-1 text-xs text-red-600">{state.errors.imageUrl[0]}</p>
         )}
