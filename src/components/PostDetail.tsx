@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { Badge } from "@/components/Badge";
 import { InquiryForm } from "@/components/InquiryForm";
+import { PostImageLightbox } from "@/components/PostImageLightbox";
 import {
   formatDate,
   formatPrice,
@@ -39,15 +40,13 @@ export async function PostDetail({
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
       <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
         <div>
-          <div className="aspect-[4/3] w-full overflow-hidden rounded-2xl bg-brand-50 dark:bg-brand-900/30">
-            {post.imageUrl ? (
-              <img src={post.imageUrl} alt={post.title} className="h-full w-full object-cover" />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-6xl">
-                {POST_TYPE_ICON[post.postType]}
-              </div>
-            )}
-          </div>
+          {post.imageUrl ? (
+            <PostImageLightbox src={post.imageUrl} alt={post.title} />
+          ) : (
+            <div className="flex aspect-[4/3] w-full items-center justify-center rounded-2xl bg-brand-50 text-6xl dark:bg-brand-900/30">
+              {POST_TYPE_ICON[post.postType]}
+            </div>
+          )}
 
           <p className="mt-5 text-sm text-black/50 dark:text-white/50">
             {post.author.name} · {POST_TYPE_LABEL[post.postType]}
