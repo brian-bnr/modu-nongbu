@@ -53,7 +53,7 @@ export async function PostDetail({
             {post.category ? ` · ${post.category}` : ""}
           </p>
           <div className="mt-1 flex items-center gap-2">
-            <h1 className="text-2xl font-bold">{post.title}</h1>
+            <h1 className="break-keep text-2xl font-bold">{post.title}</h1>
             <Badge variant={POST_STATUS_VARIANT[post.status]}>
               {POST_STATUS_LABEL[post.status]}
             </Badge>

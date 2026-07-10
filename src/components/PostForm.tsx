@@ -6,6 +6,26 @@ import type { Post, PostType } from "@prisma/client";
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 
+const REGIONS = [
+  "서울",
+  "부산",
+  "대구",
+  "인천",
+  "광주",
+  "대전",
+  "울산",
+  "세종",
+  "경기",
+  "강원",
+  "충북",
+  "충남",
+  "전북",
+  "전남",
+  "경북",
+  "경남",
+  "제주",
+];
+
 export type PostActionState = {
   errors?: Record<string, string[] | undefined>;
 };
@@ -153,12 +173,20 @@ export function PostForm({
       <div className="flex gap-3">
         <div className="flex-1">
           <label className="block text-sm font-medium">지역 (시/도)</label>
-          <input
+          <select
             name="region"
             value={region}
             onChange={(e) => setRegion(e.target.value)}
             className={fieldClass}
-          />
+          >
+            <option value="">지역을 선택하세요</option>
+            {region && !REGIONS.includes(region) && <option value={region}>{region}</option>}
+            {REGIONS.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </select>
           {state.errors?.region && (
             <p className="mt-1 text-xs text-red-600">{state.errors.region[0]}</p>
           )}

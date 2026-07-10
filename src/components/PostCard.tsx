@@ -35,7 +35,7 @@ export function PostCard({ post }: { post: Post & { author: User } }) {
               {post.author.name} · {POST_TYPE_LABEL[post.postType]}
               {post.category ? ` · ${post.category}` : ""}
             </p>
-            <h3 className="mt-1 text-base font-semibold sm:text-lg">{post.title}</h3>
+            <h3 className="mt-1 break-keep text-base font-semibold sm:text-lg">{post.title}</h3>
           </div>
           <Badge variant={POST_STATUS_VARIANT[post.status]}>{POST_STATUS_LABEL[post.status]}</Badge>
         </div>
