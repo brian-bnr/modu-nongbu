@@ -1,6 +1,24 @@
 import Link from "next/link";
 import { LoginForm } from "@/components/LoginForm";
-import { userLoginAction } from "@/app/(consumer)/login/actions";
+import { userLoginAction, socialLoginAction } from "@/app/(consumer)/login/actions";
+
+const SOCIAL_BUTTONS = [
+  {
+    provider: "naver" as const,
+    label: "네이버로 로그인",
+    className: "bg-[#03C75A] text-white hover:brightness-95",
+  },
+  {
+    provider: "kakao" as const,
+    label: "카카오로 로그인",
+    className: "bg-[#FEE500] text-black/85 hover:brightness-95",
+  },
+  {
+    provider: "google" as const,
+    label: "구글로 로그인",
+    className: "border border-black/10 bg-white text-black/85 hover:bg-black/5 dark:border-white/20 dark:bg-transparent dark:text-white",
+  },
+];
 
 export default async function LoginPage({
   searchParams,
@@ -19,6 +37,23 @@ export default async function LoginPage({
         <LoginForm action={userLoginAction}>
           <input type="hidden" name="callbackUrl" value={callbackUrl ?? "/"} />
         </LoginForm>
+      </div>
+      <div className="mt-6 flex items-center gap-3 text-xs text-black/40 dark:text-white/40">
+        <span className="h-px flex-1 bg-black/10 dark:bg-white/10" />
+        간편 로그인
+        <span className="h-px flex-1 bg-black/10 dark:bg-white/10" />
+      </div>
+      <div className="mt-4 space-y-2">
+        {SOCIAL_BUTTONS.map(({ provider, label, className }) => (
+          <form key={provider} action={socialLoginAction.bind(null, provider, callbackUrl ?? "/")}>
+            <button
+              type="submit"
+              className={`w-full rounded-md px-4 py-2 text-sm font-medium transition ${className}`}
+            >
+              {label}
+            </button>
+          </form>
+        ))}
       </div>
       <p className="mt-4 text-sm text-black/60 dark:text-white/60">
         아직 계정이 없으신가요?{" "}

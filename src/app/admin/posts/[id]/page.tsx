@@ -50,7 +50,7 @@ export default async function AdminPostDetailPage({
 
       <div className="mt-4 rounded-lg border border-black/10 p-4 text-sm dark:border-white/10">
         <p>
-          작성자: {post.author.name} ({post.author.email} · {post.author.phone})
+          작성자: {post.author.name} ({[post.author.email, post.author.phone].filter(Boolean).join(" · ")})
         </p>
         <p className="mt-1">
           지역: {post.region} {post.regionDetail}

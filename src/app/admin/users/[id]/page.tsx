@@ -49,7 +49,8 @@ export default async function AdminUserDetailPage({
           {isNew && <Badge variant="amber">신규</Badge>}
         </div>
         <p className="mt-1 text-black/60 dark:text-white/60">
-          {user.email} · {user.phone}
+          {user.email}
+          {user.phone ? ` · ${user.phone}` : ""}
         </p>
         {user.region && <p className="mt-1 text-black/60 dark:text-white/60">{user.region}</p>}
         <p className="mt-2 text-xs text-black/40 dark:text-white/40">

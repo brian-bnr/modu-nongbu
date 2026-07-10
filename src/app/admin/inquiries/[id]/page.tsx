@@ -45,7 +45,7 @@ export default async function AdminInquiryDetailPage({
           ({POST_TYPE_LABEL[inquiry.post.postType]})
         </p>
         <p className="mt-1">
-          문의자: {inquiry.user.name} ({inquiry.user.email} · {inquiry.user.phone})
+          문의자: {inquiry.user.name} ({[inquiry.user.email, inquiry.user.phone].filter(Boolean).join(" · ")})
         </p>
         {inquiry.quantity != null && <p className="mt-1">수량: {inquiry.quantity}</p>}
         {inquiry.message && <p className="mt-2 whitespace-pre-line">{inquiry.message}</p>}

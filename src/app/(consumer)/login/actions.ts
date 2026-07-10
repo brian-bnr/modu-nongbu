@@ -27,3 +27,7 @@ export async function userLoginAction(
     throw error;
   }
 }
+
+export async function socialLoginAction(provider: "google" | "kakao" | "naver", callbackUrl: string) {
+  await signIn(provider, { redirectTo: callbackUrl || "/" });
+}

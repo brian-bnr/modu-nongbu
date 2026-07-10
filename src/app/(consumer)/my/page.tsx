@@ -36,7 +36,8 @@ export default async function MyPage() {
       <div className="mt-4 rounded-lg border border-black/10 p-4 text-sm dark:border-white/10">
         <p className="font-medium">{user.name}</p>
         <p className="mt-1 text-black/60 dark:text-white/60">
-          {user.email} · {user.phone}
+          {user.email}
+          {user.phone ? ` · ${user.phone}` : ""}
         </p>
         {user.region && <p className="mt-1 text-black/60 dark:text-white/60">{user.region}</p>}
       </div>

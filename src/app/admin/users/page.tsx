@@ -34,7 +34,7 @@ export default async function AdminUsersPage() {
                   </div>
                   <p className="mt-1 text-black/50 dark:text-white/50">{user.email}</p>
                   <p className="mt-1 text-black/50 dark:text-white/50">
-                    {user.phone} {user.region ? `· ${user.region}` : ""}
+                    {[user.phone, user.region].filter(Boolean).join(" · ")}
                   </p>
                   <p className="mt-1 text-xs text-black/40 dark:text-white/40">
                     글 {user._count.posts}개 · 문의 {user._count.inquiries}건 · 가입일{" "}
