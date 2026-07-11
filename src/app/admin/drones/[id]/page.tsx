@@ -57,15 +57,27 @@ export default async function AdminDroneDetailPage({
             방제사: {reservation.operator.user.name} ({reservation.operator.user.email})
           </p>
         )}
+        {reservation.parcelJibun && <p>필지: {reservation.parcelJibun}</p>}
         <p>
           {reservation.region}
           {reservation.regionDetail ? ` ${reservation.regionDetail}` : ""} · {reservation.cropType} ·{" "}
-          {reservation.areaPyeong}평
+          신청 {reservation.areaPyeong}평
+          {reservation.actualAreaPyeong != null && ` / 실제 ${reservation.actualAreaPyeong}평`}
         </p>
         <p>희망 작업일: {formatDate(reservation.desiredDate)}</p>
         <p>결제 금액: {formatPrice(reservation.totalPrice)}</p>
         {reservation.payment && (
-          <p>결제 상태: {PAYMENT_STATUS_LABEL[reservation.payment.status]}</p>
+          <>
+            <p>결제 상태: {PAYMENT_STATUS_LABEL[reservation.payment.status]}</p>
+            {reservation.payment.additionalAmount !== 0 && (
+              <p>
+                면적 차액 정산:{" "}
+                {reservation.payment.additionalAmount > 0
+                  ? `추가청구 ${formatPrice(reservation.payment.additionalAmount)} (${reservation.payment.additionalPaid ? "결제완료" : "미결제"})`
+                  : `차감(환불) ${formatPrice(-reservation.payment.additionalAmount)}`}
+              </p>
+            )}
+          </>
         )}
         {reservation.startedAt && (
           <p>
