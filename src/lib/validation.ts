@@ -61,3 +61,14 @@ export const inquiryStatusUpdateSchema = z.object({
   status: z.enum(["REQUESTED", "ACCEPTED", "COMPLETED", "CANCELLED"]),
   adminNote: z.string().max(2000).optional().or(z.literal("")),
 });
+
+export const droneReservationSchema = z.object({
+  region: z.string().min(1, "지역(시/도)을 선택해주세요."),
+  regionDetail: z.string().optional().or(z.literal("")),
+  areaPyeong: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? undefined : Number(val)),
+    z.number().int().min(1, "면적은 1평 이상이어야 합니다.")
+  ),
+  cropType: z.string().min(1, "작물 종류를 입력해주세요."),
+  desiredDate: z.string().min(1, "희망 날짜를 선택해주세요."),
+});

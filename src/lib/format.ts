@@ -1,4 +1,13 @@
-import type { InquiryStatus, PostStatus, PostType } from "@prisma/client";
+import type {
+  InquiryStatus,
+  PostStatus,
+  PostType,
+  DroneReservationStatus,
+  DroneOperatorStatus,
+  PaymentStatus,
+  SettlementStatus,
+  DisputeStatus,
+} from "@prisma/client";
 
 export const POST_TYPE_LABEL: Record<PostType, string> = {
   SELL_PRODUCT: "농산물 판매",
@@ -61,6 +70,87 @@ export const INQUIRY_STATUS_VARIANT: Record<
   ACCEPTED: "blue",
   COMPLETED: "green",
   CANCELLED: "red",
+};
+
+export const DRONE_RESERVATION_STATUS_LABEL: Record<DroneReservationStatus, string> = {
+  REQUESTED: "신청됨",
+  PAID: "결제완료",
+  ASSIGNED: "배정됨",
+  IN_PROGRESS: "작업중",
+  COMPLETION_REQUESTED: "완료대기",
+  COMPLETED: "완료",
+  CANCELLED: "취소",
+  DISPUTED: "분쟁중",
+};
+
+export const DRONE_RESERVATION_STATUS_VARIANT: Record<
+  DroneReservationStatus,
+  "neutral" | "green" | "amber" | "red" | "blue"
+> = {
+  REQUESTED: "neutral",
+  PAID: "blue",
+  ASSIGNED: "blue",
+  IN_PROGRESS: "amber",
+  COMPLETION_REQUESTED: "amber",
+  COMPLETED: "green",
+  CANCELLED: "red",
+  DISPUTED: "red",
+};
+
+export const DRONE_OPERATOR_STATUS_LABEL: Record<DroneOperatorStatus, string> = {
+  PENDING: "승인대기",
+  APPROVED: "활동중",
+  REJECTED: "거절됨",
+  SUSPENDED: "정지됨",
+};
+
+export const DRONE_OPERATOR_STATUS_VARIANT: Record<
+  DroneOperatorStatus,
+  "neutral" | "green" | "amber" | "red" | "blue"
+> = {
+  PENDING: "neutral",
+  APPROVED: "green",
+  REJECTED: "red",
+  SUSPENDED: "red",
+};
+
+export const PAYMENT_STATUS_LABEL: Record<PaymentStatus, string> = {
+  HELD: "에스크로 보관중",
+  RELEASED: "정산완료",
+  REFUNDED: "환불완료",
+  PARTIALLY_REFUNDED: "부분환불",
+};
+
+export const PAYMENT_STATUS_VARIANT: Record<
+  PaymentStatus,
+  "neutral" | "green" | "amber" | "red" | "blue"
+> = {
+  HELD: "blue",
+  RELEASED: "green",
+  REFUNDED: "red",
+  PARTIALLY_REFUNDED: "amber",
+};
+
+export const SETTLEMENT_STATUS_LABEL: Record<SettlementStatus, string> = {
+  PENDING: "정산대기",
+  PAID: "정산완료",
+};
+
+export const SETTLEMENT_STATUS_VARIANT: Record<SettlementStatus, "neutral" | "green"> = {
+  PENDING: "neutral",
+  PAID: "green",
+};
+
+export const DISPUTE_STATUS_LABEL: Record<DisputeStatus, string> = {
+  OPEN: "접수됨",
+  IN_REVIEW: "확인중",
+  RESOLVED: "해결됨",
+};
+
+export const DISPUTE_STATUS_VARIANT: Record<DisputeStatus, "neutral" | "amber" | "green"> = {
+  OPEN: "amber",
+  IN_REVIEW: "neutral",
+  RESOLVED: "green",
 };
 
 export function formatPrice(price: number) {
