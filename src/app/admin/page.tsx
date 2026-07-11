@@ -29,10 +29,12 @@ function StatTile({
 }) {
   const body = (
     <div className="overflow-hidden rounded-lg border border-black/10 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-white/5">
-      <div className={`px-3 py-2 text-center text-sm font-medium text-white ${HEADER_COLORS[color]}`}>
+      <div
+        className={`px-2 py-2 text-center text-xs font-medium text-white sm:text-sm ${HEADER_COLORS[color]}`}
+      >
         {label}
       </div>
-      <div className="px-3 py-6 text-center text-4xl font-bold">{value}</div>
+      <div className="px-3 py-4 text-center text-2xl font-bold sm:py-6 sm:text-4xl">{value}</div>
     </div>
   );
 
@@ -86,7 +88,7 @@ export default async function AdminDashboardPage() {
     <div>
       <h1 className="text-2xl font-bold">대시보드</h1>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatTile label="오늘 방문자" value={todayVisitorCount} color="purple" />
         <StatTile
           label="신규 문의"

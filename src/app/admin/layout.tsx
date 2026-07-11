@@ -49,7 +49,7 @@ export default async function AdminLayout({
                 type="submit"
                 className="whitespace-nowrap text-sm text-black/60 hover:underline dark:text-white/60"
               >
-                로그아웃 ({session.user?.email})
+                로그아웃 <span className="hidden sm:inline">({session.user?.email})</span>
               </button>
             </form>
           </div>
