@@ -75,6 +75,16 @@ export async function GET(request: Request) {
   }
 
   const body = await vworldRes.json();
+
+  if (body?.response?.status === "ERROR") {
+    const errorText = body.response.error?.text ?? "알 수 없는 오류";
+    console.error("VWorld GetFeature error:", body.response.error);
+    return NextResponse.json(
+      { error: `지적 정보 조회에 실패했습니다 (${errorText}).` },
+      { status: 502 }
+    );
+  }
+
   const features: VWorldFeature[] =
     body?.response?.result?.featureCollection?.features ?? [];
 

@@ -8,103 +8,111 @@ import {
   POST_TYPE_LABEL,
 } from "@/lib/format";
 
+const HEADER_COLORS = {
+  green: "bg-brand-700",
+  amber: "bg-amber-600",
+  blue: "bg-blue-700",
+  purple: "bg-purple-700",
+  red: "bg-red-700",
+} as const;
+
+function StatTile({
+  label,
+  value,
+  color,
+  href,
+}: {
+  label: string;
+  value: number;
+  color: keyof typeof HEADER_COLORS;
+  href?: string;
+}) {
+  const body = (
+    <div className="overflow-hidden rounded-lg border border-black/10 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-white/5">
+      <div className={`px-3 py-2 text-center text-sm font-medium text-white ${HEADER_COLORS[color]}`}>
+        {label}
+      </div>
+      <div className="px-3 py-6 text-center text-4xl font-bold">{value}</div>
+    </div>
+  );
+
+  return href ? (
+    <Link href={href} className="block">
+      {body}
+    </Link>
+  ) : (
+    body
+  );
+}
+
+function SectionHeader({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-t-lg bg-red-700 px-4 py-2.5 text-center text-sm font-semibold text-white">
+      {children}
+    </div>
+  );
+}
+
 export default async function AdminDashboardPage() {
   const todayStr = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
 
-  const [userCount, postCount, newInquiryCount, todayVisitorCount, postsByType, recentInquiries] =
-    await Promise.all([
-      prisma.user.count(),
-      prisma.post.count(),
-      prisma.inquiry.count({ where: { status: "REQUESTED" } }),
-      prisma.visit.count({ where: { visitDate: todayStr } }),
-      prisma.post.groupBy({ by: ["postType"], _count: true }),
-      prisma.inquiry.findMany({
-        take: 10,
-        orderBy: { createdAt: "desc" },
-        include: { post: true, user: true },
-      }),
-    ]);
-
-  const statCards = [
-    {
-      href: null,
-      icon: "👀",
-      label: "오늘 방문자",
-      value: todayVisitorCount,
-      accent: "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
-    },
-    {
-      href: "/admin/inquiries?status=REQUESTED",
-      icon: "📩",
-      label: "신규 문의",
-      value: newInquiryCount,
-      accent: "bg-accent-50 text-accent-700 dark:bg-accent-700/20 dark:text-accent-200",
-    },
-    {
-      href: "/admin/users",
-      icon: "👤",
-      label: "가입 회원",
-      value: userCount,
-      accent: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-    },
-    {
-      href: "/admin/posts",
-      icon: "📝",
-      label: "등록된 글",
-      value: postCount,
-      accent: "bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300",
-    },
-  ];
+  const [
+    userCount,
+    postCount,
+    newInquiryCount,
+    todayVisitorCount,
+    postsByType,
+    recentInquiries,
+    pendingDroneCount,
+    pendingSettlementCount,
+  ] = await Promise.all([
+    prisma.user.count(),
+    prisma.post.count(),
+    prisma.inquiry.count({ where: { status: "REQUESTED" } }),
+    prisma.visit.count({ where: { visitDate: todayStr } }),
+    prisma.post.groupBy({ by: ["postType"], _count: true }),
+    prisma.inquiry.findMany({
+      take: 10,
+      orderBy: { createdAt: "desc" },
+      include: { post: true, user: true },
+    }),
+    prisma.droneReservation.count({
+      where: { status: { in: ["REQUESTED", "PAID", "ASSIGNED", "IN_PROGRESS"] } },
+    }),
+    prisma.settlement.count({ where: { status: "PENDING" } }),
+  ]);
 
   return (
     <div>
       <h1 className="text-2xl font-bold">대시보드</h1>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {statCards.map((stat) => {
-          const cardBody = (
-            <>
-              <span
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm ${stat.accent}`}
-              >
-                {stat.icon}
-              </span>
-              <p className="flex-1 text-sm text-black/50 dark:text-white/50">{stat.label}</p>
-              <p className="text-xl font-bold">{stat.value}</p>
-              {stat.href && (
-                <span className="text-black/20 transition group-hover:translate-x-0.5 group-hover:text-black/40 dark:text-white/20 dark:group-hover:text-white/40">
-                  →
-                </span>
-              )}
-            </>
-          );
-
-          if (!stat.href) {
-            return (
-              <div
-                key={stat.label}
-                className="flex items-center gap-3 rounded-xl border border-black/10 p-3 dark:border-white/10"
-              >
-                {cardBody}
-              </div>
-            );
-          }
-
-          return (
-            <Link
-              key={stat.label}
-              href={stat.href}
-              className="group flex items-center gap-3 rounded-xl border border-black/10 p-3 transition hover:-translate-y-0.5 hover:border-transparent hover:shadow-md dark:border-white/10"
-            >
-              {cardBody}
-            </Link>
-          );
-        })}
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatTile label="오늘 방문자" value={todayVisitorCount} color="purple" />
+        <StatTile
+          label="신규 문의"
+          value={newInquiryCount}
+          color="amber"
+          href="/admin/inquiries?status=REQUESTED"
+        />
+        <StatTile label="가입 회원" value={userCount} color="blue" href="/admin/users" />
+        <StatTile label="등록된 글" value={postCount} color="green" href="/admin/posts" />
+        <StatTile
+          label="진행중 드론 예약"
+          value={pendingDroneCount}
+          color="green"
+          href="/admin/drones"
+        />
+        <StatTile
+          label="정산 대기"
+          value={pendingSettlementCount}
+          color="red"
+          href="/admin/settlements"
+        />
       </div>
 
-      <div className="mt-8">
-        <h2 className="text-lg font-semibold">타입별 게시글 분포</h2>
-        <div className="mt-3 flex flex-wrap gap-2 text-sm">
+      <div className="mt-8 overflow-hidden rounded-lg border border-black/10 shadow-sm dark:border-white/10">
+        <SectionHeader>타입별 게시글 분포</SectionHeader>
+        <div className="flex flex-wrap gap-2 bg-white p-4 text-sm dark:bg-white/5">
           {postsByType.map((row) => (
             <span
               key={row.postType}
@@ -116,40 +124,61 @@ export default async function AdminDashboardPage() {
         </div>
       </div>
 
-      <div className="mt-10 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">최근 문의</h2>
-        <Link href="/admin/inquiries" className="text-sm text-brand-700 hover:underline dark:text-brand-400">
-          전체 보기 →
-        </Link>
+      <div className="mt-8 overflow-hidden rounded-lg border border-black/10 shadow-sm dark:border-white/10">
+        <SectionHeader>최근 문의</SectionHeader>
+        {recentInquiries.length === 0 ? (
+          <p className="bg-white p-4 text-sm text-black/50 dark:bg-white/5 dark:text-white/50">
+            아직 접수된 문의가 없습니다.
+          </p>
+        ) : (
+          <div className="overflow-x-auto bg-white dark:bg-white/5">
+            <table className="w-full min-w-[640px] text-sm">
+              <thead>
+                <tr className="border-b border-black/10 text-left text-xs text-black/50 dark:border-white/10 dark:text-white/50">
+                  <th className="px-4 py-2 font-medium">문의자</th>
+                  <th className="px-4 py-2 font-medium">게시글</th>
+                  <th className="px-4 py-2 font-medium">상태</th>
+                  <th className="px-4 py-2 font-medium">접수일</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentInquiries.map((inquiry) => (
+                  <tr
+                    key={inquiry.id}
+                    className="border-b border-black/5 last:border-0 hover:bg-black/[0.02] dark:border-white/5 dark:hover:bg-white/[0.03]"
+                  >
+                    <td className="px-4 py-2.5">
+                      <Link
+                        href={`/admin/inquiries/${inquiry.id}`}
+                        className="text-brand-700 hover:underline dark:text-brand-400"
+                      >
+                        {inquiry.user.name}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-2.5">{inquiry.post.title}</td>
+                    <td className="px-4 py-2.5">
+                      <Badge variant={INQUIRY_STATUS_VARIANT[inquiry.status]}>
+                        {INQUIRY_STATUS_LABEL[inquiry.status]}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-2.5 text-black/50 dark:text-white/50">
+                      {formatDate(inquiry.createdAt)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <div className="border-t border-black/10 bg-white px-4 py-2 text-right dark:border-white/10 dark:bg-white/5">
+          <Link
+            href="/admin/inquiries"
+            className="text-sm text-brand-700 hover:underline dark:text-brand-400"
+          >
+            전체 보기 →
+          </Link>
+        </div>
       </div>
-      {recentInquiries.length === 0 ? (
-        <p className="mt-4 text-sm text-black/50 dark:text-white/50">
-          아직 접수된 문의가 없습니다.
-        </p>
-      ) : (
-        <ul className="mt-4 space-y-2">
-          {recentInquiries.map((inquiry) => (
-            <li key={inquiry.id}>
-              <Link
-                href={`/admin/inquiries/${inquiry.id}`}
-                className="flex items-center justify-between gap-4 rounded-lg border border-black/10 p-3 text-sm hover:border-brand-600 dark:border-white/10"
-              >
-                <div>
-                  <p className="font-medium">
-                    {inquiry.user.name} · {inquiry.post.title}
-                  </p>
-                  <p className="text-xs text-black/40 dark:text-white/40">
-                    {formatDate(inquiry.createdAt)}
-                  </p>
-                </div>
-                <Badge variant={INQUIRY_STATUS_VARIANT[inquiry.status]}>
-                  {INQUIRY_STATUS_LABEL[inquiry.status]}
-                </Badge>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 }
