@@ -105,8 +105,9 @@ export function DroneParcelMap({
 
   if (!NAVER_MAP_CLIENT_ID || scriptFailed) {
     return (
-      <div className="rounded-lg border border-black/10 bg-black/5 p-4 text-sm text-black/60 dark:border-white/10 dark:bg-white/5 dark:text-white/60">
-        지도를 불러올 수 없어 면적을 직접 입력해주세요.
+      <div className="flex items-center gap-2 rounded-lg border border-black/10 bg-black/5 p-4 text-sm text-black/60 dark:border-white/10 dark:bg-white/5 dark:text-white/60">
+        <span>🗺️</span>
+        <span>지도를 불러올 수 없어 면적을 직접 입력해주세요.</span>
       </div>
     );
   }
