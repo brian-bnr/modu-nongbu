@@ -71,4 +71,10 @@ export const droneReservationSchema = z.object({
   ),
   cropType: z.string().min(1, "작물 종류를 입력해주세요."),
   desiredDate: z.string().min(1, "희망 날짜를 선택해주세요."),
+  parcelPnu: z.string().optional().or(z.literal("")),
+  parcelJibun: z.string().optional().or(z.literal("")),
+  parcelAreaSqm: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? undefined : Number(val)),
+    z.number().optional()
+  ),
 });

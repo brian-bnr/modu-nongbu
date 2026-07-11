@@ -6,6 +6,7 @@ import {
   type DroneReservationActionState,
 } from "@/lib/actions/droneReservation";
 import { formatPrice } from "@/lib/format";
+import { DroneParcelMap, type SelectedParcel } from "@/components/DroneParcelMap";
 
 const REGIONS = [
   "서울",
@@ -39,6 +40,13 @@ export function DroneReservationForm({ unitPrice }: { unitPrice: number }) {
   const [areaPyeong, setAreaPyeong] = useState("");
   const [cropType, setCropType] = useState("");
   const [desiredDate, setDesiredDate] = useState("");
+  const [mode, setMode] = useState<"map" | "manual">("map");
+  const [parcel, setParcel] = useState<SelectedParcel | null>(null);
+
+  function handleParcelSelected(selected: SelectedParcel) {
+    setParcel(selected);
+    setAreaPyeong(String(selected.areaPyeong));
+  }
 
   const area = Number(areaPyeong) || 0;
   const estimate = area * unitPrice;
@@ -77,15 +85,40 @@ export function DroneReservationForm({ unitPrice }: { unitPrice: number }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium">방제 면적 (평)</label>
-        <input
-          type="number"
-          name="areaPyeong"
-          min={1}
-          value={areaPyeong}
-          onChange={(e) => setAreaPyeong(e.target.value)}
-          className={fieldClass}
-        />
+        <div className="flex items-center justify-between">
+          <label className="block text-sm font-medium">방제 면적</label>
+          <button
+            type="button"
+            onClick={() => {
+              setMode(mode === "map" ? "manual" : "map");
+              setParcel(null);
+              setAreaPyeong("");
+            }}
+            className="text-xs text-brand-700 hover:underline dark:text-brand-400"
+          >
+            {mode === "map" ? "면적 직접 입력" : "지도에서 필지 선택"}
+          </button>
+        </div>
+
+        {mode === "map" ? (
+          <div className="mt-2">
+            <DroneParcelMap onParcelSelected={handleParcelSelected} />
+          </div>
+        ) : (
+          <input
+            type="number"
+            min={1}
+            value={areaPyeong}
+            onChange={(e) => setAreaPyeong(e.target.value)}
+            placeholder="평 단위로 입력"
+            className={`mt-1 ${fieldClass}`}
+          />
+        )}
+
+        <input type="hidden" name="areaPyeong" value={areaPyeong} />
+        <input type="hidden" name="parcelPnu" value={parcel?.pnu ?? ""} />
+        <input type="hidden" name="parcelJibun" value={parcel?.jibun ?? ""} />
+        <input type="hidden" name="parcelAreaSqm" value={parcel?.areaSqm ?? ""} />
         {state.errors?.areaPyeong && (
           <p className="mt-1 text-xs text-red-600">{state.errors.areaPyeong[0]}</p>
         )}
