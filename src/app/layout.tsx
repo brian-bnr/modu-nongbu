@@ -26,8 +26,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/kakao-app-icon.png",
-        width: 512,
-        height: 512,
+        width: 793,
+        height: 793,
         alt: "모두의농부 로고",
       },
     ],
