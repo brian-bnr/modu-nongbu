@@ -36,6 +36,7 @@ export function DroneOperatorJobPanel({
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [actualAreaPyeong, setActualAreaPyeong] = useState(String(reservation.areaPyeong));
 
   async function handleStart() {
     setError("");
@@ -52,11 +53,17 @@ export function DroneOperatorJobPanel({
   }
 
   async function handleEnd() {
+    const area = Number(actualAreaPyeong);
+    if (!Number.isFinite(area) || area <= 0) {
+      setError("실제 작업 면적을 올바르게 입력해주세요.");
+      return;
+    }
+
     setError("");
     setBusy(true);
     try {
       const pos = await getPosition();
-      await endWork(reservation.id, pos.coords.latitude, pos.coords.longitude);
+      await endWork(reservation.id, pos.coords.latitude, pos.coords.longitude, area);
       setStatus("COMPLETION_REQUESTED");
     } catch (err) {
       setError(err instanceof Error ? err.message : "작업 종료에 실패했습니다.");
@@ -189,6 +196,20 @@ export function DroneOperatorJobPanel({
                   className="hidden"
                 />
               </label>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">실제 작업 면적 (평)</label>
+              <input
+                type="number"
+                min={1}
+                value={actualAreaPyeong}
+                onChange={(e) => setActualAreaPyeong(e.target.value)}
+                className="mt-1 w-full rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+              />
+              <p className="mt-1 text-xs text-black/40 dark:text-white/40">
+                신청 면적({reservation.areaPyeong}평)과 다르면 차액이 자동으로 정산에 반영됩니다.
+              </p>
             </div>
 
             <button

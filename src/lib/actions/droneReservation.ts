@@ -36,6 +36,9 @@ export async function createDroneReservation(
     areaPyeong: formData.get("areaPyeong"),
     cropType: formData.get("cropType"),
     desiredDate: formData.get("desiredDate"),
+    parcelPnu: formData.get("parcelPnu"),
+    parcelJibun: formData.get("parcelJibun"),
+    parcelAreaSqm: formData.get("parcelAreaSqm"),
   });
 
   if (!parsed.success) {
@@ -55,6 +58,9 @@ export async function createDroneReservation(
       desiredDate: new Date(parsed.data.desiredDate),
       unitPrice: setting.droneUnitPrice,
       totalPrice,
+      parcelPnu: parsed.data.parcelPnu || null,
+      parcelJibun: parsed.data.parcelJibun || null,
+      parcelAreaSqm: parsed.data.parcelAreaSqm ?? null,
     },
   });
 
@@ -217,25 +223,67 @@ export async function startWork(reservationId: string, lat: number, lng: number)
   revalidatePath(`/drones/operator/${reservationId}`);
 }
 
-export async function endWork(reservationId: string, lat: number, lng: number) {
+export async function endWork(
+  reservationId: string,
+  lat: number,
+  lng: number,
+  actualAreaPyeong: number
+) {
   const reservation = await getOwnOperatorReservation(reservationId);
   if (reservation.status !== "IN_PROGRESS") {
     throw new Error("작업 중 상태가 아닙니다.");
   }
 
   const now = new Date();
-  await prisma.droneReservation.update({
-    where: { id: reservationId },
-    data: {
-      status: "COMPLETION_REQUESTED",
-      endedAt: now,
-      endLat: lat,
-      endLng: lng,
-      completionRequestedAt: now,
-    },
-  });
+  const adjustmentAmount = (actualAreaPyeong - reservation.areaPyeong) * reservation.unitPrice;
+
+  await prisma.$transaction([
+    prisma.droneReservation.update({
+      where: { id: reservationId },
+      data: {
+        status: "COMPLETION_REQUESTED",
+        endedAt: now,
+        endLat: lat,
+        endLng: lng,
+        completionRequestedAt: now,
+        actualAreaPyeong,
+      },
+    }),
+    prisma.payment.update({
+      where: { reservationId },
+      data: { additionalAmount: adjustmentAmount },
+    }),
+  ]);
 
   revalidatePath(`/drones/operator/${reservationId}`);
+  revalidatePath(`/drones/${reservationId}`);
+}
+
+export async function payAdditionalAmount(reservationId: string) {
+  const session = await auth();
+  if (session?.user?.type !== "user") {
+    throw new Error("로그인이 필요합니다.");
+  }
+
+  const reservation = await prisma.droneReservation.findUnique({
+    where: { id: reservationId },
+    include: { payment: true },
+  });
+  if (!reservation || reservation.farmerId !== session.user.id) {
+    throw new Error("이 예약에 대한 권한이 없습니다.");
+  }
+  if (!reservation.payment || reservation.payment.additionalAmount <= 0) {
+    throw new Error("추가 결제할 금액이 없습니다.");
+  }
+  if (reservation.payment.additionalPaid) {
+    throw new Error("이미 결제되었습니다.");
+  }
+
+  await prisma.payment.update({
+    where: { reservationId },
+    data: { additionalPaid: true },
+  });
+
   revalidatePath(`/drones/${reservationId}`);
 }
 
@@ -263,12 +311,20 @@ export async function approveCompletion(reservationId: string) {
 
   const reservation = await prisma.droneReservation.findUnique({
     where: { id: reservationId },
+    include: { payment: true },
   });
   if (!reservation || reservation.farmerId !== session.user.id) {
     throw new Error("이 예약에 대한 권한이 없습니다.");
   }
   if (reservation.status !== "COMPLETION_REQUESTED") {
     throw new Error("완료 대기 상태가 아닙니다.");
+  }
+  if (
+    reservation.payment &&
+    reservation.payment.additionalAmount > 0 &&
+    !reservation.payment.additionalPaid
+  ) {
+    throw new Error("면적 초과분에 대한 추가 결제를 먼저 진행해주세요.");
   }
 
   await finalizeCompletion(reservationId);

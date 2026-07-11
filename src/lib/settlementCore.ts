@@ -19,7 +19,7 @@ export async function createSettlement(reservationId: string) {
     create: { id: "singleton" },
   });
 
-  const grossAmount = reservation.payment.amount;
+  const grossAmount = reservation.payment.amount + reservation.payment.additionalAmount;
   const commissionRate = setting.droneCommissionRate;
   const commissionAmount = Math.round((grossAmount * commissionRate) / 100);
   const payoutAmount = grossAmount - commissionAmount;
