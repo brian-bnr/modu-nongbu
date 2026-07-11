@@ -16,6 +16,12 @@ async function main() {
     },
   });
 
+  await prisma.platformSetting.upsert({
+    where: { id: "singleton" },
+    update: {},
+    create: { id: "singleton" },
+  });
+
   const userCount = await prisma.user.count();
   if (userCount > 0) {
     console.log("샘플 회원이 이미 존재합니다. 시드를 건너뜁니다.");
