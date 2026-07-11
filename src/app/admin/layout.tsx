@@ -6,6 +6,9 @@ const NAV_LINKS = [
   { href: "/admin/posts", label: "게시글 관리" },
   { href: "/admin/inquiries", label: "문의 관리" },
   { href: "/admin/users", label: "회원 관리" },
+  { href: "/admin/drones", label: "드론 예약 관리" },
+  { href: "/admin/settlements", label: "정산 관리" },
+  { href: "/admin/settings", label: "설정" },
 ];
 
 export default async function AdminLayout({
