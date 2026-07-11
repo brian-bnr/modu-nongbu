@@ -13,8 +13,25 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.mdfarm.co.kr"),
   title: "모두의농부",
   description: "전국 농가의 농산물을 찾고 농민에게 직접 구매요청을 보내는 플랫폼",
+  openGraph: {
+    title: "모두의농부",
+    description: "전국 농가의 농산물을 찾고 농민에게 직접 구매요청을 보내는 플랫폼",
+    url: "https://www.mdfarm.co.kr",
+    siteName: "모두의농부",
+    locale: "ko_KR",
+    type: "website",
+    images: [
+      {
+        url: "/kakao-app-icon.png",
+        width: 512,
+        height: 512,
+        alt: "모두의농부 로고",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
