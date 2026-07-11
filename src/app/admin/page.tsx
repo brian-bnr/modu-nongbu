@@ -133,7 +133,7 @@ export default async function AdminDashboardPage() {
             아직 접수된 문의가 없습니다.
           </p>
         ) : (
-          <div className="overflow-x-auto bg-white dark:bg-white/5">
+          <div className="min-w-0 overflow-x-auto bg-white dark:bg-white/5">
             <table className="w-full min-w-[640px] text-sm">
               <thead>
                 <tr className="border-b border-black/10 text-left text-xs text-black/50 dark:border-white/10 dark:text-white/50">
