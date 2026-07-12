@@ -1,15 +1,6 @@
 import Link from "next/link";
 import { auth, signOut } from "@/lib/auth";
-
-const NAV_LINKS = [
-  { href: "/admin", label: "대시보드" },
-  { href: "/admin/posts", label: "게시글 관리" },
-  { href: "/admin/inquiries", label: "문의 관리" },
-  { href: "/admin/users", label: "회원 관리" },
-  { href: "/admin/drones", label: "드론 예약 관리" },
-  { href: "/admin/settlements", label: "정산 관리" },
-  { href: "/admin/settings", label: "설정" },
-];
+import { AdminNav } from "@/components/admin/AdminNav";
 
 export default async function AdminLayout({
   children,
@@ -54,13 +45,7 @@ export default async function AdminLayout({
             </form>
           </div>
         </div>
-        <nav className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
-          {NAV_LINKS.map((link) => (
-            <Link key={link.href} href={link.href} className="whitespace-nowrap hover:underline">
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        <AdminNav />
       </div>
       {children}
     </div>
