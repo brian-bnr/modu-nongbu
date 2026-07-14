@@ -1,7 +1,7 @@
-import Link from "next/link";
 import type { DroneReservationStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
+import { PageIntro, StatTile, SectionCard, GridCard, FilterPill } from "@/components/admin/AdminUI";
 import {
   DRONE_RESERVATION_STATUS_LABEL,
   DRONE_RESERVATION_STATUS_VARIANT,
@@ -20,6 +20,8 @@ const STATUS_OPTIONS: DroneReservationStatus[] = [
   "DISPUTED",
 ];
 
+const IN_PROGRESS_STATUSES: DroneReservationStatus[] = ["REQUESTED", "PAID", "ASSIGNED", "IN_PROGRESS"];
+
 export default async function AdminDronesPage({
   searchParams,
 }: {
@@ -31,78 +33,73 @@ export default async function AdminDronesPage({
       ? (status as DroneReservationStatus)
       : undefined;
 
-  const reservations = await prisma.droneReservation.findMany({
-    where: activeStatus ? { status: activeStatus } : undefined,
-    orderBy: { createdAt: "desc" },
-    include: { farmer: true, operator: { include: { user: true } } },
-  });
+  const [reservations, totalCount, inProgressCount, completedCount] = await Promise.all([
+    prisma.droneReservation.findMany({
+      where: activeStatus ? { status: activeStatus } : undefined,
+      orderBy: { createdAt: "desc" },
+      include: { farmer: true, operator: { include: { user: true } } },
+    }),
+    prisma.droneReservation.count(),
+    prisma.droneReservation.count({ where: { status: { in: IN_PROGRESS_STATUSES } } }),
+    prisma.droneReservation.count({ where: { status: "COMPLETED" } }),
+  ]);
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">드론 예약 관리</h1>
+      <PageIntro title="드론 예약 관리" subtitle={`전체 ${totalCount.toLocaleString("ko-KR")}건`} />
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        <Link
-          href="/admin/drones"
-          className={`whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ${
-            !activeStatus
-              ? "bg-brand-700 text-white"
-              : "bg-black/5 text-black/60 hover:bg-black/10 dark:bg-white/10 dark:text-white/60"
-          }`}
-        >
+      <div className="mt-5 grid grid-cols-3 gap-3">
+        <StatTile label="전체 예약" value={totalCount} color="teal" delay={0} />
+        <StatTile label="진행중" value={inProgressCount} color="amber" delay={40} />
+        <StatTile label="완료" value={completedCount} color="green" delay={80} />
+      </div>
+
+      <div className="mt-6 flex flex-wrap gap-2">
+        <FilterPill href="/admin/drones" active={!activeStatus}>
           전체
-        </Link>
+        </FilterPill>
         {STATUS_OPTIONS.map((s) => (
-          <Link
-            key={s}
-            href={`/admin/drones?status=${s}`}
-            className={`whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ${
-              activeStatus === s
-                ? "bg-brand-700 text-white"
-                : "bg-black/5 text-black/60 hover:bg-black/10 dark:bg-white/10 dark:text-white/60"
-            }`}
-          >
+          <FilterPill key={s} href={`/admin/drones?status=${s}`} active={activeStatus === s}>
             {DRONE_RESERVATION_STATUS_LABEL[s]}
-          </Link>
+          </FilterPill>
         ))}
       </div>
 
-      {reservations.length === 0 ? (
-        <p className="mt-8 text-sm text-black/50 dark:text-white/50">해당하는 예약이 없습니다.</p>
-      ) : (
-        <ul className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {reservations.map((reservation) => (
-            <li key={reservation.id}>
-              <Link
-                href={`/admin/drones/${reservation.id}`}
-                className="flex h-full flex-col justify-between gap-2 rounded-lg border border-black/10 p-3 text-sm hover:border-brand-600 dark:border-white/10"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <p className="font-medium">
-                    {reservation.cropType} · {reservation.areaPyeong}평
-                  </p>
-                  <Badge variant={DRONE_RESERVATION_STATUS_VARIANT[reservation.status]}>
-                    {DRONE_RESERVATION_STATUS_LABEL[reservation.status]}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-xs text-black/50 dark:text-white/50">
-                    {reservation.farmer.name} · {formatPrice(reservation.totalPrice)}
-                  </p>
-                  {reservation.operator && (
-                    <p className="text-xs text-black/40 dark:text-white/40">
-                      방제사: {reservation.operator.user.name}
+      <div className="mt-6">
+        <SectionCard title="예약 목록" tone="teal" delay={80}>
+          {reservations.length === 0 ? (
+            <p className="text-sm text-black/50 dark:text-white/50">해당하는 예약이 없습니다.</p>
+          ) : (
+            <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {reservations.map((reservation, i) => (
+                <GridCard key={reservation.id} href={`/admin/drones/${reservation.id}`} delay={i * 30}>
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-medium">
+                      {reservation.cropType} · {reservation.areaPyeong}평
                     </p>
-                  )}
-                  <p className="mt-0.5 text-xs text-black/40 dark:text-white/40">
-                    {formatDate(reservation.createdAt)}
-                  </p>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+                    <Badge variant={DRONE_RESERVATION_STATUS_VARIANT[reservation.status]}>
+                      {DRONE_RESERVATION_STATUS_LABEL[reservation.status]}
+                    </Badge>
+                  </div>
+                  <div>
+                    <p className="text-xs text-black/50 dark:text-white/50">
+                      {reservation.farmer.name} · {formatPrice(reservation.totalPrice)}
+                    </p>
+                    {reservation.operator && (
+                      <p className="text-xs text-black/40 dark:text-white/40">
+                        방제사: {reservation.operator.user.name}
+                      </p>
+                    )}
+                    <p className="mt-0.5 text-xs text-black/40 dark:text-white/40">
+                      {formatDate(reservation.createdAt)}
+                    </p>
+                  </div>
+                </GridCard>
+              ))}
+            </ul>
+          )}
+        </SectionCard>
+      </div>
     </div>
   );
 }

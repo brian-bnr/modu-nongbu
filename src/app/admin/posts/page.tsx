@@ -1,7 +1,7 @@
-import Link from "next/link";
 import type { PostStatus, PostType } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
+import { PageIntro, StatTile, SectionCard, GridCard } from "@/components/admin/AdminUI";
 import { formatDate, POST_STATUS_LABEL, POST_STATUS_VARIANT, POST_TYPE_LABEL } from "@/lib/format";
 
 export default async function AdminPostsPage({
@@ -11,20 +11,31 @@ export default async function AdminPostsPage({
 }) {
   const { type, status } = await searchParams;
 
-  const posts = await prisma.post.findMany({
-    where: {
-      AND: [
-        type ? { postType: type as PostType } : {},
-        status ? { status: status as PostStatus } : {},
-      ],
-    },
-    orderBy: { createdAt: "desc" },
-    include: { author: true },
-  });
+  const [posts, totalCount, openCount, closedCount] = await Promise.all([
+    prisma.post.findMany({
+      where: {
+        AND: [
+          type ? { postType: type as PostType } : {},
+          status ? { status: status as PostStatus } : {},
+        ],
+      },
+      orderBy: { createdAt: "desc" },
+      include: { author: true },
+    }),
+    prisma.post.count(),
+    prisma.post.count({ where: { status: "OPEN" } }),
+    prisma.post.count({ where: { status: "CLOSED" } }),
+  ]);
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">게시글 관리</h1>
+      <PageIntro title="게시글 관리" subtitle={`전체 ${totalCount.toLocaleString("ko-KR")}건`} />
+
+      <div className="mt-5 grid grid-cols-3 gap-3">
+        <StatTile label="전체 게시글" value={totalCount} color="green" delay={0} />
+        <StatTile label="진행중" value={openCount} color="teal" delay={40} />
+        <StatTile label="마감" value={closedCount} color="indigo" delay={80} />
+      </div>
 
       <form method="get" className="mt-6 flex flex-wrap gap-2">
         <select
@@ -56,33 +67,32 @@ export default async function AdminPostsPage({
         </button>
       </form>
 
-      {posts.length === 0 ? (
-        <p className="mt-8 text-sm text-black/50 dark:text-white/50">등록된 글이 없습니다.</p>
-      ) : (
-        <ul className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {posts.map((post) => (
-            <li key={post.id}>
-              <Link
-                href={`/admin/posts/${post.id}`}
-                className="flex h-full flex-col justify-between gap-2 rounded-lg border border-black/10 p-3 text-sm hover:border-brand-600 dark:border-white/10"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <p className="font-medium">{post.title}</p>
-                  <Badge variant={POST_STATUS_VARIANT[post.status]}>
-                    {POST_STATUS_LABEL[post.status]}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-xs text-black/50 dark:text-white/50">{post.author.name}</p>
-                  <p className="mt-0.5 text-xs text-black/40 dark:text-white/40">
-                    {POST_TYPE_LABEL[post.postType]} · {formatDate(post.createdAt)}
-                  </p>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="mt-6">
+        <SectionCard title="게시글 목록" tone="brand" delay={80}>
+          {posts.length === 0 ? (
+            <p className="text-sm text-black/50 dark:text-white/50">등록된 글이 없습니다.</p>
+          ) : (
+            <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {posts.map((post, i) => (
+                <GridCard key={post.id} href={`/admin/posts/${post.id}`} delay={i * 30}>
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-medium">{post.title}</p>
+                    <Badge variant={POST_STATUS_VARIANT[post.status]}>
+                      {POST_STATUS_LABEL[post.status]}
+                    </Badge>
+                  </div>
+                  <div>
+                    <p className="text-xs text-black/50 dark:text-white/50">{post.author.name}</p>
+                    <p className="mt-0.5 text-xs text-black/40 dark:text-white/40">
+                      {POST_TYPE_LABEL[post.postType]} · {formatDate(post.createdAt)}
+                    </p>
+                  </div>
+                </GridCard>
+              ))}
+            </ul>
+          )}
+        </SectionCard>
+      </div>
     </div>
   );
 }

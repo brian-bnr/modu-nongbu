@@ -3,9 +3,9 @@ import type { DroneReservationStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { AnimatedNumber } from "@/components/admin/AnimatedNumber";
 import { VisitTrendChart } from "@/components/admin/VisitTrendChart";
 import { BarList, type BarListItem } from "@/components/admin/BarList";
+import { PageIntro, StatTile, SectionHeader, SectionCard } from "@/components/admin/AdminUI";
 import {
   formatDate,
   INQUIRY_STATUS_LABEL,
@@ -15,17 +15,6 @@ import {
   DRONE_RESERVATION_STATUS_LABEL,
   DRONE_RESERVATION_STATUS_VARIANT,
 } from "@/lib/format";
-
-const TILE_STYLES = {
-  purple: { header: "bg-gradient-to-br from-purple-600 to-purple-800", icon: "👀" },
-  amber: { header: "bg-gradient-to-br from-amber-500 to-amber-700", icon: "💬" },
-  blue: { header: "bg-gradient-to-br from-blue-600 to-blue-800", icon: "👥" },
-  green: { header: "bg-gradient-to-br from-brand-500 to-brand-700", icon: "📝" },
-  teal: { header: "bg-gradient-to-br from-teal-500 to-teal-700", icon: "🚁" },
-  red: { header: "bg-gradient-to-br from-red-600 to-red-800", icon: "💰" },
-  indigo: { header: "bg-gradient-to-br from-indigo-600 to-indigo-800", icon: "🔒" },
-  emerald: { header: "bg-gradient-to-br from-emerald-500 to-emerald-700", icon: "✅" },
-} as const;
 
 const DRONE_STATUS_ORDER: DroneReservationStatus[] = [
   "REQUESTED",
@@ -51,79 +40,9 @@ const QUICK_LINKS = [
   { href: "/admin/inquiries", label: "문의 관리", icon: "💬", color: "bg-amber-50 dark:bg-amber-900/20" },
   { href: "/admin/users", label: "회원 관리", icon: "👥", color: "bg-blue-50 dark:bg-blue-900/20" },
   { href: "/admin/drones", label: "드론 예약 관리", icon: "🚁", color: "bg-teal-50 dark:bg-teal-900/20" },
-  { href: "/admin/settlements", label: "정산 관리", icon: "💰", color: "bg-red-50 dark:bg-red-900/20" },
+  { href: "/admin/settlements", label: "정산 관리", icon: "💰", color: "bg-accent-50 dark:bg-accent-900/20" },
   { href: "/admin/settings", label: "설정", icon: "⚙️", color: "bg-black/5 dark:bg-white/10" },
 ];
-
-function StatTile({
-  label,
-  value,
-  color,
-  href,
-  unit,
-  delay = 0,
-}: {
-  label: string;
-  value: number;
-  color: keyof typeof TILE_STYLES;
-  href?: string;
-  unit?: string;
-  delay?: number;
-}) {
-  const style = TILE_STYLES[color];
-  const body = (
-    <div className="group h-full overflow-hidden rounded-lg border border-black/10 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-white/10 dark:bg-white/5">
-      <div
-        className={`flex items-center justify-between px-3 py-2 text-xs font-medium text-white sm:text-sm ${style.header}`}
-      >
-        <span>{label}</span>
-        <span className="text-sm opacity-90 transition-transform duration-300 group-hover:scale-125">
-          {style.icon}
-        </span>
-      </div>
-      <div className="px-3 py-4 text-center text-2xl font-bold sm:py-6 sm:text-4xl">
-        <AnimatedNumber value={value} unit={unit} />
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="animate-fade-in-up" style={{ animationDelay: `${delay}ms` }}>
-      {href ? (
-        <Link href={href} className="block h-full">
-          {body}
-        </Link>
-      ) : (
-        body
-      )}
-    </div>
-  );
-}
-
-function SectionHeader({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="rounded-t-lg bg-gradient-to-r from-red-700 to-red-800 px-4 py-2.5 text-center text-sm font-semibold text-white">
-      {children}
-    </div>
-  );
-}
-
-function SectionCard({
-  title,
-  delay = 0,
-  children,
-}: {
-  title: string;
-  delay?: number;
-  children: React.ReactNode;
-}) {
-  return (
-    <ScrollReveal delay={delay} className="overflow-hidden rounded-lg border border-black/10 shadow-sm dark:border-white/10">
-      <SectionHeader>{title}</SectionHeader>
-      <div className="bg-white p-4 dark:bg-white/5">{children}</div>
-    </ScrollReveal>
-  );
-}
 
 export default async function AdminDashboardPage() {
   const todayStr = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
@@ -200,16 +119,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h1 className="text-2xl font-bold">대시보드</h1>
-        <p className="flex items-center gap-1.5 text-xs text-black/50 dark:text-white/50">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-500 opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-600" />
-          </span>
-          실시간 현황 · {formatDate(now)} 기준
-        </p>
-      </div>
+      <PageIntro title="대시보드" subtitle={`실시간 현황 · ${formatDate(now)} 기준`} />
 
       <div className="mt-5 grid grid-cols-3 gap-2 sm:grid-cols-6 sm:gap-3">
         {QUICK_LINKS.map((link) => (
@@ -245,7 +155,7 @@ export default async function AdminDashboardPage() {
         <StatTile
           label="정산 대기"
           value={pendingSettlementCount}
-          color="red"
+          color="accent"
           href="/admin/settlements"
           delay={200}
         />
@@ -269,7 +179,9 @@ export default async function AdminDashboardPage() {
 
       <div className="mt-8">
         <ScrollReveal className="overflow-hidden rounded-lg border border-black/10 shadow-sm dark:border-white/10">
-          <SectionHeader>최근 14일 방문자 추이 (총 {periodVisitorTotal.toLocaleString("ko-KR")}명)</SectionHeader>
+          <SectionHeader tone="blue">
+            최근 14일 방문자 추이 (총 {periodVisitorTotal.toLocaleString("ko-KR")}명)
+          </SectionHeader>
           <div className="bg-white p-4 dark:bg-white/5">
             <VisitTrendChart data={visitTrend} />
           </div>
@@ -277,7 +189,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        <SectionCard title="타입별 게시글 분포" delay={80}>
+        <SectionCard title="타입별 게시글 분포" tone="brand" delay={80}>
           {postTypeItems.length === 0 ? (
             <p className="text-sm text-black/50 dark:text-white/50">등록된 글이 없습니다.</p>
           ) : (
@@ -285,7 +197,7 @@ export default async function AdminDashboardPage() {
           )}
         </SectionCard>
 
-        <SectionCard title="드론 예약 상태별 현황" delay={140}>
+        <SectionCard title="드론 예약 상태별 현황" tone="teal" delay={140}>
           {droneStatusItems.every((item) => item.value === 0) ? (
             <p className="text-sm text-black/50 dark:text-white/50">드론 예약 내역이 없습니다.</p>
           ) : (
@@ -295,7 +207,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="mt-8 overflow-hidden rounded-lg border border-black/10 shadow-sm dark:border-white/10">
-        <SectionHeader>최근 문의</SectionHeader>
+        <SectionHeader tone="amber">최근 문의</SectionHeader>
         {recentInquiries.length === 0 ? (
           <p className="bg-white p-4 text-sm text-black/50 dark:bg-white/5 dark:text-white/50">
             아직 접수된 문의가 없습니다.
