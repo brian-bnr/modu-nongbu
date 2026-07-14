@@ -14,8 +14,8 @@ export default async function ConsumerLayout({
   return (
     <div className="flex min-h-full flex-1 flex-col">
       <Header />
-      <main className="flex-1 pb-16 sm:pb-0">{children}</main>
-      <div className="hidden sm:block">
+      <main className="flex-1">{children}</main>
+      <div className="pb-16 sm:pb-0">
         <Footer />
       </div>
       <MobileTabBar loggedIn={loggedIn} />
