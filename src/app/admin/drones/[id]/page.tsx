@@ -13,12 +13,15 @@ import {
 } from "@/lib/format";
 import { DroneAdminNoteForm } from "@/components/DroneAdminNoteForm";
 import { DisputeResolveForm } from "@/components/DisputeResolveForm";
+import { requireAdmin } from "@/lib/auth";
 
 export default async function AdminDroneDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAdmin();
+
   const { id } = await params;
 
   const reservation = await prisma.droneReservation.findUnique({

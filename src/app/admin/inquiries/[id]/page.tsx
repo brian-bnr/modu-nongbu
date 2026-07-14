@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { InquiryStatusForm } from "@/components/InquiryStatusForm";
+import { requireAdmin } from "@/lib/auth";
 import { formatDate, POST_TYPE_LABEL } from "@/lib/format";
 
 const JOB_TYPES = new Set(["FIND_WORKER", "LOOKING_FOR_WORK"]);
@@ -11,6 +12,8 @@ export default async function AdminInquiryDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAdmin();
+
   const { id } = await params;
   const inquiry = await prisma.inquiry.findUnique({
     where: { id },

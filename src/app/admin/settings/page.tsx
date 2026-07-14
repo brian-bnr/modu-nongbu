@@ -1,20 +1,19 @@
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { PlatformSettingForm } from "@/components/PlatformSettingForm";
 import { AdminAccountForm } from "@/components/AdminAccountForm";
 import { PageIntro, SectionCard } from "@/components/admin/AdminUI";
 
 export default async function AdminSettingsPage() {
-  const session = await auth();
+  const session = await requireAdmin();
+
   const [setting, admin] = await Promise.all([
     prisma.platformSetting.upsert({
       where: { id: "singleton" },
       update: {},
       create: { id: "singleton" },
     }),
-    session?.user?.id
-      ? prisma.admin.findUnique({ where: { id: session.user.id } })
-      : Promise.resolve(null),
+    prisma.admin.findUnique({ where: { id: session.user.id } }),
   ]);
 
   return (

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
 import { DeleteButton } from "@/components/DeleteButton";
 import { setPostStatus, deletePostAdmin } from "@/app/admin/posts/actions";
+import { requireAdmin } from "@/lib/auth";
 import {
   formatDate,
   formatPrice,
@@ -19,6 +20,8 @@ export default async function AdminPostDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAdmin();
+
   const { id } = await params;
   const post = await prisma.post.findUnique({
     where: { id },

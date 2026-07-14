@@ -2,6 +2,7 @@ import type { DroneReservationStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
 import { PageIntro, StatTile, SectionCard, GridCard, FilterPill } from "@/components/admin/AdminUI";
+import { requireAdmin } from "@/lib/auth";
 import {
   DRONE_RESERVATION_STATUS_LABEL,
   DRONE_RESERVATION_STATUS_VARIANT,
@@ -27,6 +28,8 @@ export default async function AdminDronesPage({
 }: {
   searchParams: Promise<{ status?: string }>;
 }) {
+  await requireAdmin();
+
   const { status } = await searchParams;
   const activeStatus =
     status && STATUS_OPTIONS.includes(status as DroneReservationStatus)

@@ -1,11 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
 import { PageIntro, StatTile, SectionCard, GridCard } from "@/components/admin/AdminUI";
+import { requireAdmin } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
 
 const NEW_USER_WINDOW_MS = 5 * 24 * 60 * 60 * 1000;
 
 export default async function AdminUsersPage() {
+  await requireAdmin();
+
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
     include: { _count: { select: { posts: true, inquiries: true } } },

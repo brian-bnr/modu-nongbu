@@ -2,6 +2,7 @@ import type { InquiryStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
 import { PageIntro, StatTile, SectionCard, GridCard, FilterPill } from "@/components/admin/AdminUI";
+import { requireAdmin } from "@/lib/auth";
 import { formatDate, INQUIRY_STATUS_LABEL, INQUIRY_STATUS_VARIANT } from "@/lib/format";
 
 const STATUS_OPTIONS: InquiryStatus[] = ["REQUESTED", "ACCEPTED", "COMPLETED", "CANCELLED"];
@@ -11,6 +12,8 @@ export default async function AdminInquiriesPage({
 }: {
   searchParams: Promise<{ status?: string }>;
 }) {
+  await requireAdmin();
+
   const { status } = await searchParams;
   const activeStatus =
     status && STATUS_OPTIONS.includes(status as InquiryStatus) ? (status as InquiryStatus) : undefined;

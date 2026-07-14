@@ -4,6 +4,7 @@ import Google from "next-auth/providers/google";
 import Kakao from "next-auth/providers/kakao";
 import Naver from "next-auth/providers/naver";
 import bcrypt from "bcryptjs";
+import { redirect } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
 
@@ -120,3 +121,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
 });
+
+export async function requireAdmin() {
+  const session = await auth();
+  if (session?.user?.type !== "admin") {
+    redirect("/admin/login");
+  }
+  return session;
+}

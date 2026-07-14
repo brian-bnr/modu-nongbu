@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
+import { requireAdmin } from "@/lib/auth";
 import {
   formatDate,
   INQUIRY_STATUS_LABEL,
@@ -19,6 +20,8 @@ export default async function AdminUserDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await requireAdmin();
+
   const { id } = await params;
   const user = await prisma.user.findUnique({
     where: { id },

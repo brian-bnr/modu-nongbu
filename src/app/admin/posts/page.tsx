@@ -2,6 +2,7 @@ import type { PostStatus, PostType } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
 import { PageIntro, StatTile, SectionCard, GridCard } from "@/components/admin/AdminUI";
+import { requireAdmin } from "@/lib/auth";
 import { formatDate, POST_STATUS_LABEL, POST_STATUS_VARIANT, POST_TYPE_LABEL } from "@/lib/format";
 
 export default async function AdminPostsPage({
@@ -9,6 +10,8 @@ export default async function AdminPostsPage({
 }: {
   searchParams: Promise<{ type?: string; status?: string }>;
 }) {
+  await requireAdmin();
+
   const { type, status } = await searchParams;
 
   const [posts, totalCount, openCount, closedCount] = await Promise.all([

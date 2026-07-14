@@ -6,6 +6,7 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import { VisitTrendChart } from "@/components/admin/VisitTrendChart";
 import { BarList, type BarListItem } from "@/components/admin/BarList";
 import { PageIntro, StatTile, SectionHeader, SectionCard } from "@/components/admin/AdminUI";
+import { requireAdmin } from "@/lib/auth";
 import {
   formatDate,
   INQUIRY_STATUS_LABEL,
@@ -45,6 +46,8 @@ const QUICK_LINKS = [
 ];
 
 export default async function AdminDashboardPage() {
+  await requireAdmin();
+
   const todayStr = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);

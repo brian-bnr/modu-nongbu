@@ -1,10 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
 import { PageIntro, StatTile, SectionCard } from "@/components/admin/AdminUI";
+import { requireAdmin } from "@/lib/auth";
 import { SETTLEMENT_STATUS_LABEL, SETTLEMENT_STATUS_VARIANT, formatDate, formatPrice } from "@/lib/format";
 import { markSettlementPaid } from "@/lib/actions/settlement";
 
 export default async function AdminSettlementsPage() {
+  await requireAdmin();
+
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
