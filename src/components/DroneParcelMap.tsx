@@ -246,17 +246,17 @@ export function DroneParcelMap({
         onLoad={() => setScriptLoaded(true)}
         onError={() => setScriptFailed(true)}
       />
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleAddressSearch(addressQuery);
-        }}
-        className="mb-2 flex gap-2"
-      >
+      <div className="mb-2 flex gap-2">
         <input
           type="text"
           value={addressQuery}
           onChange={(e) => setAddressQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleAddressSearch(addressQuery);
+            }
+          }}
           disabled={!scriptLoaded}
           placeholder={
             scriptLoaded
@@ -266,13 +266,14 @@ export function DroneParcelMap({
           className="w-full rounded-lg border border-black/10 px-3 py-2.5 text-sm disabled:opacity-60 dark:border-white/20 dark:bg-transparent"
         />
         <button
-          type="submit"
+          type="button"
+          onClick={() => handleAddressSearch(addressQuery)}
           disabled={searching || !scriptLoaded}
           className="shrink-0 rounded-lg bg-brand-700 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-60"
         >
           {searching ? "검색 중..." : "검색"}
         </button>
-      </form>
+      </div>
       {addressError && <p className="mb-2 text-xs text-red-600">{addressError}</p>}
       {addressResults.length > 0 && (
         <ul className="mb-2 space-y-1 rounded-lg border border-black/10 p-2 text-sm dark:border-white/20">
