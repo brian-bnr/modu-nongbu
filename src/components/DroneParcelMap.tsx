@@ -155,6 +155,11 @@ export function DroneParcelMap({
     const trimmed = query.trim();
     if (!trimmed) return;
 
+    if (!mapRef.current) {
+      setAddressError("지도를 불러오는 중이에요. 잠시 후 다시 시도해주세요.");
+      return;
+    }
+
     setSearching(true);
     setAddressError("");
     setAddressResults([]);
@@ -252,12 +257,17 @@ export function DroneParcelMap({
           type="text"
           value={addressQuery}
           onChange={(e) => setAddressQuery(e.target.value)}
-          placeholder="지번 주소로 검색 (예: 서울특별시 중구 태평로1가 31)"
-          className="w-full rounded-lg border border-black/10 px-3 py-2.5 text-sm dark:border-white/20 dark:bg-transparent"
+          disabled={!scriptLoaded}
+          placeholder={
+            scriptLoaded
+              ? "지번 주소로 검색 (예: 서울특별시 중구 태평로1가 31)"
+              : "지도를 불러오는 중..."
+          }
+          className="w-full rounded-lg border border-black/10 px-3 py-2.5 text-sm disabled:opacity-60 dark:border-white/20 dark:bg-transparent"
         />
         <button
           type="submit"
-          disabled={searching}
+          disabled={searching || !scriptLoaded}
           className="shrink-0 rounded-lg bg-brand-700 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-60"
         >
           {searching ? "검색 중..." : "검색"}
