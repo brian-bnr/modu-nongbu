@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { auth, signOut } from "@/lib/auth";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 const NAV_LINKS = [
   { href: "/products", label: "농산물" },
@@ -65,6 +66,7 @@ export async function Header() {
           >
             운영자
           </Link>
+          <LanguageSwitcher />
         </nav>
       </div>
     </header>
