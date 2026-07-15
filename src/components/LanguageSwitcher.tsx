@@ -18,12 +18,49 @@ declare global {
   }
 }
 
+type TrigramLine = "yang" | "yin";
+
+function Trigram({ x, y, lines }: { x: number; y: number; lines: [TrigramLine, TrigramLine, TrigramLine] }) {
+  const w = 6;
+  const barH = 1;
+  const rowGap = 0.6;
+  const gapW = 0.8;
+  const segW = (w - gapW) / 2;
+  return (
+    <g fill="#000">
+      {lines.map((type, i) => {
+        const rowY = y + i * (barH + rowGap);
+        return type === "yang" ? (
+          <rect key={i} x={x} y={rowY} width={w} height={barH} />
+        ) : (
+          <g key={i}>
+            <rect x={x} y={rowY} width={segW} height={barH} />
+            <rect x={x + segW + gapW} y={rowY} width={segW} height={barH} />
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
 function FlagKR() {
+  const cx = 15;
+  const cy = 10;
+  const r = 5;
+  const half = r / 2;
   return (
     <svg viewBox="0 0 30 20" className="h-full w-full">
       <rect width="30" height="20" fill="#fff" />
-      <circle cx="15" cy="10" r="5.5" fill="#c60c30" />
-      <path d="M15 4.5a5.5 5.5 0 0 1 0 11 2.75 2.75 0 0 1 0-5.5 2.75 2.75 0 0 0 0-5.5z" fill="#003478" />
+      <circle cx={cx} cy={cy} r={r} fill="#003478" />
+      <path
+        d={`M${cx},${cy - r} A${r},${r} 0 0 1 ${cx},${cy + r} A${half},${half} 0 0 1 ${cx},${cy} A${half},${half} 0 0 0 ${cx},${cy - r} Z`}
+        fill="#c60c30"
+      />
+      {/* 건(하늘, 좌상) 감(물, 우상) 리(불, 좌하) 곤(땅, 우하) */}
+      <Trigram x={2} y={2} lines={["yang", "yang", "yang"]} />
+      <Trigram x={22} y={2} lines={["yin", "yang", "yin"]} />
+      <Trigram x={2} y={13.8} lines={["yang", "yin", "yang"]} />
+      <Trigram x={22} y={13.8} lines={["yin", "yin", "yin"]} />
     </svg>
   );
 }
