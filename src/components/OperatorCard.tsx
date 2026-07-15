@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export type OperatorCardData = {
@@ -23,12 +24,25 @@ export function OperatorCard({ operator }: { operator: OperatorCardData }) {
     >
       <div className="flex items-center gap-3">
         {operator.photoUrl ? (
-          <img
-            src={operator.photoUrl}
-            alt=""
-            style={{ objectPosition: operator.photoPosition ?? "center" }}
-            className="h-12 w-12 shrink-0 rounded-full object-cover"
-          />
+          operator.photoUrl.startsWith("/") ? (
+            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full">
+              <Image
+                src={operator.photoUrl}
+                alt=""
+                fill
+                sizes="48px"
+                style={{ objectPosition: operator.photoPosition ?? "center" }}
+                className="object-cover"
+              />
+            </div>
+          ) : (
+            <img
+              src={operator.photoUrl}
+              alt=""
+              style={{ objectPosition: operator.photoPosition ?? "center" }}
+              className="h-12 w-12 shrink-0 rounded-full object-cover"
+            />
+          )
         ) : (
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-50 text-2xl">
             🧑‍✈️

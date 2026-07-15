@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -25,12 +26,16 @@ export default async function DroneOperatorDetailPage({
         <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-4">
             {sample.photoUrl ? (
-              <img
-                src={sample.photoUrl}
-                alt=""
-                style={{ objectPosition: sample.photoPosition ?? "center" }}
-                className="h-16 w-16 shrink-0 rounded-full object-cover"
-              />
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full">
+                <Image
+                  src={sample.photoUrl}
+                  alt=""
+                  fill
+                  sizes="64px"
+                  style={{ objectPosition: sample.photoPosition ?? "center" }}
+                  className="object-cover"
+                />
+              </div>
             ) : (
               <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand-50 text-3xl">
                 🧑‍✈️

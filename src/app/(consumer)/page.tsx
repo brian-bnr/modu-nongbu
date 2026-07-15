@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { PostCard } from "@/components/PostCard";
@@ -47,18 +48,27 @@ export default async function HomePage() {
   const todayStr = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-  const [recentPosts, counts, popularPool, platformSetting, operators] = await Promise.all([
+  const [recentPosts, counts, popularPool, operators] = await Promise.all([
     prisma.post.findMany({
       take: 8,
       orderBy: { createdAt: "desc" },
       include: { author: true },
     }),
-    prisma.$queryRaw<{ post_count: bigint; inquiry_count: bigint; user_count: bigint; today_visitors: bigint }[]>`
+    prisma.$queryRaw<
+      {
+        post_count: bigint;
+        inquiry_count: bigint;
+        user_count: bigint;
+        today_visitors: bigint;
+        drone_unit_price: number | null;
+      }[]
+    >`
       SELECT
         (SELECT COUNT(*) FROM "Post") AS post_count,
         (SELECT COUNT(*) FROM "Inquiry") AS inquiry_count,
         (SELECT COUNT(*) FROM "User") AS user_count,
-        (SELECT COUNT(*) FROM "Visit" WHERE "visitDate" = ${todayStr}) AS today_visitors
+        (SELECT COUNT(*) FROM "Visit" WHERE "visitDate" = ${todayStr}) AS today_visitors,
+        (SELECT "droneUnitPrice" FROM "PlatformSetting" WHERE id = 'singleton') AS drone_unit_price
     `,
     prisma.post.findMany({
       take: 30,
@@ -66,13 +76,12 @@ export default async function HomePage() {
       orderBy: [{ inquiries: { _count: "desc" } }, { createdAt: "desc" }],
       include: { author: true, _count: { select: { inquiries: true } } },
     }),
-    prisma.platformSetting.findUnique({ where: { id: "singleton" } }),
     getApprovedOperatorsWithStats(),
   ]);
 
   const popularRealtime = popularPool.slice(0, 8);
   const popularWeekly = popularPool.filter((p) => p.createdAt >= sevenDaysAgo).slice(0, 8);
-  const droneUnitPrice = platformSetting?.droneUnitPrice ?? 3000;
+  const droneUnitPrice = counts[0].drone_unit_price ?? 3000;
 
   const STATS = [
     { label: "등록된 매물", value: Number(counts[0].post_count) },
@@ -117,12 +126,14 @@ export default async function HomePage() {
             <div className="mt-4 flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0">
               <Link
                 href="/drones/new"
-                className="relative w-32 shrink-0 snap-start overflow-hidden rounded-xl shadow-sm sm:w-40"
+                className="relative h-20 w-32 shrink-0 snap-start overflow-hidden rounded-xl shadow-sm sm:h-24 sm:w-40"
               >
-                <img
+                <Image
                   src="/hero-drone.png"
                   alt=""
-                  className="h-20 w-full object-cover sm:h-24"
+                  fill
+                  sizes="160px"
+                  className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-2 text-white">

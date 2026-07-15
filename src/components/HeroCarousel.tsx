@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
@@ -37,16 +38,20 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
         onScroll={updateProgress}
         className="flex gap-4 overflow-x-auto pb-1 snap-x snap-mandatory scroll-smooth"
       >
-        {slides.map((slide) => (
+        {slides.map((slide, i) => (
           <Link
             key={slide.href}
             href={slide.href}
             className={`group relative h-72 w-[85%] shrink-0 snap-start overflow-hidden rounded-3xl bg-gradient-to-br sm:h-80 sm:w-[calc(50%-8px)] ${slide.gradient}`}
           >
-            <img
+            <Image
               src={slide.image}
               alt=""
-              className="absolute inset-0 h-full w-full object-cover object-[center_15%] transition-transform duration-700 ease-out group-hover:scale-105"
+              fill
+              sizes="(min-width: 640px) 50vw, 85vw"
+              priority={i === 0}
+              loading={i === 0 ? undefined : "lazy"}
+              className="object-cover object-[center_15%] transition-transform duration-700 ease-out group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
             <div className="absolute inset-x-0 top-4 px-5">
