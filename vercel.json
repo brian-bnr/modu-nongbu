@@ -1,4 +1,4 @@
 {
-  "regions": ["bom1"],
+  "regions": ["icn1"],
   "crons": [{ "path": "/api/cron/auto-approve-drone", "schedule": "0 0 * * *" }]
 }
