@@ -143,7 +143,7 @@ export function DroneReservationForm({ unitPrice }: { unitPrice: number }) {
         }
       >
         {mode === "map" ? (
-          <DroneParcelMap onParcelSelected={handleParcelSelected} />
+          <DroneParcelMap onParcelSelected={handleParcelSelected} region={region} />
         ) : (
           <input
             type="number"

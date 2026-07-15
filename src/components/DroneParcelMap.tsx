@@ -14,13 +14,40 @@ export type SelectedParcel = {
   lng: number;
 };
 
+// 시/도 중심 좌표 (지역 선택 시 지도 이동용, 대략적인 도청 소재지 기준)
+const REGION_CENTERS: Record<string, { lat: number; lng: number; zoom: number }> = {
+  서울: { lat: 37.5665, lng: 126.978, zoom: 11 },
+  부산: { lat: 35.1796, lng: 129.0756, zoom: 11 },
+  대구: { lat: 35.8714, lng: 128.6014, zoom: 11 },
+  인천: { lat: 37.4563, lng: 126.7052, zoom: 10 },
+  광주: { lat: 35.1595, lng: 126.8526, zoom: 11 },
+  대전: { lat: 36.3504, lng: 127.3845, zoom: 11 },
+  울산: { lat: 35.5384, lng: 129.3114, zoom: 11 },
+  세종: { lat: 36.4801, lng: 127.289, zoom: 11 },
+  경기: { lat: 37.4138, lng: 127.5183, zoom: 9 },
+  강원: { lat: 37.8228, lng: 128.1555, zoom: 8 },
+  충북: { lat: 36.6357, lng: 127.4917, zoom: 9 },
+  충남: { lat: 36.5184, lng: 126.8, zoom: 9 },
+  전북: { lat: 35.7175, lng: 127.153, zoom: 9 },
+  전남: { lat: 34.8161, lng: 126.463, zoom: 9 },
+  경북: { lat: 36.4919, lng: 128.8889, zoom: 8 },
+  경남: { lat: 35.4606, lng: 128.2132, zoom: 9 },
+  제주: { lat: 33.4996, lng: 126.5312, zoom: 10 },
+};
+
+type NaverMapInstance = {
+  setCenter: (latlng: unknown) => void;
+  setZoom: (zoom: number) => void;
+};
+
 declare global {
   interface Window {
     naver?: {
       maps: {
-        Map: new (el: HTMLElement, options: Record<string, unknown>) => unknown;
+        Map: new (el: HTMLElement, options: Record<string, unknown>) => NaverMapInstance;
         LatLng: new (lat: number, lng: number) => unknown;
         Polygon: new (options: Record<string, unknown>) => { setMap: (map: unknown) => void };
+        CadastralLayer: new () => { setMap: (map: unknown) => void };
         Event: {
           addListener: (
             target: unknown,
@@ -35,11 +62,13 @@ declare global {
 
 export function DroneParcelMap({
   onParcelSelected,
+  region,
 }: {
   onParcelSelected: (parcel: SelectedParcel) => void;
+  region?: string;
 }) {
   const mapElRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<unknown>(null);
+  const mapRef = useRef<NaverMapInstance | null>(null);
   const polygonRef = useRef<{ setMap: (map: unknown) => void } | null>(null);
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const [scriptFailed, setScriptFailed] = useState(false);
@@ -51,11 +80,18 @@ export function DroneParcelMap({
     if (!scriptLoaded || !mapElRef.current || !window.naver) return;
 
     const naver = window.naver;
+    const initialCenter = region ? REGION_CENTERS[region] : undefined;
     const map = new naver.maps.Map(mapElRef.current, {
-      center: new naver.maps.LatLng(36.5, 127.8),
-      zoom: 7,
+      center: new naver.maps.LatLng(
+        initialCenter?.lat ?? 36.5,
+        initialCenter?.lng ?? 127.8
+      ),
+      zoom: initialCenter?.zoom ?? 7,
     });
     mapRef.current = map;
+
+    const cadastralLayer = new naver.maps.CadastralLayer();
+    cadastralLayer.setMap(map);
 
     naver.maps.Event.addListener(map, "click", async (e) => {
       const lat = e.coord.y;
@@ -103,6 +139,14 @@ export function DroneParcelMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scriptLoaded]);
 
+  useEffect(() => {
+    if (!mapRef.current || !region || !window.naver) return;
+    const center = REGION_CENTERS[region];
+    if (!center) return;
+    mapRef.current.setCenter(new window.naver.maps.LatLng(center.lat, center.lng));
+    mapRef.current.setZoom(center.zoom);
+  }, [region]);
+
   if (!NAVER_MAP_CLIENT_ID || scriptFailed) {
     return (
       <div className="flex items-center gap-2 rounded-lg border border-black/10 bg-black/5 p-4 text-sm text-black/60 dark:border-white/10 dark:bg-white/5 dark:text-white/60">
@@ -115,7 +159,7 @@ export function DroneParcelMap({
   return (
     <div>
       <Script
-        src={`https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${NAVER_MAP_CLIENT_ID}`}
+        src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${NAVER_MAP_CLIENT_ID}`}
         strategy="afterInteractive"
         onLoad={() => setScriptLoaded(true)}
         onError={() => setScriptFailed(true)}
