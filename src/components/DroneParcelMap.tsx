@@ -83,6 +83,13 @@ export function DroneParcelMap({
   const [error, setError] = useState("");
   const [parcels, setParcels] = useState<SelectedParcel[]>([]);
 
+  const [addressQuery, setAddressQuery] = useState("");
+  const [searching, setSearching] = useState(false);
+  const [addressError, setAddressError] = useState("");
+  const [addressResults, setAddressResults] = useState<
+    { pnu: string | null; address: string; lat: number; lng: number }[]
+  >([]);
+
   function removeParcel(key: string) {
     polygonsRef.current.get(key)?.setMap(null);
     polygonsRef.current.delete(key);
@@ -90,6 +97,100 @@ export function DroneParcelMap({
     const next = Array.from(parcelsRef.current.values());
     setParcels(next);
     onParcelsChanged(next);
+  }
+
+  async function selectPoint(lat: number, lng: number) {
+    const naver = window.naver;
+    if (!naver || !mapRef.current) return;
+
+    setLoadingParcel(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/vworld/parcel?lat=${lat}&lng=${lng}`);
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "필지 조회에 실패했습니다.");
+        return;
+      }
+
+      const parcel: SelectedParcel = {
+        pnu: data.pnu,
+        jibun: data.jibun,
+        areaPyeong: data.areaPyeong,
+        areaSqm: data.areaSqm,
+        lat,
+        lng,
+      };
+      const key = parcelKey(parcel);
+
+      if (parcelsRef.current.has(key)) {
+        removeParcel(key);
+        return;
+      }
+
+      const naverRings = (data.rings as [number, number][]).map(
+        ([rLat, rLng]) => new naver.maps.LatLng(rLat, rLng)
+      );
+      const polygon = new naver.maps.Polygon({
+        map: mapRef.current,
+        paths: [naverRings],
+        fillColor: "#15803d",
+        fillOpacity: 0.35,
+        strokeColor: "#15803d",
+        strokeWeight: 2,
+      });
+      polygonsRef.current.set(key, polygon);
+      parcelsRef.current.set(key, parcel);
+      const next = Array.from(parcelsRef.current.values());
+      setParcels(next);
+      onParcelsChanged(next);
+    } catch {
+      setError("필지 조회 중 오류가 발생했습니다.");
+    } finally {
+      setLoadingParcel(false);
+    }
+  }
+
+  async function handleAddressSearch(query: string) {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+
+    setSearching(true);
+    setAddressError("");
+    setAddressResults([]);
+    try {
+      const res = await fetch(`/api/vworld/geocode?query=${encodeURIComponent(trimmed)}`);
+      const data = await res.json();
+      if (!res.ok) {
+        setAddressError(data.error ?? "주소 검색에 실패했습니다.");
+        return;
+      }
+      const results: { pnu: string | null; address: string; lat: number; lng: number }[] =
+        data.results ?? [];
+      if (results.length === 0) {
+        setAddressError("검색 결과가 없습니다.");
+        return;
+      }
+      if (results.length === 1) {
+        await pickAddressResult(results[0]);
+        return;
+      }
+      setAddressResults(results);
+    } catch {
+      setAddressError("주소 검색 중 오류가 발생했습니다.");
+    } finally {
+      setSearching(false);
+    }
+  }
+
+  async function pickAddressResult(result: { lat: number; lng: number }) {
+    if (mapRef.current && window.naver) {
+      mapRef.current.setCenter(new window.naver.maps.LatLng(result.lat, result.lng));
+      mapRef.current.setZoom(19);
+    }
+    setAddressResults([]);
+    setAddressQuery("");
+    await selectPoint(result.lat, result.lng);
   }
 
   useEffect(() => {
@@ -109,56 +210,8 @@ export function DroneParcelMap({
     const cadastralLayer = new naver.maps.CadastralLayer();
     cadastralLayer.setMap(map);
 
-    naver.maps.Event.addListener(map, "click", async (e) => {
-      const lat = e.coord.y;
-      const lng = e.coord.x;
-
-      setLoadingParcel(true);
-      setError("");
-      try {
-        const res = await fetch(`/api/vworld/parcel?lat=${lat}&lng=${lng}`);
-        const data = await res.json();
-        if (!res.ok) {
-          setError(data.error ?? "필지 조회에 실패했습니다.");
-          return;
-        }
-
-        const parcel: SelectedParcel = {
-          pnu: data.pnu,
-          jibun: data.jibun,
-          areaPyeong: data.areaPyeong,
-          areaSqm: data.areaSqm,
-          lat,
-          lng,
-        };
-        const key = parcelKey(parcel);
-
-        if (parcelsRef.current.has(key)) {
-          removeParcel(key);
-          return;
-        }
-
-        const naverRings = (data.rings as [number, number][]).map(
-          ([rLat, rLng]) => new naver.maps.LatLng(rLat, rLng)
-        );
-        const polygon = new naver.maps.Polygon({
-          map,
-          paths: [naverRings],
-          fillColor: "#15803d",
-          fillOpacity: 0.35,
-          strokeColor: "#15803d",
-          strokeWeight: 2,
-        });
-        polygonsRef.current.set(key, polygon);
-        parcelsRef.current.set(key, parcel);
-        const next = Array.from(parcelsRef.current.values());
-        setParcels(next);
-        onParcelsChanged(next);
-      } catch {
-        setError("필지 조회 중 오류가 발생했습니다.");
-      } finally {
-        setLoadingParcel(false);
-      }
+    naver.maps.Event.addListener(map, "click", (e) => {
+      selectPoint(e.coord.y, e.coord.x);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scriptLoaded]);
@@ -188,6 +241,44 @@ export function DroneParcelMap({
         onLoad={() => setScriptLoaded(true)}
         onError={() => setScriptFailed(true)}
       />
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleAddressSearch(addressQuery);
+        }}
+        className="mb-2 flex gap-2"
+      >
+        <input
+          type="text"
+          value={addressQuery}
+          onChange={(e) => setAddressQuery(e.target.value)}
+          placeholder="지번 주소로 검색 (예: 서울특별시 중구 태평로1가 31)"
+          className="w-full rounded-lg border border-black/10 px-3 py-2.5 text-sm dark:border-white/20 dark:bg-transparent"
+        />
+        <button
+          type="submit"
+          disabled={searching}
+          className="shrink-0 rounded-lg bg-brand-700 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-60"
+        >
+          {searching ? "검색 중..." : "검색"}
+        </button>
+      </form>
+      {addressError && <p className="mb-2 text-xs text-red-600">{addressError}</p>}
+      {addressResults.length > 0 && (
+        <ul className="mb-2 space-y-1 rounded-lg border border-black/10 p-2 text-sm dark:border-white/20">
+          {addressResults.map((r, i) => (
+            <li key={`${r.pnu}_${i}`}>
+              <button
+                type="button"
+                onClick={() => pickAddressResult(r)}
+                className="w-full rounded-md px-2 py-1.5 text-left hover:bg-brand-50 dark:hover:bg-brand-900/20"
+              >
+                {r.address}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
       <div
         ref={mapElRef}
         className="h-[55vh] min-h-[360px] w-full overflow-hidden rounded-lg border border-black/10 dark:border-white/20 sm:h-[60vh] lg:h-[70vh]"
