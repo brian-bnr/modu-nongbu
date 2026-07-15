@@ -89,138 +89,140 @@ export function DroneReservationForm({ unitPrice }: { unitPrice: number }) {
   return (
     <form
       action={formAction}
-      className="max-w-lg space-y-5 rounded-2xl border border-black/10 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5"
+      className="w-full space-y-5 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-6 lg:space-y-0"
     >
-      <FieldSection
-        icon="📍"
-        accent="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-        label="지역"
-        error={state.errors?.region?.[0]}
-      >
-        <div className="flex gap-3">
-          <select
-            name="region"
-            value={region}
-            onChange={(e) => setRegion(e.target.value)}
-            className={`${fieldClass} flex-1`}
-          >
-            <option value="">시/도 선택</option>
-            {REGIONS.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-          <input
-            name="regionDetail"
-            value={regionDetail}
-            onChange={(e) => setRegionDetail(e.target.value)}
-            placeholder="상세지역 (선택)"
-            className={`${fieldClass} flex-1`}
-          />
-        </div>
-      </FieldSection>
+      <div className="space-y-5 rounded-2xl border border-black/10 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
+        <FieldSection
+          icon="📍"
+          accent="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+          label="지역"
+          error={state.errors?.region?.[0]}
+        >
+          <div className="flex gap-3">
+            <select
+              name="region"
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
+              className={`${fieldClass} flex-1`}
+            >
+              <option value="">시/도 선택</option>
+              {REGIONS.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </select>
+            <input
+              name="regionDetail"
+              value={regionDetail}
+              onChange={(e) => setRegionDetail(e.target.value)}
+              placeholder="상세지역 (선택)"
+              className={`${fieldClass} flex-1`}
+            />
+          </div>
+        </FieldSection>
 
-      <div className="h-px bg-black/5 dark:bg-white/10" />
+        <div className="h-px bg-black/5 dark:bg-white/10" />
 
-      <FieldSection
-        icon="📐"
-        accent="bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300"
-        label="방제 면적"
-        error={state.errors?.areaPyeong?.[0]}
-        action={
-          <button
-            type="button"
-            onClick={() => {
-              setMode(mode === "map" ? "manual" : "map");
-              setParcel(null);
-              setAreaPyeong("");
-            }}
-            className="text-xs font-medium text-brand-700 hover:underline dark:text-brand-400"
-          >
-            {mode === "map" ? "면적 직접 입력" : "지도에서 필지 선택"}
-          </button>
-        }
-      >
-        {mode === "map" ? (
-          <DroneParcelMap onParcelSelected={handleParcelSelected} region={region} />
-        ) : (
-          <input
-            type="number"
-            min={1}
-            value={areaPyeong}
-            onChange={(e) => setAreaPyeong(e.target.value)}
-            placeholder="평 단위로 입력"
-            className={fieldClass}
-          />
-        )}
-        <input type="hidden" name="areaPyeong" value={areaPyeong} />
-        <input type="hidden" name="parcelPnu" value={parcel?.pnu ?? ""} />
-        <input type="hidden" name="parcelJibun" value={parcel?.jibun ?? ""} />
-        <input type="hidden" name="parcelAreaSqm" value={parcel?.areaSqm ?? ""} />
-      </FieldSection>
-
-      <div className="h-px bg-black/5 dark:bg-white/10" />
-
-      <FieldSection
-        icon="🌾"
-        accent="bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
-        label="작물 종류"
-        error={state.errors?.cropType?.[0]}
-      >
-        <input
-          name="cropType"
-          value={cropType}
-          onChange={(e) => setCropType(e.target.value)}
-          placeholder="벼, 배추, 고추 등"
-          className={fieldClass}
-        />
-      </FieldSection>
-
-      <FieldSection
-        icon="📅"
-        accent="bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
-        label="희망 작업일"
-        error={state.errors?.desiredDate?.[0]}
-      >
-        <input
-          type="date"
-          name="desiredDate"
-          value={desiredDate}
-          onChange={(e) => setDesiredDate(e.target.value)}
-          className={fieldClass}
-        />
-      </FieldSection>
-
-      <div className="rounded-xl border border-brand-200 bg-gradient-to-br from-brand-50 to-brand-100/60 p-4 dark:border-brand-800 dark:from-brand-900/30 dark:to-brand-900/10">
-        <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-700 text-sm text-white">
-            💰
-          </span>
-          <p className="text-sm font-medium text-black/60 dark:text-white/60">예상 견적</p>
-        </div>
-        <p className="mt-2 text-3xl font-bold text-brand-800 dark:text-brand-300">
-          {formatPrice(estimate)}
-        </p>
-        <p className="mt-1 text-xs text-black/40 dark:text-white/40">
-          평당 {formatPrice(unitPrice)} × {area || 0}평
-        </p>
-        <p className="mt-3 flex items-start gap-1.5 text-xs text-black/50 dark:text-white/50">
-          <span>🔒</span>
-          <span>
-            신청 후 결제하시면 대금은 에스크로(구매안전서비스)에 보관되며, 방제 작업이 완료되고
-            승인하시면 방제사에게 정산됩니다.
-          </span>
-        </p>
+        <FieldSection
+          icon="📐"
+          accent="bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300"
+          label="방제 면적"
+          error={state.errors?.areaPyeong?.[0]}
+          action={
+            <button
+              type="button"
+              onClick={() => {
+                setMode(mode === "map" ? "manual" : "map");
+                setParcel(null);
+                setAreaPyeong("");
+              }}
+              className="text-xs font-medium text-brand-700 hover:underline dark:text-brand-400"
+            >
+              {mode === "map" ? "면적 직접 입력" : "지도에서 필지 선택"}
+            </button>
+          }
+        >
+          {mode === "map" ? (
+            <DroneParcelMap onParcelSelected={handleParcelSelected} region={region} />
+          ) : (
+            <input
+              type="number"
+              min={1}
+              value={areaPyeong}
+              onChange={(e) => setAreaPyeong(e.target.value)}
+              placeholder="평 단위로 입력"
+              className={fieldClass}
+            />
+          )}
+          <input type="hidden" name="areaPyeong" value={areaPyeong} />
+          <input type="hidden" name="parcelPnu" value={parcel?.pnu ?? ""} />
+          <input type="hidden" name="parcelJibun" value={parcel?.jibun ?? ""} />
+          <input type="hidden" name="parcelAreaSqm" value={parcel?.areaSqm ?? ""} />
+        </FieldSection>
       </div>
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className="w-full rounded-lg bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-800 disabled:opacity-60"
-      >
-        {isPending ? "신청 중..." : "신청하기"}
-      </button>
+      <div className="space-y-5 rounded-2xl border border-black/10 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5 lg:sticky lg:top-6">
+        <FieldSection
+          icon="🌾"
+          accent="bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+          label="작물 종류"
+          error={state.errors?.cropType?.[0]}
+        >
+          <input
+            name="cropType"
+            value={cropType}
+            onChange={(e) => setCropType(e.target.value)}
+            placeholder="벼, 배추, 고추 등"
+            className={fieldClass}
+          />
+        </FieldSection>
+
+        <FieldSection
+          icon="📅"
+          accent="bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+          label="희망 작업일"
+          error={state.errors?.desiredDate?.[0]}
+        >
+          <input
+            type="date"
+            name="desiredDate"
+            value={desiredDate}
+            onChange={(e) => setDesiredDate(e.target.value)}
+            className={fieldClass}
+          />
+        </FieldSection>
+
+        <div className="rounded-xl border border-brand-200 bg-gradient-to-br from-brand-50 to-brand-100/60 p-4 dark:border-brand-800 dark:from-brand-900/30 dark:to-brand-900/10">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-700 text-sm text-white">
+              💰
+            </span>
+            <p className="text-sm font-medium text-black/60 dark:text-white/60">예상 견적</p>
+          </div>
+          <p className="mt-2 text-3xl font-bold text-brand-800 dark:text-brand-300">
+            {formatPrice(estimate)}
+          </p>
+          <p className="mt-1 text-xs text-black/40 dark:text-white/40">
+            평당 {formatPrice(unitPrice)} × {area || 0}평
+          </p>
+          <p className="mt-3 flex items-start gap-1.5 text-xs text-black/50 dark:text-white/50">
+            <span>🔒</span>
+            <span>
+              신청 후 결제하시면 대금은 에스크로(구매안전서비스)에 보관되며, 방제 작업이 완료되고
+              승인하시면 방제사에게 정산됩니다.
+            </span>
+          </p>
+        </div>
+
+        <button
+          type="submit"
+          disabled={isPending}
+          className="w-full rounded-lg bg-brand-700 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-800 disabled:opacity-60"
+        >
+          {isPending ? "신청 중..." : "신청하기"}
+        </button>
+      </div>
     </form>
   );
 }

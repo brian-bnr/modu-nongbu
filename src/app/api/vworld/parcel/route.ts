@@ -52,11 +52,14 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "잘못된 좌표입니다." }, { status: 400 });
   }
 
+  const domain = new URL(request.url).hostname;
+
   const url = new URL(VWORLD_ENDPOINT);
   url.searchParams.set("service", "data");
   url.searchParams.set("request", "GetFeature");
   url.searchParams.set("data", "LP_PA_CBND_BUBUN");
   url.searchParams.set("key", apiKey);
+  url.searchParams.set("domain", domain);
   url.searchParams.set("geomFilter", `POINT(${lng} ${lat})`);
   url.searchParams.set("geometry", "true");
   url.searchParams.set("crs", "EPSG:4326");

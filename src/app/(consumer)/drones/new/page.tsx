@@ -16,7 +16,7 @@ export default async function NewDroneReservationPage() {
   });
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-10 sm:px-8">
+    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-8">
       <div className="flex items-center gap-3">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-100 text-2xl dark:bg-brand-900/40">
           🚁

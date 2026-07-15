@@ -166,7 +166,7 @@ export function DroneParcelMap({
       />
       <div
         ref={mapElRef}
-        className="h-72 w-full overflow-hidden rounded-lg border border-black/10 dark:border-white/20"
+        className="h-[55vh] min-h-[360px] w-full overflow-hidden rounded-lg border border-black/10 dark:border-white/20 sm:h-[60vh] lg:h-[70vh]"
       />
       <p className="mt-2 text-xs text-black/50 dark:text-white/50">
         {loadingParcel
