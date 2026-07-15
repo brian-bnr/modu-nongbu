@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { auth, signOut } from "@/lib/auth";
+import { Suspense } from "react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { HeaderAuthSlot } from "@/components/HeaderAuthSlot";
 import { SearchIcon, ChatIcon } from "@/components/icons/NavIcons";
 
 const NAV_LINKS = [
@@ -9,11 +10,27 @@ const NAV_LINKS = [
   { href: "/jobs", label: "일자리" },
 ];
 
-export async function Header() {
-  const session = await auth();
-  const isUser = session?.user?.type === "user";
-  const inquiriesHref = isUser ? "/my/inquiries" : "/login?callbackUrl=/my/inquiries";
+function HeaderAuthFallback() {
+  return (
+    <>
+      <Link
+        href="/login"
+        className="whitespace-nowrap rounded-md border border-white/25 px-2 py-1 hover:bg-white/10 sm:px-3 sm:py-1.5"
+      >
+        로그인
+      </Link>
+      <Link
+        href="/login?callbackUrl=/my/inquiries"
+        aria-label="문의함"
+        className="text-white hover:text-white/70"
+      >
+        <ChatIcon className="h-5 w-5" />
+      </Link>
+    </>
+  );
+}
 
+export function Header() {
   return (
     <header className="bg-brand-900">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-8 sm:py-4">
@@ -41,33 +58,9 @@ export async function Header() {
               </Link>
             ))}
           </div>
-          {isUser ? (
-            <>
-              <Link
-                href="/my"
-                className="hidden rounded-md border border-white/25 px-3 py-1.5 hover:bg-white/10 sm:block"
-              >
-                마이페이지
-              </Link>
-              <form
-                action={async () => {
-                  "use server";
-                  await signOut({ redirectTo: "/" });
-                }}
-              >
-                <button type="submit" className="whitespace-nowrap text-white/70 hover:underline">
-                  로그아웃
-                </button>
-              </form>
-            </>
-          ) : (
-            <Link
-              href="/login"
-              className="whitespace-nowrap rounded-md border border-white/25 px-2 py-1 hover:bg-white/10 sm:px-3 sm:py-1.5"
-            >
-              로그인
-            </Link>
-          )}
+          <Suspense fallback={<HeaderAuthFallback />}>
+            <HeaderAuthSlot />
+          </Suspense>
           <Link
             href="/admin"
             className="hidden whitespace-nowrap text-white/40 hover:underline sm:inline"
@@ -77,9 +70,6 @@ export async function Header() {
           <LanguageSwitcher />
           <Link href="/search" aria-label="검색" className="text-white hover:text-white/70">
             <SearchIcon className="h-5 w-5" />
-          </Link>
-          <Link href={inquiriesHref} aria-label="문의함" className="text-white hover:text-white/70">
-            <ChatIcon className="h-5 w-5" />
           </Link>
         </nav>
       </div>

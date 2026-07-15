@@ -13,6 +13,7 @@ export function toOperatorCardData(op: OperatorWithStats): OperatorCardData {
     completedCount: op.completedCount,
     avgRating: op.avgRating,
     reviewCount: op.reviewCount,
+    photoUrl: op.user.image ?? undefined,
   };
 }
 

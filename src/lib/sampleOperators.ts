@@ -15,10 +15,13 @@ export const SAMPLE_OPERATORS: OperatorCardData[] = [
     avgRating: 4.9,
     reviewCount: 86,
     sample: true,
+    photoUrl: "/operator-sample-1.jpg",
+    photoPosition: "center 20%",
+    equipmentInfo: "정밀 방제 드론 보유, 벼농사·밭작물 방제 전문",
   },
   {
     id: "sample-2",
-    name: "이든든",
+    name: "김미나",
     region: "충남 논산",
     experienceYears: 6,
     totalAreaPyeong: 198000,
@@ -26,6 +29,9 @@ export const SAMPLE_OPERATORS: OperatorCardData[] = [
     avgRating: 4.8,
     reviewCount: 54,
     sample: true,
+    photoUrl: "/operator-sample-2.jpg",
+    photoPosition: "center 20%",
+    equipmentInfo: "대형 논 방제 다수 경험, 신속한 일정 조율",
   },
   {
     id: "sample-3",
@@ -37,5 +43,8 @@ export const SAMPLE_OPERATORS: OperatorCardData[] = [
     avgRating: 4.7,
     reviewCount: 31,
     sample: true,
+    photoUrl: "/operator-sample-3.jpg",
+    photoPosition: "center 20%",
+    equipmentInfo: "과수원·밭작물 방제 특화",
   },
 ];

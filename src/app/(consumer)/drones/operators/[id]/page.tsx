@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/format";
+import { SAMPLE_OPERATORS } from "@/lib/sampleOperators";
 
 function maskName(name: string) {
   if (name.length <= 1) return `${name}*`;
@@ -14,6 +15,71 @@ export default async function DroneOperatorDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+
+  if (id.startsWith("sample-")) {
+    const sample = SAMPLE_OPERATORS.find((op) => op.id === id);
+    if (!sample) notFound();
+
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-10 sm:px-8">
+        <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
+          <div className="flex items-center gap-4">
+            {sample.photoUrl ? (
+              <img
+                src={sample.photoUrl}
+                alt=""
+                style={{ objectPosition: sample.photoPosition ?? "center" }}
+                className="h-16 w-16 shrink-0 rounded-full object-cover"
+              />
+            ) : (
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand-50 text-3xl">
+                🧑‍✈️
+              </div>
+            )}
+            <div>
+              <h1 className="text-xl font-bold">{sample.name}</h1>
+              <p className="text-sm text-black/50">{sample.region ?? "지역 미등록"}</p>
+            </div>
+          </div>
+
+          <div className="mt-4 grid grid-cols-3 gap-2 border-t border-black/10 pt-4 text-center text-sm">
+            <div>
+              <p className="font-semibold">{sample.completedCount}건</p>
+              <p className="text-xs text-black/50">완료 작업</p>
+            </div>
+            <div>
+              <p className="font-semibold">{sample.totalAreaPyeong.toLocaleString("ko-KR")}평</p>
+              <p className="text-xs text-black/50">누적 방제 면적</p>
+            </div>
+            <div>
+              {sample.avgRating != null ? (
+                <p className="font-semibold text-amber-500">★ {sample.avgRating.toFixed(1)}</p>
+              ) : (
+                <p className="font-semibold text-black/30">-</p>
+              )}
+              <p className="text-xs text-black/50">평점 ({sample.reviewCount})</p>
+            </div>
+          </div>
+
+          {sample.experienceYears != null && (
+            <p className="mt-4 text-sm text-black/60">경력 {sample.experienceYears}년</p>
+          )}
+          {sample.equipmentInfo && (
+            <p className="mt-2 whitespace-pre-line text-sm text-black/60">
+              {sample.equipmentInfo}
+            </p>
+          )}
+
+          <Link
+            href="/drones/new"
+            className="mt-6 block w-full rounded-md bg-brand-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-brand-800"
+          >
+            방제 신청하기
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const operator = await prisma.droneOperator.findUnique({
     where: { id },
@@ -39,9 +105,17 @@ export default async function DroneOperatorDetailPage({
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-8">
       <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
         <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-50 text-3xl">
-            🧑‍✈️
-          </div>
+          {operator.user.image ? (
+            <img
+              src={operator.user.image}
+              alt=""
+              className="h-16 w-16 shrink-0 rounded-full object-cover"
+            />
+          ) : (
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand-50 text-3xl">
+              🧑‍✈️
+            </div>
+          )}
           <div>
             <h1 className="text-xl font-bold">{operator.user.name}</h1>
             <p className="text-sm text-black/50">{operator.user.region ?? "지역 미등록"}</p>

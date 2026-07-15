@@ -47,51 +47,38 @@ export default async function HomePage() {
   const todayStr = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-  const [
-    recentPosts,
-    postCount,
-    inquiryCount,
-    userCount,
-    todayVisitorCount,
-    popularRealtime,
-    popularWeekly,
-    platformSetting,
-    operators,
-  ] = await Promise.all([
+  const [recentPosts, counts, popularPool, platformSetting, operators] = await Promise.all([
     prisma.post.findMany({
       take: 8,
       orderBy: { createdAt: "desc" },
       include: { author: true },
     }),
-    prisma.post.count(),
-    prisma.inquiry.count(),
-    prisma.user.count(),
-    prisma.visit.count({ where: { visitDate: todayStr } }),
+    prisma.$queryRaw<{ post_count: bigint; inquiry_count: bigint; user_count: bigint; today_visitors: bigint }[]>`
+      SELECT
+        (SELECT COUNT(*) FROM "Post") AS post_count,
+        (SELECT COUNT(*) FROM "Inquiry") AS inquiry_count,
+        (SELECT COUNT(*) FROM "User") AS user_count,
+        (SELECT COUNT(*) FROM "Visit" WHERE "visitDate" = ${todayStr}) AS today_visitors
+    `,
     prisma.post.findMany({
-      take: 8,
+      take: 30,
       where: { status: "OPEN" },
       orderBy: [{ inquiries: { _count: "desc" } }, { createdAt: "desc" }],
       include: { author: true, _count: { select: { inquiries: true } } },
     }),
-    prisma.post.findMany({
-      take: 8,
-      where: { status: "OPEN", createdAt: { gte: sevenDaysAgo } },
-      orderBy: [{ inquiries: { _count: "desc" } }, { createdAt: "desc" }],
-      include: { author: true, _count: { select: { inquiries: true } } },
-    }),
-    prisma.platformSetting.upsert({
-      where: { id: "singleton" },
-      update: {},
-      create: { id: "singleton" },
-    }),
+    prisma.platformSetting.findUnique({ where: { id: "singleton" } }),
     getApprovedOperatorsWithStats(),
   ]);
 
+  const popularRealtime = popularPool.slice(0, 8);
+  const popularWeekly = popularPool.filter((p) => p.createdAt >= sevenDaysAgo).slice(0, 8);
+  const droneUnitPrice = platformSetting?.droneUnitPrice ?? 3000;
+
   const STATS = [
-    { label: "등록된 매물", value: postCount },
-    { label: "누적 문의", value: inquiryCount },
-    { label: "함께하는 회원", value: userCount },
-    { label: "오늘 방문자", value: todayVisitorCount },
+    { label: "등록된 매물", value: Number(counts[0].post_count) },
+    { label: "누적 문의", value: Number(counts[0].inquiry_count) },
+    { label: "함께하는 회원", value: Number(counts[0].user_count) },
+    { label: "오늘 방문자", value: Number(counts[0].today_visitors) },
   ];
 
   const topOperators =
@@ -141,7 +128,7 @@ export default async function HomePage() {
                 <div className="absolute inset-x-0 bottom-0 p-2 text-white">
                   <p className="text-sm font-semibold">드론 방제</p>
                   <p className="text-[11px] opacity-90">
-                    평당 {formatPrice(platformSetting.droneUnitPrice)}~
+                    평당 {formatPrice(droneUnitPrice)}~
                   </p>
                 </div>
               </Link>

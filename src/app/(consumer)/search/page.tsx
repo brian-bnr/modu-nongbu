@@ -27,11 +27,11 @@ export default async function SearchPage({
           name="q"
           defaultValue={query}
           placeholder="농산물, 일자리 제목으로 검색"
-          className="w-full max-w-md rounded-md border border-black/10 px-3 py-2 text-sm"
+          className="w-full min-w-0 max-w-md flex-1 rounded-md border border-black/10 px-3 py-2 text-sm"
         />
         <button
           type="submit"
-          className="rounded-md bg-brand-700 px-4 py-2 text-sm font-medium text-white hover:bg-brand-800"
+          className="shrink-0 whitespace-nowrap rounded-md bg-brand-700 px-4 py-2 text-sm font-medium text-white hover:bg-brand-800"
         >
           검색
         </button>

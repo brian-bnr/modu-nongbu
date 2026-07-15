@@ -10,21 +10,33 @@ export type OperatorCardData = {
   avgRating: number | null;
   reviewCount: number;
   sample?: boolean;
+  photoUrl?: string;
+  photoPosition?: string;
+  equipmentInfo?: string;
 };
 
 export function OperatorCard({ operator }: { operator: OperatorCardData }) {
   return (
     <Link
-      href={operator.sample ? "/drones/new" : `/drones/operators/${operator.id}`}
+      href={`/drones/operators/${operator.id}`}
       className="block shrink-0 rounded-2xl border border-black/10 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
     >
       <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-50 text-2xl">
-          🧑‍✈️
-        </div>
-        <div>
-          <p className="font-semibold">{operator.name}</p>
-          <p className="text-xs text-black/50">{operator.region ?? "지역 미등록"}</p>
+        {operator.photoUrl ? (
+          <img
+            src={operator.photoUrl}
+            alt=""
+            style={{ objectPosition: operator.photoPosition ?? "center" }}
+            className="h-12 w-12 shrink-0 rounded-full object-cover"
+          />
+        ) : (
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-50 text-2xl">
+            🧑‍✈️
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-semibold">{operator.name}</p>
+          <p className="truncate text-xs text-black/50">{operator.region ?? "지역 미등록"}</p>
         </div>
       </div>
       <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs text-black/60">

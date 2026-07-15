@@ -1,16 +1,14 @@
+import { Suspense } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { MobileTabBar } from "@/components/MobileTabBar";
-import { auth } from "@/lib/auth";
+import { MobileTabBarSlot } from "@/components/MobileTabBarSlot";
 
-export default async function ConsumerLayout({
+export default function ConsumerLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
-  const loggedIn = session?.user?.type === "user";
-
   return (
     <div className="flex min-h-full flex-1 flex-col">
       <Header />
@@ -18,7 +16,9 @@ export default async function ConsumerLayout({
       <div className="pb-16 sm:pb-0">
         <Footer />
       </div>
-      <MobileTabBar loggedIn={loggedIn} />
+      <Suspense fallback={<MobileTabBar loggedIn={false} />}>
+        <MobileTabBarSlot />
+      </Suspense>
     </div>
   );
 }
