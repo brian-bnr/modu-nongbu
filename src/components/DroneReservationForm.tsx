@@ -76,11 +76,12 @@ export function DroneReservationForm({ unitPrice }: { unitPrice: number }) {
   const [cropType, setCropType] = useState("");
   const [desiredDate, setDesiredDate] = useState("");
   const [mode, setMode] = useState<"map" | "manual">("map");
-  const [parcel, setParcel] = useState<SelectedParcel | null>(null);
+  const [parcels, setParcels] = useState<SelectedParcel[]>([]);
 
-  function handleParcelSelected(selected: SelectedParcel) {
-    setParcel(selected);
-    setAreaPyeong(String(selected.areaPyeong));
+  function handleParcelsChanged(next: SelectedParcel[]) {
+    setParcels(next);
+    const totalPyeong = next.reduce((sum, p) => sum + p.areaPyeong, 0);
+    setAreaPyeong(next.length > 0 ? String(totalPyeong) : "");
   }
 
   const area = Number(areaPyeong) || 0;
@@ -134,7 +135,7 @@ export function DroneReservationForm({ unitPrice }: { unitPrice: number }) {
               type="button"
               onClick={() => {
                 setMode(mode === "map" ? "manual" : "map");
-                setParcel(null);
+                setParcels([]);
                 setAreaPyeong("");
               }}
               className="text-xs font-medium text-brand-700 hover:underline dark:text-brand-400"
@@ -144,7 +145,7 @@ export function DroneReservationForm({ unitPrice }: { unitPrice: number }) {
           }
         >
           {mode === "map" ? (
-            <DroneParcelMap onParcelSelected={handleParcelSelected} region={region} />
+            <DroneParcelMap onParcelsChanged={handleParcelsChanged} region={region} />
           ) : (
             <input
               type="number"
@@ -156,9 +157,21 @@ export function DroneReservationForm({ unitPrice }: { unitPrice: number }) {
             />
           )}
           <input type="hidden" name="areaPyeong" value={areaPyeong} />
-          <input type="hidden" name="parcelPnu" value={parcel?.pnu ?? ""} />
-          <input type="hidden" name="parcelJibun" value={parcel?.jibun ?? ""} />
-          <input type="hidden" name="parcelAreaSqm" value={parcel?.areaSqm ?? ""} />
+          <input
+            type="hidden"
+            name="parcelPnu"
+            value={parcels.map((p) => p.pnu).filter(Boolean).join(",")}
+          />
+          <input
+            type="hidden"
+            name="parcelJibun"
+            value={parcels.map((p) => p.jibun).filter(Boolean).join(", ")}
+          />
+          <input
+            type="hidden"
+            name="parcelAreaSqm"
+            value={parcels.length > 0 ? parcels.reduce((sum, p) => sum + p.areaSqm, 0) : ""}
+          />
         </FieldSection>
       </div>
 

@@ -40,6 +40,12 @@ type NaverMapInstance = {
   setZoom: (zoom: number) => void;
 };
 
+type PolygonHandle = { setMap: (map: unknown) => void };
+
+function parcelKey(p: { pnu: string | null; jibun: string | null; lat: number; lng: number }) {
+  return p.pnu || p.jibun || `${p.lat.toFixed(5)}_${p.lng.toFixed(5)}`;
+}
+
 declare global {
   interface Window {
     naver?: {
@@ -61,20 +67,30 @@ declare global {
 }
 
 export function DroneParcelMap({
-  onParcelSelected,
+  onParcelsChanged,
   region,
 }: {
-  onParcelSelected: (parcel: SelectedParcel) => void;
+  onParcelsChanged: (parcels: SelectedParcel[]) => void;
   region?: string;
 }) {
   const mapElRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<NaverMapInstance | null>(null);
-  const polygonRef = useRef<{ setMap: (map: unknown) => void } | null>(null);
+  const parcelsRef = useRef<Map<string, SelectedParcel>>(new Map());
+  const polygonsRef = useRef<Map<string, PolygonHandle>>(new Map());
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const [scriptFailed, setScriptFailed] = useState(false);
   const [loadingParcel, setLoadingParcel] = useState(false);
   const [error, setError] = useState("");
-  const [selected, setSelected] = useState<SelectedParcel | null>(null);
+  const [parcels, setParcels] = useState<SelectedParcel[]>([]);
+
+  function removeParcel(key: string) {
+    polygonsRef.current.get(key)?.setMap(null);
+    polygonsRef.current.delete(key);
+    parcelsRef.current.delete(key);
+    const next = Array.from(parcelsRef.current.values());
+    setParcels(next);
+    onParcelsChanged(next);
+  }
 
   useEffect(() => {
     if (!scriptLoaded || !mapElRef.current || !window.naver) return;
@@ -107,19 +123,6 @@ export function DroneParcelMap({
           return;
         }
 
-        polygonRef.current?.setMap(null);
-        const naverRings = (data.rings as [number, number][]).map(
-          ([rLat, rLng]) => new naver.maps.LatLng(rLat, rLng)
-        );
-        polygonRef.current = new naver.maps.Polygon({
-          map,
-          paths: [naverRings],
-          fillColor: "#15803d",
-          fillOpacity: 0.35,
-          strokeColor: "#15803d",
-          strokeWeight: 2,
-        });
-
         const parcel: SelectedParcel = {
           pnu: data.pnu,
           jibun: data.jibun,
@@ -128,8 +131,29 @@ export function DroneParcelMap({
           lat,
           lng,
         };
-        setSelected(parcel);
-        onParcelSelected(parcel);
+        const key = parcelKey(parcel);
+
+        if (parcelsRef.current.has(key)) {
+          removeParcel(key);
+          return;
+        }
+
+        const naverRings = (data.rings as [number, number][]).map(
+          ([rLat, rLng]) => new naver.maps.LatLng(rLat, rLng)
+        );
+        const polygon = new naver.maps.Polygon({
+          map,
+          paths: [naverRings],
+          fillColor: "#15803d",
+          fillOpacity: 0.35,
+          strokeColor: "#15803d",
+          strokeWeight: 2,
+        });
+        polygonsRef.current.set(key, polygon);
+        parcelsRef.current.set(key, parcel);
+        const next = Array.from(parcelsRef.current.values());
+        setParcels(next);
+        onParcelsChanged(next);
       } catch {
         setError("필지 조회 중 오류가 발생했습니다.");
       } finally {
@@ -171,14 +195,33 @@ export function DroneParcelMap({
       <p className="mt-2 text-xs text-black/50 dark:text-white/50">
         {loadingParcel
           ? "필지 정보를 불러오는 중..."
-          : "지도를 클릭해 방제할 필지를 선택하세요."}
+          : "필지를 클릭하면 추가되고, 선택된 필지를 다시 클릭하면 제외돼요."}
       </p>
       {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
-      {selected && (
-        <div className="mt-2 rounded-lg bg-brand-50 p-3 text-sm dark:bg-brand-900/20">
-          <p className="font-medium">{selected.jibun ?? "선택된 필지"}</p>
-          <p className="mt-1 text-black/60 dark:text-white/60">
-            자동 계산된 면적: {selected.areaPyeong}평
+      {parcels.length > 0 && (
+        <div className="mt-2 space-y-2 rounded-lg bg-brand-50 p-3 text-sm dark:bg-brand-900/20">
+          <ul className="space-y-1">
+            {parcels.map((p) => {
+              const key = parcelKey(p);
+              return (
+                <li key={key} className="flex items-center justify-between gap-2">
+                  <span className="truncate">
+                    {p.jibun ?? "선택된 필지"} · {p.areaPyeong}평
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeParcel(key)}
+                    className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-100 text-xs font-bold text-red-700 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-300"
+                    aria-label="필지 제외"
+                  >
+                    −
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="border-t border-brand-200 pt-2 font-medium dark:border-brand-800">
+            총 {parcels.length}개 필지 · {parcels.reduce((sum, p) => sum + p.areaPyeong, 0)}평
           </p>
         </div>
       )}
