@@ -19,7 +19,7 @@ export function OperatorCard({ operator }: { operator: OperatorCardData }) {
   return (
     <Link
       href={`/drones/operators/${operator.id}`}
-      className="block shrink-0 rounded-2xl border border-black/10 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+      className="block w-full min-w-[9.5rem] shrink-0 rounded-2xl border border-black/10 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
     >
       <div className="flex items-center gap-3">
         {operator.photoUrl ? (
