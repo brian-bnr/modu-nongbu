@@ -4,12 +4,6 @@ import { useEffect, useState } from "react";
 
 type LangCode = "ko" | "en" | "ja";
 
-const LANGS: { code: LangCode; flag: string; label: string }[] = [
-  { code: "ko", flag: "🇰🇷", label: "한국어" },
-  { code: "en", flag: "🇺🇸", label: "English" },
-  { code: "ja", flag: "🇯🇵", label: "日本語" },
-];
-
 declare global {
   interface Window {
     googleTranslateElementInit?: () => void;
@@ -23,6 +17,47 @@ declare global {
     };
   }
 }
+
+function FlagKR() {
+  return (
+    <svg viewBox="0 0 30 20" className="h-full w-full">
+      <rect width="30" height="20" fill="#fff" />
+      <circle cx="15" cy="10" r="5.5" fill="#c60c30" />
+      <path d="M15 4.5a5.5 5.5 0 0 1 0 11 2.75 2.75 0 0 1 0-5.5 2.75 2.75 0 0 0 0-5.5z" fill="#003478" />
+    </svg>
+  );
+}
+
+function FlagUS() {
+  const stripeH = 20 / 7;
+  return (
+    <svg viewBox="0 0 30 20" className="h-full w-full">
+      <rect width="30" height="20" fill="#fff" />
+      {[0, 1, 2, 3, 4, 5, 6].map(
+        (i) =>
+          i % 2 === 0 && (
+            <rect key={i} y={i * stripeH} width="30" height={stripeH} fill="#b22234" />
+          )
+      )}
+      <rect width="13" height={stripeH * 4} fill="#3c3b6e" />
+    </svg>
+  );
+}
+
+function FlagJP() {
+  return (
+    <svg viewBox="0 0 30 20" className="h-full w-full">
+      <rect width="30" height="20" fill="#fff" />
+      <circle cx="15" cy="10" r="5.5" fill="#bc002d" />
+    </svg>
+  );
+}
+
+const LANGS: { code: LangCode; Flag: () => React.JSX.Element; label: string }[] = [
+  { code: "ko", Flag: FlagKR, label: "한국어" },
+  { code: "en", Flag: FlagUS, label: "English" },
+  { code: "ja", Flag: FlagJP, label: "日本語" },
+];
 
 function readLangFromCookie(): LangCode {
   const match = document.cookie.match(/googtrans=\/ko\/(en|ja)/);
@@ -42,8 +77,32 @@ function writeLangCookie(lang: LangCode) {
   }
 }
 
+function findCombo(): HTMLSelectElement | null {
+  return document.querySelector<HTMLSelectElement>(".goog-te-combo");
+}
+
+function waitForCombo(timeoutMs = 8000): Promise<HTMLSelectElement | null> {
+  return new Promise((resolve) => {
+    const existing = findCombo();
+    if (existing) {
+      resolve(existing);
+      return;
+    }
+    const start = Date.now();
+    const timer = setInterval(() => {
+      const combo = findCombo();
+      if (combo || Date.now() - start > timeoutMs) {
+        clearInterval(timer);
+        resolve(combo);
+      }
+    }, 200);
+  });
+}
+
 export function LanguageSwitcher() {
   const [current, setCurrent] = useState<LangCode>("ko");
+  const [pending, setPending] = useState<LangCode | null>(null);
+  const [unavailable, setUnavailable] = useState(false);
 
   useEffect(() => {
     setCurrent(readLangFromCookie());
@@ -63,33 +122,61 @@ export function LanguageSwitcher() {
     script.id = "google-translate-script";
     script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
     script.async = true;
+    script.onerror = () => setUnavailable(true);
     document.body.appendChild(script);
   }, []);
 
-  function handleSelect(lang: LangCode) {
-    if (lang === current) return;
+  async function handleSelect(lang: LangCode) {
+    if (lang === current || pending) return;
+
+    if (lang === "ko") {
+      writeLangCookie("ko");
+      window.location.reload();
+      return;
+    }
+
+    setPending(lang);
+    const combo = await waitForCombo();
+    if (!combo) {
+      writeLangCookie(lang);
+      window.location.reload();
+      return;
+    }
+    combo.value = lang;
+    combo.dispatchEvent(new Event("change"));
     writeLangCookie(lang);
-    window.location.reload();
+
+    // 구글 번역 위젯이 드롭다운 변경에 응답하지 않는 경우가 간헐적으로 있어,
+    // 실제로 번역이 적용됐는지 확인하고 안 됐으면 쿠키+새로고침으로 재시도한다.
+    await new Promise((resolve) => setTimeout(resolve, 2500));
+    const applied = document.documentElement.classList.contains("translated-ltr");
+    if (!applied) {
+      window.location.reload();
+      return;
+    }
+    setCurrent(lang);
+    setPending(null);
   }
 
   return (
-    <div className="notranslate flex items-center gap-1">
+    <div className="notranslate flex items-center gap-1.5">
       <div id="google_translate_element" className="hidden" />
-      {LANGS.map((lang) => (
+      {LANGS.map(({ code, Flag, label }) => (
         <button
-          key={lang.code}
+          key={code}
           type="button"
-          onClick={() => handleSelect(lang.code)}
-          aria-label={lang.label}
-          aria-pressed={current === lang.code}
-          title={lang.label}
-          className={`flex h-7 w-7 items-center justify-center rounded-full text-base transition ${
-            current === lang.code
-              ? "bg-brand-100 ring-1 ring-brand-400 dark:bg-brand-900/40"
-              : "opacity-60 hover:opacity-100"
-          }`}
+          onClick={() => handleSelect(code)}
+          disabled={unavailable || pending !== null}
+          aria-label={label}
+          aria-pressed={current === code}
+          title={unavailable ? "번역 서비스를 불러올 수 없어요" : label}
+          className={`h-5 w-[26px] overflow-hidden rounded-[3px] shadow-sm ring-1 transition disabled:opacity-40 ${
+            current === code
+              ? "ring-2 ring-brand-500"
+              : "ring-black/10 opacity-70 hover:opacity-100 dark:ring-white/20"
+          } ${pending === code ? "animate-pulse" : ""}`}
         >
-          {lang.flag}
+          <Flag />
         </button>
       ))}
     </div>
