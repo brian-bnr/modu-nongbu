@@ -1,22 +1,26 @@
 import Link from "next/link";
 import { LoginForm } from "@/components/LoginForm";
 import { userLoginAction, socialLoginAction } from "@/app/(consumer)/login/actions";
+import { KakaoIcon, NaverIcon, GoogleIcon } from "@/components/icons/SocialIcons";
 
 const SOCIAL_BUTTONS = [
   {
     provider: "naver" as const,
     label: "네이버로 로그인",
     className: "bg-[#03C75A] text-white hover:brightness-95",
+    Icon: NaverIcon,
   },
   {
     provider: "kakao" as const,
     label: "카카오로 로그인",
     className: "bg-[#FEE500] text-black/85 hover:brightness-95",
+    Icon: KakaoIcon,
   },
   {
     provider: "google" as const,
     label: "구글로 로그인",
     className: "border border-black/10 bg-white text-black/85 hover:bg-black/5 dark:border-white/20 dark:bg-transparent dark:text-white",
+    Icon: GoogleIcon,
   },
 ];
 
@@ -53,15 +57,16 @@ export default async function LoginPage({
             <span className="h-px flex-1 bg-black/10 dark:bg-white/10" />
           </div>
           <div className="mt-4 space-y-2">
-            {SOCIAL_BUTTONS.map(({ provider, label, className }) => (
+            {SOCIAL_BUTTONS.map(({ provider, label, className, Icon }) => (
               <form
                 key={provider}
                 action={socialLoginAction.bind(null, provider, callbackUrl ?? "/")}
               >
                 <button
                   type="submit"
-                  className={`w-full rounded-md px-4 py-2 text-sm font-medium transition ${className}`}
+                  className={`relative flex w-full items-center justify-center rounded-md px-4 py-2.5 text-sm font-medium shadow-sm transition ${className}`}
                 >
+                  <Icon className="absolute left-4 h-5 w-5" />
                   {label}
                 </button>
               </form>
