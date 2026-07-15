@@ -1,9 +1,12 @@
 import Link from "next/link";
-import { getApprovedOperatorsWithStats } from "@/lib/droneOperatorStats";
+import { getApprovedOperatorsWithStats, toOperatorCardData } from "@/lib/droneOperatorStats";
 import { OperatorCard } from "@/components/OperatorCard";
+import { SAMPLE_OPERATORS } from "@/lib/sampleOperators";
 
 export default async function DroneOperatorsPage() {
-  const operators = await getApprovedOperatorsWithStats();
+  const realOperators = await getApprovedOperatorsWithStats();
+  const operators =
+    realOperators.length > 0 ? realOperators.map(toOperatorCardData) : SAMPLE_OPERATORS;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8">

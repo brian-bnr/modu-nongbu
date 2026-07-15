@@ -7,8 +7,10 @@ import { RankingTabs } from "@/components/RankingTabs";
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { OperatorCard } from "@/components/OperatorCard";
 import { CATEGORY_TILES } from "@/lib/categoryTiles";
-import { getApprovedOperatorsWithStats } from "@/lib/droneOperatorStats";
+import { getApprovedOperatorsWithStats, toOperatorCardData } from "@/lib/droneOperatorStats";
+import { SAMPLE_OPERATORS } from "@/lib/sampleOperators";
 import { formatPrice } from "@/lib/format";
+import { TractorFlatIcon, CartIcon, GradCapIcon } from "@/components/icons/CategoryIcons";
 
 const HERO_SLIDES = [
   {
@@ -23,20 +25,22 @@ const HERO_SLIDES = [
     ),
     subtitle: "드론 방제부터 위탁영농까지 한 번에 해결하세요",
     href: "/drones/new",
+    gradient: "from-brand-700 to-brand-900",
   },
   {
-    image: "https://images.unsplash.com/photo-1560493676-04071c5f467b?w=2000&q=80",
+    image: "https://images.unsplash.com/photo-1560493676-04071c5f467b?w=1200&q=80",
     tag: "농업에 필요한 모든 연결을 한곳에서",
     title: <>모두의농부</>,
     subtitle: "농산물 거래부터 일손 구인까지, 대한민국 농업의 모든 연결이 이어지는 곳입니다",
     href: "/products",
+    gradient: "from-accent-600 to-accent-800",
   },
 ];
 
 const POPULAR_SERVICES_STUBS = [
-  { title: "위탁영농", href: "/consign-farming" },
-  { title: "농자재 쇼핑", href: "/farm-supplies" },
-  { title: "농업교육", href: "/education" },
+  { title: "위탁영농", href: "/consign-farming", Icon: TractorFlatIcon, gradient: "from-lime-600 to-lime-800" },
+  { title: "농자재 쇼핑", href: "/farm-supplies", Icon: CartIcon, gradient: "from-orange-500 to-orange-700" },
+  { title: "농업교육", href: "/education", Icon: GradCapIcon, gradient: "from-rose-500 to-rose-700" },
 ];
 
 export default async function HomePage() {
@@ -90,7 +94,8 @@ export default async function HomePage() {
     { label: "오늘 방문자", value: todayVisitorCount },
   ];
 
-  const topOperators = operators.slice(0, 4);
+  const topOperators =
+    operators.length > 0 ? operators.slice(0, 4).map(toOperatorCardData) : SAMPLE_OPERATORS;
 
   return (
     <div>
@@ -102,10 +107,8 @@ export default async function HomePage() {
             {CATEGORY_TILES.map((t, i) => (
               <ScrollReveal key={t.href} delay={i * 40}>
                 <Link href={t.href} className="flex flex-col items-center gap-1.5">
-                  <span
-                    className={`relative flex h-12 w-12 items-center justify-center rounded-full text-xl text-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md sm:h-14 sm:w-14 sm:text-2xl ${t.color}`}
-                  >
-                    {t.emoji}
+                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-black/[0.04] shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md sm:h-16 sm:w-16">
+                    <t.Icon className="h-8 w-8 sm:h-9 sm:w-9" />
                   </span>
                   <span className="text-center text-[11px] font-medium leading-tight sm:text-xs">
                     {t.label}
@@ -124,20 +127,20 @@ export default async function HomePage() {
             </Link>
           </div>
           <ScrollReveal>
-            <div className="mt-4 flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0">
+            <div className="mt-4 flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory sm:mx-0 sm:px-0">
               <Link
                 href="/drones/new"
-                className="relative w-44 shrink-0 snap-start overflow-hidden rounded-2xl shadow-sm sm:w-56"
+                className="relative w-32 shrink-0 snap-start overflow-hidden rounded-xl shadow-sm sm:w-40"
               >
                 <img
-                  src="https://images.unsplash.com/photo-1560493676-04071c5f467b?w=600&q=80"
+                  src="/hero-drone.png"
                   alt=""
-                  className="h-32 w-full object-cover sm:h-40"
+                  className="h-20 w-full object-cover sm:h-24"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-3 text-white">
-                  <p className="font-semibold">드론 방제</p>
-                  <p className="text-xs opacity-90">
+                <div className="absolute inset-x-0 bottom-0 p-2 text-white">
+                  <p className="text-sm font-semibold">드론 방제</p>
+                  <p className="text-[11px] opacity-90">
                     평당 {formatPrice(platformSetting.droneUnitPrice)}~
                   </p>
                 </div>
@@ -146,12 +149,15 @@ export default async function HomePage() {
                 <Link
                   key={s.href}
                   href={s.href}
-                  className="flex w-44 shrink-0 snap-start flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-black/10 bg-black/[0.02] p-4 text-center sm:w-56"
+                  className={`relative flex h-20 w-32 shrink-0 snap-start items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br shadow-sm sm:h-24 sm:w-40 ${s.gradient}`}
                 >
-                  <p className="font-semibold text-black/70">{s.title}</p>
-                  <span className="rounded-full bg-black/10 px-2 py-0.5 text-[11px] text-black/50">
+                  <s.Icon className="h-9 w-9 opacity-90 sm:h-10 sm:w-10" />
+                  <span className="absolute right-1.5 top-1.5 rounded-full bg-black/40 px-1.5 py-0.5 text-[9px] font-medium text-white">
                     준비중
                   </span>
+                  <p className="absolute inset-x-0 bottom-0 p-2 text-sm font-semibold text-white">
+                    {s.title}
+                  </p>
                 </Link>
               ))}
             </div>

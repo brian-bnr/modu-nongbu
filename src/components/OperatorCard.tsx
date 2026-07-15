@@ -1,10 +1,21 @@
 import Link from "next/link";
-import type { OperatorWithStats } from "@/lib/droneOperatorStats";
 
-export function OperatorCard({ operator }: { operator: OperatorWithStats }) {
+export type OperatorCardData = {
+  id: string;
+  name: string;
+  region: string | null;
+  experienceYears: number | null;
+  totalAreaPyeong: number;
+  completedCount: number;
+  avgRating: number | null;
+  reviewCount: number;
+  sample?: boolean;
+};
+
+export function OperatorCard({ operator }: { operator: OperatorCardData }) {
   return (
     <Link
-      href={`/drones/operators/${operator.id}`}
+      href={operator.sample ? "/drones/new" : `/drones/operators/${operator.id}`}
       className="block shrink-0 rounded-2xl border border-black/10 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
     >
       <div className="flex items-center gap-3">
@@ -12,8 +23,8 @@ export function OperatorCard({ operator }: { operator: OperatorWithStats }) {
           🧑‍✈️
         </div>
         <div>
-          <p className="font-semibold">{operator.user.name}</p>
-          <p className="text-xs text-black/50">{operator.user.region ?? "지역 미등록"}</p>
+          <p className="font-semibold">{operator.name}</p>
+          <p className="text-xs text-black/50">{operator.region ?? "지역 미등록"}</p>
         </div>
       </div>
       <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs text-black/60">

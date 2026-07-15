@@ -21,14 +21,16 @@ export async function Header() {
           href="/"
           className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-base font-bold text-white sm:gap-2 sm:text-2xl"
         >
-          <Image
-            src="/logo-icon.png"
-            alt=""
-            width={34}
-            height={34}
-            quality={100}
-            className="h-6 w-6 sm:h-[34px] sm:w-[34px]"
-          />
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white p-1 shadow-sm sm:h-9 sm:w-9">
+            <Image
+              src="/logo-icon.png"
+              alt=""
+              width={34}
+              height={34}
+              quality={100}
+              className="h-full w-full object-contain"
+            />
+          </span>
           모두의농부
         </Link>
         <nav className="flex items-center gap-1.5 text-xs text-white sm:gap-4 sm:text-sm">

@@ -1,6 +1,20 @@
 import { prisma } from "@/lib/prisma";
+import type { OperatorCardData } from "@/components/OperatorCard";
 
 export type OperatorWithStats = Awaited<ReturnType<typeof getApprovedOperatorsWithStats>>[number];
+
+export function toOperatorCardData(op: OperatorWithStats): OperatorCardData {
+  return {
+    id: op.id,
+    name: op.user.name,
+    region: op.user.region,
+    experienceYears: op.experienceYears,
+    totalAreaPyeong: op.totalAreaPyeong,
+    completedCount: op.completedCount,
+    avgRating: op.avgRating,
+    reviewCount: op.reviewCount,
+  };
+}
 
 export async function getApprovedOperatorsWithStats() {
   const operators = await prisma.droneOperator.findMany({
