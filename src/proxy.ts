@@ -8,7 +8,7 @@ const USER_ONLY_PATTERNS = [
   /^\/products\/[^/]+\/edit$/,
   /^\/jobs\/new$/,
   /^\/jobs\/[^/]+\/edit$/,
-  /^\/drones\/.+$/,
+  /^\/drones\/(?!operators(\/|$)).+$/,
   /^\/my(\/.*)?$/,
 ];
 

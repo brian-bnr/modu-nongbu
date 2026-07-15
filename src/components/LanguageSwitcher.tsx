@@ -137,8 +137,8 @@ export function LanguageSwitcher() {
           title={unavailable ? "번역 서비스를 불러올 수 없어요" : label}
           className={`rounded-[4px] px-1.5 py-0.5 text-[10px] font-bold tracking-wide shadow-sm ring-1 transition disabled:opacity-40 sm:px-2 sm:py-1 sm:text-xs ${
             current === code
-              ? "bg-brand-500 text-white ring-brand-500"
-              : "text-neutral-700 ring-black/10 opacity-70 hover:opacity-100 dark:text-neutral-200 dark:ring-white/20"
+              ? "bg-white text-brand-800 ring-white"
+              : "text-white/70 ring-white/30 opacity-70 hover:opacity-100"
           } ${pending === code ? "animate-pulse" : ""}`}
         >
           {short}

@@ -17,6 +17,7 @@ import {
 } from "@/lib/actions/droneReservation";
 import { CancelReservationButton } from "@/components/CancelReservationButton";
 import { DroneProgressSteps } from "@/components/DroneProgressSteps";
+import { ReviewForm } from "@/components/ReviewForm";
 
 export default async function DroneReservationDetailPage({
   params,
@@ -35,6 +36,7 @@ export default async function DroneReservationDetailPage({
       payment: true,
       photos: { orderBy: { createdAt: "asc" } },
       operator: { include: { user: true } },
+      review: true,
     },
   });
 
@@ -188,6 +190,24 @@ export default async function DroneReservationDetailPage({
       {canCancel && (
         <div className="mt-4">
           <CancelReservationButton reservationId={reservation.id} action={cancelReservation} />
+        </div>
+      )}
+
+      {reservation.status === "COMPLETED" && reservation.operatorId && (
+        <div className="mt-6">
+          {reservation.review ? (
+            <div className="rounded-lg border border-black/10 p-4 text-sm">
+              <p className="font-medium">
+                {"★".repeat(reservation.review.rating)}
+                <span className="text-black/20">{"★".repeat(5 - reservation.review.rating)}</span>
+              </p>
+              {reservation.review.comment && (
+                <p className="mt-2 text-black/70">{reservation.review.comment}</p>
+              )}
+            </div>
+          ) : (
+            <ReviewForm reservationId={reservation.id} />
+          )}
         </div>
       )}
     </div>

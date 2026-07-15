@@ -4,9 +4,9 @@ import { PostListingPage } from "@/components/PostListingPage";
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ type?: string; q?: string; category?: string; region?: string }>;
+  searchParams: Promise<{ type?: string; q?: string; category?: string; region?: string; sort?: string }>;
 }) {
-  const { type, q, category, region } = await searchParams;
+  const { type, q, category, region, sort } = await searchParams;
   const activeType: PostType = type === "BUY_PRODUCT" ? "BUY_PRODUCT" : "SELL_PRODUCT";
 
   return (
@@ -23,6 +23,7 @@ export default async function ProductsPage({
       q={q}
       category={category}
       region={region}
+      sort={sort}
     />
   );
 }

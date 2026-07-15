@@ -32,6 +32,7 @@ model User {
 
   droneReservationsAsFarmer DroneReservation[] @relation("FarmerDroneReservations")
   droneOperator             DroneOperator?
+  reviews                   Review[]
 }
 
 model Visit {
@@ -116,17 +117,19 @@ enum DroneOperatorStatus {
 }
 
 model DroneOperator {
-  id            String              @id @default(cuid())
-  userId        String              @unique
-  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status        DroneOperatorStatus @default(PENDING)
-  equipmentInfo String?
-  adminNote     String?
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
+  id              String              @id @default(cuid())
+  userId          String              @unique
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status          DroneOperatorStatus @default(PENDING)
+  equipmentInfo   String?
+  experienceYears Int?
+  adminNote       String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
 
   reservations DroneReservation[]
   settlements  Settlement[]
+  reviews      Review[]
 
   @@index([status])
 }
@@ -182,6 +185,7 @@ model DroneReservation {
   photos  DroneWorkPhoto[]
   payment Payment?
   dispute Dispute?
+  review  Review?
 
   @@index([farmerId])
   @@index([operatorId])
@@ -269,6 +273,21 @@ model Dispute {
   updatedAt     DateTime         @updatedAt
 
   @@index([status])
+}
+
+model Review {
+  id            String           @id @default(cuid())
+  reservationId String           @unique
+  reservation   DroneReservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  operatorId    String
+  operator      DroneOperator    @relation(fields: [operatorId], references: [id], onDelete: Cascade)
+  farmerId      String
+  farmer        User             @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  rating        Int
+  comment       String?
+  createdAt     DateTime         @default(now())
+
+  @@index([operatorId])
 }
 
 model PlatformSetting {

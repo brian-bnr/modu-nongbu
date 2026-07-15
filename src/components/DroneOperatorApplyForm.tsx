@@ -22,11 +22,22 @@ export function DroneOperatorApplyForm() {
   return (
     <form action={formAction} className="max-w-lg space-y-4">
       <div>
+        <label className="block text-sm font-medium">경력 (년, 선택)</label>
+        <input
+          type="number"
+          name="experienceYears"
+          min={0}
+          max={60}
+          placeholder="예: 5"
+          className="mt-1 w-full rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+        />
+      </div>
+      <div>
         <label className="block text-sm font-medium">보유 장비 / 자격 정보 (선택)</label>
         <textarea
           name="equipmentInfo"
           rows={4}
-          placeholder="드론 기종, 방제 자격증, 경력 등을 입력해주세요."
+          placeholder="드론 기종, 방제 자격증 등을 입력해주세요."
           className="mt-1 w-full rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
         />
       </div>

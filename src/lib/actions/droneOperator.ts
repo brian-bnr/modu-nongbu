@@ -26,9 +26,18 @@ export async function applyAsDroneOperator(
   }
 
   const equipmentInfo = String(formData.get("equipmentInfo") ?? "").trim();
+  const experienceYearsRaw = String(formData.get("experienceYears") ?? "").trim();
+  const experienceYears = experienceYearsRaw ? Number(experienceYearsRaw) : null;
 
   await prisma.droneOperator.create({
-    data: { userId: session.user.id, equipmentInfo: equipmentInfo || null },
+    data: {
+      userId: session.user.id,
+      equipmentInfo: equipmentInfo || null,
+      experienceYears:
+        experienceYears != null && Number.isInteger(experienceYears) && experienceYears >= 0
+          ? experienceYears
+          : null,
+    },
   });
 
   revalidatePath("/drones/operator");

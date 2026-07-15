@@ -11,6 +11,7 @@ export async function PostListingPage({
   q,
   category,
   region,
+  sort,
   newHref,
   basePath,
 }: {
@@ -21,9 +22,15 @@ export async function PostListingPage({
   q?: string;
   category?: string;
   region?: string;
+  sort?: string;
   newHref: string;
   basePath: string;
 }) {
+  const orderBy =
+    sort === "popular"
+      ? [{ inquiries: { _count: "desc" as const } }, { createdAt: "desc" as const }]
+      : { createdAt: "desc" as const };
+
   const [posts, categories, regions] = await Promise.all([
     prisma.post.findMany({
       where: {
@@ -34,7 +41,7 @@ export async function PostListingPage({
           region ? { region } : {},
         ],
       },
-      orderBy: { createdAt: "desc" },
+      orderBy,
       include: { author: true },
     }),
     prisma.post.findMany({
@@ -51,12 +58,33 @@ export async function PostListingPage({
     }),
   ]);
 
+  function buildHref(overrides: Record<string, string | undefined>) {
+    const merged: Record<string, string | undefined> = {
+      type: activeType,
+      q,
+      category,
+      region,
+      sort,
+      ...overrides,
+    };
+    const params = new URLSearchParams();
+    for (const [k, v] of Object.entries(merged)) {
+      if (v) params.set(k, v);
+    }
+    return `${basePath}?${params.toString()}`;
+  }
+
+  const chipClass = (active: boolean) =>
+    `shrink-0 rounded-full px-3 py-1.5 text-sm font-medium ${
+      active ? "bg-brand-700 text-white" : "bg-black/5 text-black/60 hover:bg-black/10"
+    }`;
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">{heading}</h1>
-          <p className="mt-1 text-sm text-black/50 dark:text-white/50">{description}</p>
+          <p className="mt-1 text-sm text-black/50">{description}</p>
         </div>
         <Link
           href={newHref}
@@ -74,7 +102,7 @@ export async function PostListingPage({
             className={`rounded-full px-4 py-1.5 text-sm font-medium ${
               tab.type === activeType
                 ? "bg-brand-700 text-white"
-                : "bg-black/5 text-black/60 hover:bg-black/10 dark:bg-white/10 dark:text-white/60"
+                : "bg-black/5 text-black/60 hover:bg-black/10"
             }`}
           >
             {tab.label}
@@ -82,37 +110,51 @@ export async function PostListingPage({
         ))}
       </div>
 
-      <form method="get" className="mt-6 flex flex-wrap gap-2">
+      {categories.length > 0 && (
+        <div className="mt-4 flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:flex-wrap sm:px-0">
+          <Link href={buildHref({ category: undefined })} className={chipClass(!category)}>
+            전체
+          </Link>
+          {categories.map(
+            (c) =>
+              c.category && (
+                <Link
+                  key={c.category}
+                  href={buildHref({ category: c.category })}
+                  className={chipClass(category === c.category)}
+                >
+                  {c.category}
+                </Link>
+              )
+          )}
+        </div>
+      )}
+
+      <div className="mt-3 flex gap-2">
+        <Link href={buildHref({ sort: undefined })} className={chipClass(sort !== "popular")}>
+          최신순
+        </Link>
+        <Link href={buildHref({ sort: "popular" })} className={chipClass(sort === "popular")}>
+          인기순
+        </Link>
+      </div>
+
+      <form method="get" className="mt-4 flex flex-wrap gap-2">
         <input type="hidden" name="type" value={activeType} />
+        <input type="hidden" name="category" value={category ?? ""} />
+        <input type="hidden" name="sort" value={sort ?? ""} />
         <input
           type="text"
           name="q"
           defaultValue={q}
           placeholder="제목 검색"
-          className="w-56 rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+          className="w-56 rounded-md border border-black/10 px-3 py-2 text-sm"
         />
-        {categories.length > 0 && (
-          <select
-            name="category"
-            defaultValue={category ?? ""}
-            className="rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
-          >
-            <option value="">전체 카테고리</option>
-            {categories.map(
-              (c) =>
-                c.category && (
-                  <option key={c.category} value={c.category}>
-                    {c.category}
-                  </option>
-                )
-            )}
-          </select>
-        )}
         {regions.length > 0 && (
           <select
             name="region"
             defaultValue={region ?? ""}
-            className="rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+            className="rounded-md border border-black/10 px-3 py-2 text-sm"
           >
             <option value="">전체 지역</option>
             {regions.map((r) => (
@@ -131,7 +173,7 @@ export async function PostListingPage({
       </form>
 
       {posts.length === 0 ? (
-        <p className="mt-8 text-sm text-black/50 dark:text-white/50">조건에 맞는 글이 없습니다.</p>
+        <p className="mt-8 text-sm text-black/50">조건에 맞는 글이 없습니다.</p>
       ) : (
         <div className="mt-6 grid grid-cols-1 gap-0 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
           {posts.map((post) => (
