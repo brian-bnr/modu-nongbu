@@ -12,7 +12,7 @@ export function ComingSoon({
   features?: string[];
 }) {
   return (
-    <div className="mx-auto max-w-lg px-4 py-24 text-center">
+    <div className="mx-auto max-w-lg px-4 py-8 text-center">
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-50 text-3xl dark:bg-brand-900/30">
         {icon}
       </div>
@@ -32,21 +32,13 @@ export function ComingSoon({
         </ul>
       )}
 
-      <div className="mt-6 inline-flex flex-col items-center gap-1 rounded-2xl bg-black/5 px-4 py-3 dark:bg-white/10">
-        <p className="text-sm font-semibold text-black/70 dark:text-white/70">
-          죄송해요 😥 조만간 서비스 예정이에요
-        </p>
-        <p className="text-xs text-black/50 dark:text-white/50">
-          귀엽고 멋진 기능으로 곧 찾아올게요 ✨
-        </p>
-      </div>
-
       <Image
         src="/coming-soon-mascot.png"
-        alt=""
+        alt="죄송해요, 조만간 서비스로 찾아올게요"
         width={941}
         height={1672}
-        className="mx-auto mt-6 w-40 rounded-2xl shadow-sm sm:w-48"
+        priority
+        className="mx-auto mt-6 w-full max-w-xs rounded-3xl shadow-sm sm:max-w-sm"
       />
     </div>
   );
