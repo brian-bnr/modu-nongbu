@@ -102,7 +102,7 @@ export default async function HomePage() {
                       </span>
                     )}
                   </span>
-                  <span className="text-center text-[11px] font-medium leading-tight sm:text-xs">
+                  <span className="w-14 break-keep text-center text-[10px] font-medium leading-tight sm:w-16 sm:text-xs">
                     {t.label}
                   </span>
                 </Link>

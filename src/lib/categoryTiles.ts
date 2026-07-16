@@ -76,7 +76,7 @@ export const CATEGORY_TILES: CategoryTile[] = [
   {
     href: "/news",
     Icon: MegaphoneIcon,
-    label: "모두의농부소식",
+    label: "농부소식",
     comingSoon: true,
     bg: "bg-yellow-100 dark:bg-yellow-900/30",
   },

@@ -20,7 +20,7 @@ export default function ServicesPage() {
                 </span>
               )}
             </span>
-            <span className="text-center text-sm font-medium">{t.label}</span>
+            <span className="break-keep text-center text-sm font-medium">{t.label}</span>
           </Link>
         ))}
       </div>
