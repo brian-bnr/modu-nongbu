@@ -4,9 +4,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { droneReservationSchema } from "@/lib/validation";
+import { droneReservationSchema, parcelCropBreakdownSchema } from "@/lib/validation";
 import { finalizeCompletion } from "@/lib/droneCompletion";
-import { getCropUnitPrice } from "@/lib/cropPricing";
+import { getCropUnitPrice, calcTotalPriceByParcel, summarizeCropTypes } from "@/lib/cropPricing";
 
 export type DroneReservationActionState = {
   status: "idle" | "error" | "success";
@@ -40,14 +40,42 @@ export async function createDroneReservation(
     parcelPnu: formData.get("parcelPnu"),
     parcelJibun: formData.get("parcelJibun"),
     parcelAreaSqm: formData.get("parcelAreaSqm"),
+    parcelBreakdown: formData.get("parcelBreakdown"),
   });
 
   if (!parsed.success) {
     return { status: "error", errors: parsed.error.flatten().fieldErrors };
   }
 
-  const unitPrice = getCropUnitPrice(parsed.data.cropType);
-  const totalPrice = parsed.data.areaPyeong * unitPrice;
+  // 지도에서 필지를 여러 개 선택한 경우 필지별 (면적×작물 단가)를 모두 더해 견적을 계산하고,
+  // 그렇지 않은 경우(면적 직접 입력)는 단일 작물 기준으로 계산한다.
+  let unitPrice: number;
+  let totalPrice: number;
+  let cropType: string;
+
+  const breakdownJson = parsed.data.parcelBreakdown;
+  let parsedBreakdownJson: unknown = null;
+  if (breakdownJson) {
+    try {
+      parsedBreakdownJson = JSON.parse(breakdownJson);
+    } catch {
+      parsedBreakdownJson = null;
+    }
+  }
+  const breakdown = parsedBreakdownJson
+    ? parcelCropBreakdownSchema.safeParse(parsedBreakdownJson)
+    : null;
+
+  if (breakdown?.success && breakdown.data.length > 0) {
+    totalPrice = calcTotalPriceByParcel(breakdown.data);
+    const totalArea = breakdown.data.reduce((sum, p) => sum + p.areaPyeong, 0);
+    unitPrice = totalArea > 0 ? Math.round(totalPrice / totalArea) : 0;
+    cropType = summarizeCropTypes(breakdown.data.map((p) => p.cropType));
+  } else {
+    unitPrice = getCropUnitPrice(parsed.data.cropType);
+    totalPrice = parsed.data.areaPyeong * unitPrice;
+    cropType = parsed.data.cropType;
+  }
 
   const reservation = await prisma.droneReservation.create({
     data: {
@@ -55,7 +83,7 @@ export async function createDroneReservation(
       region: parsed.data.region,
       regionDetail: parsed.data.regionDetail || null,
       areaPyeong: parsed.data.areaPyeong,
-      cropType: parsed.data.cropType,
+      cropType,
       desiredDate: new Date(parsed.data.desiredDate),
       unitPrice,
       totalPrice,

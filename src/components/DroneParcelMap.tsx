@@ -4,6 +4,8 @@ import { useRef, useState } from "react";
 import { NaverParcelCanvas } from "@/components/map/NaverParcelCanvas";
 import { GoogleParcelCanvas } from "@/components/map/GoogleParcelCanvas";
 import { type MapCanvasHandle, type SelectedParcel, parcelKey } from "@/components/map/types";
+import { CROP_TYPES, RICE_CROP_TYPE, calcTotalPriceByParcel } from "@/lib/cropPricing";
+import { formatPrice } from "@/lib/format";
 
 export type { SelectedParcel } from "@/components/map/types";
 
@@ -37,6 +39,15 @@ export function DroneParcelMap({
     onParcelsChanged(next);
   }
 
+  function setParcelCropType(key: string, cropType: string) {
+    const existing = parcelsRef.current.get(key);
+    if (!existing) return;
+    parcelsRef.current.set(key, { ...existing, cropType });
+    const next = Array.from(parcelsRef.current.values());
+    setParcels(next);
+    onParcelsChanged(next);
+  }
+
   async function selectPoint(lat: number, lng: number) {
     setLoadingParcel(true);
     setError("");
@@ -56,6 +67,7 @@ export function DroneParcelMap({
         lat,
         lng,
         rings: data.rings as [number, number][],
+        cropType: RICE_CROP_TYPE,
       };
       const key = parcelKey(parcel);
 
@@ -199,14 +211,25 @@ export function DroneParcelMap({
       {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
       {parcels.length > 0 && (
         <div className="mt-2 space-y-2 rounded-lg bg-brand-50 p-3 text-sm dark:bg-brand-900/20">
-          <ul className="space-y-1">
+          <ul className="space-y-1.5">
             {parcels.map((p) => {
               const key = parcelKey(p);
               return (
                 <li key={key} className="flex items-center justify-between gap-2">
-                  <span className="truncate">
+                  <span className="min-w-0 flex-1 truncate">
                     {p.jibun ?? "선택된 필지"} · {p.areaPyeong}평
                   </span>
+                  <select
+                    value={p.cropType}
+                    onChange={(e) => setParcelCropType(key, e.target.value)}
+                    className="shrink-0 rounded-md border border-black/10 bg-white px-2 py-1 text-xs dark:border-white/20 dark:bg-black/20"
+                  >
+                    {CROP_TYPES.map((crop) => (
+                      <option key={crop} value={crop}>
+                        {crop}
+                      </option>
+                    ))}
+                  </select>
                   <button
                     type="button"
                     onClick={() => removeParcel(key)}
@@ -220,7 +243,8 @@ export function DroneParcelMap({
             })}
           </ul>
           <p className="border-t border-brand-200 pt-2 font-medium dark:border-brand-800">
-            총 {parcels.length}개 필지 · {parcels.reduce((sum, p) => sum + p.areaPyeong, 0)}평
+            총 {parcels.length}개 필지 · {parcels.reduce((sum, p) => sum + p.areaPyeong, 0)}평 ·{" "}
+            {formatPrice(calcTotalPriceByParcel(parcels))}
           </p>
         </div>
       )}

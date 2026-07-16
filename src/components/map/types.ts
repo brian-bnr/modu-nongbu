@@ -6,6 +6,7 @@ export type SelectedParcel = {
   lat: number;
   lng: number;
   rings: [number, number][]; // [lat, lng] pairs, 필지 경계 폴리곤
+  cropType: string;
 };
 
 export type MapCanvasHandle = {

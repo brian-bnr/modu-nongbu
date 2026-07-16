@@ -96,4 +96,13 @@ export const droneReservationSchema = z.object({
     (val) => (val === "" || val === null || val === undefined ? undefined : Number(val)),
     z.number().optional()
   ),
+  // 지도에서 필지를 여러 개 선택한 경우, 필지별 (면적×작물) 견적 계산을 위한 JSON 배열
+  parcelBreakdown: z.string().optional().or(z.literal("")),
 });
+
+export const parcelCropBreakdownSchema = z.array(
+  z.object({
+    areaPyeong: z.number().positive(),
+    cropType: z.string().min(1),
+  })
+);
