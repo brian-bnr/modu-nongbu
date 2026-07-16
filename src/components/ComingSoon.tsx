@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export function ComingSoon({
   icon,
   title,
@@ -15,7 +17,7 @@ export function ComingSoon({
         {icon}
       </div>
       <h1 className="mt-4 text-xl font-bold">{title}</h1>
-      <p className="mt-2 text-sm text-black/60 dark:text-white/60">{description}</p>
+      <p className="mt-2 break-keep text-sm text-black/60 dark:text-white/60">{description}</p>
 
       {features && features.length > 0 && (
         <ul className="mt-6 space-y-2 text-left">
@@ -38,6 +40,14 @@ export function ComingSoon({
           귀엽고 멋진 기능으로 곧 찾아올게요 ✨
         </p>
       </div>
+
+      <Image
+        src="/coming-soon-mascot.png"
+        alt=""
+        width={941}
+        height={1672}
+        className="mx-auto mt-6 w-40 rounded-2xl shadow-sm sm:w-48"
+      />
     </div>
   );
 }
