@@ -97,7 +97,7 @@ const getHomeData = unstable_cache(
     return { recentPosts, popularRealtime, popularWeekly, droneUnitPrice, stats, topOperators };
   },
   ["home-page-data"],
-  { revalidate: 60 }
+  { revalidate: 300 }
 );
 
 export default async function HomePage() {
