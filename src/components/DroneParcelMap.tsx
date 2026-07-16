@@ -1,70 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Script from "next/script";
+import { useRef, useState } from "react";
+import { NaverParcelCanvas } from "@/components/map/NaverParcelCanvas";
+import { GoogleParcelCanvas } from "@/components/map/GoogleParcelCanvas";
+import { type MapCanvasHandle, type SelectedParcel, parcelKey } from "@/components/map/types";
 
-const NAVER_MAP_CLIENT_ID = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID;
+export type { SelectedParcel } from "@/components/map/types";
 
-export type SelectedParcel = {
-  pnu: string | null;
-  jibun: string | null;
-  areaPyeong: number;
-  areaSqm: number;
-  lat: number;
-  lng: number;
-};
-
-// 시/도 중심 좌표 (지역 선택 시 지도 이동용, 대략적인 도청 소재지 기준)
-const REGION_CENTERS: Record<string, { lat: number; lng: number; zoom: number }> = {
-  서울: { lat: 37.5665, lng: 126.978, zoom: 11 },
-  부산: { lat: 35.1796, lng: 129.0756, zoom: 11 },
-  대구: { lat: 35.8714, lng: 128.6014, zoom: 11 },
-  인천: { lat: 37.4563, lng: 126.7052, zoom: 10 },
-  광주: { lat: 35.1595, lng: 126.8526, zoom: 11 },
-  대전: { lat: 36.3504, lng: 127.3845, zoom: 11 },
-  울산: { lat: 35.5384, lng: 129.3114, zoom: 11 },
-  세종: { lat: 36.4801, lng: 127.289, zoom: 11 },
-  경기: { lat: 37.4138, lng: 127.5183, zoom: 9 },
-  강원: { lat: 37.8228, lng: 128.1555, zoom: 8 },
-  충북: { lat: 36.6357, lng: 127.4917, zoom: 9 },
-  충남: { lat: 36.5184, lng: 126.8, zoom: 9 },
-  전북: { lat: 35.7175, lng: 127.153, zoom: 9 },
-  전남: { lat: 34.8161, lng: 126.463, zoom: 9 },
-  경북: { lat: 36.4919, lng: 128.8889, zoom: 8 },
-  경남: { lat: 35.4606, lng: 128.2132, zoom: 9 },
-  제주: { lat: 33.4996, lng: 126.5312, zoom: 10 },
-};
-
-type NaverMapInstance = {
-  setCenter: (latlng: unknown) => void;
-  setZoom: (zoom: number) => void;
-};
-
-type PolygonHandle = { setMap: (map: unknown) => void };
-
-function parcelKey(p: { pnu: string | null; jibun: string | null; lat: number; lng: number }) {
-  return p.pnu || p.jibun || `${p.lat.toFixed(5)}_${p.lng.toFixed(5)}`;
-}
-
-declare global {
-  interface Window {
-    naver?: {
-      maps: {
-        Map: new (el: HTMLElement, options: Record<string, unknown>) => NaverMapInstance;
-        LatLng: new (lat: number, lng: number) => unknown;
-        Polygon: new (options: Record<string, unknown>) => { setMap: (map: unknown) => void };
-        CadastralLayer: new () => { setMap: (map: unknown) => void };
-        Event: {
-          addListener: (
-            target: unknown,
-            eventName: string,
-            handler: (e: { coord: { x: number; y: number } }) => void
-          ) => void;
-        };
-      };
-    };
-  }
-}
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 export function DroneParcelMap({
   onParcelsChanged,
@@ -73,12 +16,9 @@ export function DroneParcelMap({
   onParcelsChanged: (parcels: SelectedParcel[]) => void;
   region?: string;
 }) {
-  const mapElRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<NaverMapInstance | null>(null);
+  const mapCanvasRef = useRef<MapCanvasHandle | null>(null);
   const parcelsRef = useRef<Map<string, SelectedParcel>>(new Map());
-  const polygonsRef = useRef<Map<string, PolygonHandle>>(new Map());
-  const [scriptLoaded, setScriptLoaded] = useState(false);
-  const [scriptFailed, setScriptFailed] = useState(false);
+  const [provider, setProvider] = useState<"naver" | "google">("naver");
   const [loadingParcel, setLoadingParcel] = useState(false);
   const [error, setError] = useState("");
   const [parcels, setParcels] = useState<SelectedParcel[]>([]);
@@ -91,8 +31,6 @@ export function DroneParcelMap({
   >([]);
 
   function removeParcel(key: string) {
-    polygonsRef.current.get(key)?.setMap(null);
-    polygonsRef.current.delete(key);
     parcelsRef.current.delete(key);
     const next = Array.from(parcelsRef.current.values());
     setParcels(next);
@@ -100,9 +38,6 @@ export function DroneParcelMap({
   }
 
   async function selectPoint(lat: number, lng: number) {
-    const naver = window.naver;
-    if (!naver || !mapRef.current) return;
-
     setLoadingParcel(true);
     setError("");
     try {
@@ -120,6 +55,7 @@ export function DroneParcelMap({
         areaSqm: data.areaSqm,
         lat,
         lng,
+        rings: data.rings as [number, number][],
       };
       const key = parcelKey(parcel);
 
@@ -128,18 +64,6 @@ export function DroneParcelMap({
         return;
       }
 
-      const naverRings = (data.rings as [number, number][]).map(
-        ([rLat, rLng]) => new naver.maps.LatLng(rLat, rLng)
-      );
-      const polygon = new naver.maps.Polygon({
-        map: mapRef.current,
-        paths: [naverRings],
-        fillColor: "#15803d",
-        fillOpacity: 0.35,
-        strokeColor: "#15803d",
-        strokeWeight: 2,
-      });
-      polygonsRef.current.set(key, polygon);
       parcelsRef.current.set(key, parcel);
       const next = Array.from(parcelsRef.current.values());
       setParcels(next);
@@ -154,11 +78,6 @@ export function DroneParcelMap({
   async function handleAddressSearch(query: string) {
     const trimmed = query.trim();
     if (!trimmed) return;
-
-    if (!mapRef.current) {
-      setAddressError("지도를 불러오는 중이에요. 잠시 후 다시 시도해주세요.");
-      return;
-    }
 
     setSearching(true);
     setAddressError("");
@@ -189,63 +108,20 @@ export function DroneParcelMap({
   }
 
   async function pickAddressResult(result: { lat: number; lng: number }) {
-    if (mapRef.current && window.naver) {
-      mapRef.current.setCenter(new window.naver.maps.LatLng(result.lat, result.lng));
-      mapRef.current.setZoom(19);
-    }
+    mapCanvasRef.current?.setCenter(result.lat, result.lng, 19);
     setAddressResults([]);
     setAddressQuery("");
     await selectPoint(result.lat, result.lng);
   }
 
-  useEffect(() => {
-    if (!scriptLoaded || !mapElRef.current || !window.naver) return;
+  // 일반/위성 지도를 전환할 때 현재까지 선택한 마지막 필지를 기준으로 화면을 다시 잡아준다.
+  const lastParcel = parcels[parcels.length - 1];
+  const initialCenter = lastParcel ? { lat: lastParcel.lat, lng: lastParcel.lng, zoom: 18 } : undefined;
 
-    const naver = window.naver;
-    const initialCenter = region ? REGION_CENTERS[region] : undefined;
-    const map = new naver.maps.Map(mapElRef.current, {
-      center: new naver.maps.LatLng(
-        initialCenter?.lat ?? 36.5,
-        initialCenter?.lng ?? 127.8
-      ),
-      zoom: initialCenter?.zoom ?? 7,
-    });
-    mapRef.current = map;
-
-    const cadastralLayer = new naver.maps.CadastralLayer();
-    cadastralLayer.setMap(map);
-
-    naver.maps.Event.addListener(map, "click", (e) => {
-      selectPoint(e.coord.y, e.coord.x);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scriptLoaded]);
-
-  useEffect(() => {
-    if (!mapRef.current || !region || !window.naver) return;
-    const center = REGION_CENTERS[region];
-    if (!center) return;
-    mapRef.current.setCenter(new window.naver.maps.LatLng(center.lat, center.lng));
-    mapRef.current.setZoom(center.zoom);
-  }, [region]);
-
-  if (!NAVER_MAP_CLIENT_ID || scriptFailed) {
-    return (
-      <div className="flex items-center gap-2 rounded-lg border border-black/10 bg-black/5 p-4 text-sm text-black/60 dark:border-white/10 dark:bg-white/5 dark:text-white/60">
-        <span>🗺️</span>
-        <span>지도를 불러올 수 없어 면적을 직접 입력해주세요.</span>
-      </div>
-    );
-  }
+  const canvasProps = { region, parcels, onMapClick: selectPoint, initialCenter };
 
   return (
     <div>
-      <Script
-        src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${NAVER_MAP_CLIENT_ID}`}
-        strategy="afterInteractive"
-        onLoad={() => setScriptLoaded(true)}
-        onError={() => setScriptFailed(true)}
-      />
       <div className="mb-2 flex gap-2">
         <input
           type="text"
@@ -257,18 +133,13 @@ export function DroneParcelMap({
               handleAddressSearch(addressQuery);
             }
           }}
-          disabled={!scriptLoaded}
-          placeholder={
-            scriptLoaded
-              ? "지번 주소로 검색 (예: 서울특별시 중구 태평로1가 31)"
-              : "지도를 불러오는 중..."
-          }
+          placeholder="지번 주소로 검색 (예: 서울특별시 중구 태평로1가 31)"
           className="w-full rounded-lg border border-black/10 px-3 py-2.5 text-sm disabled:opacity-60 dark:border-white/20 dark:bg-transparent"
         />
         <button
           type="button"
           onClick={() => handleAddressSearch(addressQuery)}
-          disabled={searching || !scriptLoaded}
+          disabled={searching}
           className="shrink-0 rounded-lg bg-brand-700 px-4 py-2.5 text-sm font-medium text-white disabled:opacity-60"
         >
           {searching ? "검색 중..." : "검색"}
@@ -290,10 +161,36 @@ export function DroneParcelMap({
           ))}
         </ul>
       )}
-      <div
-        ref={mapElRef}
-        className="h-[65vh] min-h-[420px] w-full overflow-hidden rounded-lg border border-black/10 dark:border-white/20 sm:h-[72vh] lg:h-[82vh]"
-      />
+
+      {GOOGLE_MAPS_API_KEY && (
+        <div className="mb-2 inline-flex rounded-lg border border-black/10 p-0.5 text-sm dark:border-white/20">
+          <button
+            type="button"
+            onClick={() => setProvider("naver")}
+            className={`rounded-md px-3 py-1.5 font-medium transition ${
+              provider === "naver" ? "bg-brand-700 text-white" : "text-black/60 dark:text-white/60"
+            }`}
+          >
+            일반지도
+          </button>
+          <button
+            type="button"
+            onClick={() => setProvider("google")}
+            className={`rounded-md px-3 py-1.5 font-medium transition ${
+              provider === "google" ? "bg-brand-700 text-white" : "text-black/60 dark:text-white/60"
+            }`}
+          >
+            위성지도
+          </button>
+        </div>
+      )}
+
+      {provider === "naver" ? (
+        <NaverParcelCanvas ref={mapCanvasRef} {...canvasProps} />
+      ) : (
+        <GoogleParcelCanvas ref={mapCanvasRef} {...canvasProps} />
+      )}
+
       <p className="mt-2 text-xs text-black/50 dark:text-white/50">
         {loadingParcel
           ? "필지 정보를 불러오는 중..."

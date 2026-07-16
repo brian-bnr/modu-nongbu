@@ -4,20 +4,6 @@ import { useEffect, useState } from "react";
 
 type LangCode = "ko" | "en" | "ja";
 
-declare global {
-  interface Window {
-    googleTranslateElementInit?: () => void;
-    google?: {
-      translate: {
-        TranslateElement: new (
-          options: { pageLanguage: string; includedLanguages: string; autoDisplay: boolean },
-          elementId: string
-        ) => unknown;
-      };
-    };
-  }
-}
-
 const LANGS: { code: LangCode; short: string; label: string }[] = [
   { code: "ko", short: "KOR", label: "한국어" },
   { code: "en", short: "EN", label: "English" },
@@ -75,7 +61,7 @@ export function LanguageSwitcher() {
     if (document.getElementById("google-translate-script")) return;
 
     window.googleTranslateElementInit = () => {
-      const TranslateElement = window.google?.translate.TranslateElement;
+      const TranslateElement = window.google?.translate?.TranslateElement;
       if (!TranslateElement) return;
       new TranslateElement(
         { pageLanguage: "ko", includedLanguages: "en,ja", autoDisplay: false },

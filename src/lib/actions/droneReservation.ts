@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { droneReservationSchema } from "@/lib/validation";
 import { finalizeCompletion } from "@/lib/droneCompletion";
+import { getCropUnitPrice } from "@/lib/cropPricing";
 
 export type DroneReservationActionState = {
   status: "idle" | "error" | "success";
@@ -45,8 +46,8 @@ export async function createDroneReservation(
     return { status: "error", errors: parsed.error.flatten().fieldErrors };
   }
 
-  const setting = await getPlatformSetting();
-  const totalPrice = parsed.data.areaPyeong * setting.droneUnitPrice;
+  const unitPrice = getCropUnitPrice(parsed.data.cropType);
+  const totalPrice = parsed.data.areaPyeong * unitPrice;
 
   const reservation = await prisma.droneReservation.create({
     data: {
@@ -56,7 +57,7 @@ export async function createDroneReservation(
       areaPyeong: parsed.data.areaPyeong,
       cropType: parsed.data.cropType,
       desiredDate: new Date(parsed.data.desiredDate),
-      unitPrice: setting.droneUnitPrice,
+      unitPrice,
       totalPrice,
       parcelPnu: parsed.data.parcelPnu || null,
       parcelJibun: parsed.data.parcelJibun || null,

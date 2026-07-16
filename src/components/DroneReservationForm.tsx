@@ -6,6 +6,7 @@ import {
   type DroneReservationActionState,
 } from "@/lib/actions/droneReservation";
 import { formatPrice } from "@/lib/format";
+import { getCropUnitPrice } from "@/lib/cropPricing";
 import { DroneParcelMap, type SelectedParcel } from "@/components/DroneParcelMap";
 
 const REGIONS = [
@@ -27,6 +28,8 @@ const REGIONS = [
   "경남",
   "제주",
 ];
+
+const CROP_TYPES = ["벼", "옥수수", "콩", "감자", "고구마", "배추"];
 
 const initialState: DroneReservationActionState = { status: "idle" };
 
@@ -67,7 +70,7 @@ function FieldSection({
   );
 }
 
-export function DroneReservationForm({ unitPrice }: { unitPrice: number }) {
+export function DroneReservationForm() {
   const [state, formAction, isPending] = useActionState(createDroneReservation, initialState);
 
   const [region, setRegion] = useState("");
@@ -85,7 +88,8 @@ export function DroneReservationForm({ unitPrice }: { unitPrice: number }) {
   }
 
   const area = Number(areaPyeong) || 0;
-  const estimate = area * unitPrice;
+  const unitPrice = cropType ? getCropUnitPrice(cropType) : null;
+  const estimate = area * (unitPrice ?? 0);
 
   return (
     <form
@@ -182,13 +186,23 @@ export function DroneReservationForm({ unitPrice }: { unitPrice: number }) {
           label="작물 종류"
           error={state.errors?.cropType?.[0]}
         >
-          <input
-            name="cropType"
-            value={cropType}
-            onChange={(e) => setCropType(e.target.value)}
-            placeholder="벼, 배추, 고추 등"
-            className={fieldClass}
-          />
+          <div className="grid grid-cols-3 gap-2">
+            {CROP_TYPES.map((crop) => (
+              <button
+                key={crop}
+                type="button"
+                onClick={() => setCropType(crop)}
+                className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition ${
+                  cropType === crop
+                    ? "border-brand-700 bg-brand-700 text-white"
+                    : "border-black/10 text-black/70 hover:border-brand-300 dark:border-white/20 dark:text-white/70"
+                }`}
+              >
+                {crop}
+              </button>
+            ))}
+          </div>
+          <input type="hidden" name="cropType" value={cropType} />
         </FieldSection>
 
         <FieldSection
@@ -217,7 +231,9 @@ export function DroneReservationForm({ unitPrice }: { unitPrice: number }) {
             {formatPrice(estimate)}
           </p>
           <p className="mt-1 text-xs text-black/40 dark:text-white/40">
-            평당 {formatPrice(unitPrice)} × {area || 0}평
+            {unitPrice
+              ? `평당 ${formatPrice(unitPrice)} × ${area || 0}평`
+              : "작물 종류를 선택하면 평당 단가가 계산돼요"}
           </p>
           <p className="mt-3 flex items-start gap-1.5 text-xs text-black/50 dark:text-white/50">
             <span>🔒</span>

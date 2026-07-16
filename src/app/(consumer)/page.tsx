@@ -4,7 +4,6 @@ import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { PostCard } from "@/components/PostCard";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { AnimatedNumber } from "@/components/admin/AnimatedNumber";
 import { RankingTabs } from "@/components/RankingTabs";
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { OperatorCard } from "@/components/OperatorCard";
@@ -12,6 +11,7 @@ import { CATEGORY_TILES } from "@/lib/categoryTiles";
 import { getApprovedOperatorsWithStats, toOperatorCardData } from "@/lib/droneOperatorStats";
 import { SAMPLE_OPERATORS } from "@/lib/sampleOperators";
 import { formatPrice } from "@/lib/format";
+import { RICE_UNIT_PRICE } from "@/lib/cropPricing";
 import { TractorFlatIcon, CartIcon, GradCapIcon } from "@/components/icons/CategoryIcons";
 
 const HERO_SLIDES = [
@@ -46,31 +46,15 @@ const POPULAR_SERVICES_STUBS = [
 ];
 
 const getHomeData = unstable_cache(
-  async (todayStr: string, sevenDaysAgoISO: string) => {
+  async (sevenDaysAgoISO: string) => {
     const sevenDaysAgo = new Date(sevenDaysAgoISO);
 
-    const [recentPosts, counts, popularPool, operators] = await Promise.all([
+    const [recentPosts, popularPool, operators] = await Promise.all([
       prisma.post.findMany({
         take: 8,
         orderBy: { createdAt: "desc" },
         include: { author: true },
       }),
-      prisma.$queryRaw<
-        {
-          post_count: bigint;
-          inquiry_count: bigint;
-          user_count: bigint;
-          today_visitors: bigint;
-          drone_unit_price: number | null;
-        }[]
-      >`
-        SELECT
-          (SELECT COUNT(*) FROM "Post") AS post_count,
-          (SELECT COUNT(*) FROM "Inquiry") AS inquiry_count,
-          (SELECT COUNT(*) FROM "User") AS user_count,
-          (SELECT COUNT(*) FROM "Visit" WHERE "visitDate" = ${todayStr}) AS today_visitors,
-          (SELECT "droneUnitPrice" FROM "PlatformSetting" WHERE id = 'singleton') AS drone_unit_price
-      `,
       prisma.post.findMany({
         take: 30,
         where: { status: "OPEN" },
@@ -82,37 +66,21 @@ const getHomeData = unstable_cache(
 
     const popularRealtime = popularPool.slice(0, 8);
     const popularWeekly = popularPool.filter((p) => p.createdAt >= sevenDaysAgo).slice(0, 8);
-    const droneUnitPrice = counts[0].drone_unit_price ?? 3000;
-
-    const stats = {
-      postCount: Number(counts[0].post_count),
-      inquiryCount: Number(counts[0].inquiry_count),
-      userCount: Number(counts[0].user_count),
-      todayVisitors: Number(counts[0].today_visitors),
-    };
 
     const topOperators =
       operators.length > 0 ? operators.slice(0, 4).map(toOperatorCardData) : SAMPLE_OPERATORS;
 
-    return { recentPosts, popularRealtime, popularWeekly, droneUnitPrice, stats, topOperators };
+    return { recentPosts, popularRealtime, popularWeekly, topOperators };
   },
   ["home-page-data"],
   { revalidate: 300 }
 );
 
 export default async function HomePage() {
-  const todayStr = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-  const { recentPosts, popularRealtime, popularWeekly, droneUnitPrice, stats, topOperators } =
-    await getHomeData(todayStr, sevenDaysAgo.toISOString());
-
-  const STATS = [
-    { label: "등록된 매물", value: stats.postCount },
-    { label: "누적 문의", value: stats.inquiryCount },
-    { label: "함께하는 회원", value: stats.userCount },
-    { label: "오늘 방문자", value: stats.todayVisitors },
-  ];
+  const { recentPosts, popularRealtime, popularWeekly, topOperators } =
+    await getHomeData(sevenDaysAgo.toISOString());
 
   return (
     <div>
@@ -160,7 +128,7 @@ export default async function HomePage() {
                 <div className="absolute inset-x-0 bottom-0 p-2 text-white">
                   <p className="text-sm font-semibold">드론 방제</p>
                   <p className="text-[11px] opacity-90">
-                    평당 {formatPrice(droneUnitPrice)}~
+                    평당 {formatPrice(RICE_UNIT_PRICE)}~
                   </p>
                 </div>
               </Link>
@@ -203,21 +171,6 @@ export default async function HomePage() {
               </div>
             </ScrollReveal>
           )}
-        </section>
-
-        <section className="relative z-10 mt-12">
-          <ScrollReveal>
-            <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-black/5 shadow-lg sm:grid-cols-4">
-              {STATS.map((s) => (
-                <div key={s.label} className="bg-white px-4 py-5 text-center sm:py-6">
-                  <p className="text-2xl font-bold text-brand-800 sm:text-3xl">
-                    <AnimatedNumber value={s.value} />
-                  </p>
-                  <p className="mt-1 text-xs text-black/50 sm:text-sm">{s.label}</p>
-                </div>
-              ))}
-            </div>
-          </ScrollReveal>
         </section>
 
         {popularRealtime.length > 0 && (

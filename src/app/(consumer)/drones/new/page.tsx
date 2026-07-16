@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { DroneReservationForm } from "@/components/DroneReservationForm";
 
 export default async function NewDroneReservationPage() {
@@ -8,12 +7,6 @@ export default async function NewDroneReservationPage() {
   if (session?.user?.type !== "user") {
     redirect("/login?callbackUrl=/drones/new");
   }
-
-  const setting = await prisma.platformSetting.upsert({
-    where: { id: "singleton" },
-    update: {},
-    create: { id: "singleton" },
-  });
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-8">
@@ -29,7 +22,7 @@ export default async function NewDroneReservationPage() {
         </div>
       </div>
       <div className="mt-6">
-        <DroneReservationForm unitPrice={setting.droneUnitPrice} />
+        <DroneReservationForm />
       </div>
     </div>
   );
