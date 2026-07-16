@@ -69,7 +69,7 @@ export const CATEGORY_TILES: CategoryTile[] = [
   {
     href: "/bnr-videos",
     Icon: VideoIcon,
-    label: "비엔알영상",
+    label: "비앤알영상",
     comingSoon: true,
     bg: "bg-rose-100 dark:bg-rose-900/30",
   },

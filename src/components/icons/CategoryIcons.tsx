@@ -40,15 +40,17 @@ export function TractorFlatIcon({ className }: IconProps) {
 export function SproutPotIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <path d="M14 28h20l-2.5 10a3 3 0 0 1-2.9 2.3H19.4a3 3 0 0 1-2.9-2.3z" fill="#166534" />
-      <path
-        d="M24 28v-8"
-        stroke="#22c55e"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      <path d="M24 22c0-5-4-7-9-7 0 5.5 4 8 9 8" fill="#22c55e" />
-      <path d="M24 20c0-5 4-7 9-7 0 5.5-4 8-9 8" fill="#4ade80" />
+      <g transform="translate(24 26.65) scale(1.45) translate(-24 -26.65)">
+        <path d="M14 28h20l-2.5 10a3 3 0 0 1-2.9 2.3H19.4a3 3 0 0 1-2.9-2.3z" fill="#166534" />
+        <path
+          d="M24 28v-8"
+          stroke="#22c55e"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+        <path d="M24 22c0-5-4-7-9-7 0 5.5 4 8 9 8" fill="#22c55e" />
+        <path d="M24 20c0-5 4-7 9-7 0 5.5-4 8-9 8" fill="#4ade80" />
+      </g>
     </svg>
   );
 }
@@ -68,9 +70,11 @@ export function BasketIcon({ className }: IconProps) {
 export function FarmerIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <path d="M24 8c-6 0-10 3-11 7h22c-1-4-5-7-11-7z" fill="#166534" />
-      <circle cx="24" cy="18" r="6" fill="#22c55e" />
-      <path d="M13 40v-3c0-6 5-10 11-10s11 4 11 10v3z" fill="#16a34a" />
+      <g transform="translate(24 24) scale(1.25) translate(-24 -24)">
+        <path d="M24 8c-6 0-10 3-11 7h22c-1-4-5-7-11-7z" fill="#166534" />
+        <circle cx="24" cy="18" r="6" fill="#22c55e" />
+        <path d="M13 40v-3c0-6 5-10 11-10s11 4 11 10v3z" fill="#16a34a" />
+      </g>
     </svg>
   );
 }
@@ -109,12 +113,14 @@ export function CartIcon({ className }: IconProps) {
 export function NewsIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <path d="M12 6h18l6 6v30a2 2 0 0 1-2 2H12a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" fill="#2563eb" />
-      <path d="M30 6v6h6z" fill="#1d4ed8" />
-      <g stroke="#dbeafe" strokeWidth="2" strokeLinecap="round">
-        <path d="M15 22h18" />
-        <path d="M15 27h18" />
-        <path d="M15 32h11" />
+      <g transform="translate(23 22) scale(1.25) translate(-23 -22)">
+        <path d="M12 6h18l6 6v30a2 2 0 0 1-2 2H12a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" fill="#2563eb" />
+        <path d="M30 6v6h6z" fill="#1d4ed8" />
+        <g stroke="#dbeafe" strokeWidth="2" strokeLinecap="round">
+          <path d="M15 22h18" />
+          <path d="M15 27h18" />
+          <path d="M15 32h11" />
+        </g>
       </g>
     </svg>
   );
