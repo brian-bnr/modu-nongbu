@@ -30,9 +30,14 @@ export function ComingSoon({
         </ul>
       )}
 
-      <p className="mt-6 inline-flex items-center rounded-full bg-black/5 px-3 py-1 text-xs font-medium text-black/50 dark:bg-white/10 dark:text-white/50">
-        준비중입니다. 곧 만나요!
-      </p>
+      <div className="mt-6 inline-flex flex-col items-center gap-1 rounded-2xl bg-black/5 px-4 py-3 dark:bg-white/10">
+        <p className="text-sm font-semibold text-black/70 dark:text-white/70">
+          죄송해요 😥 조만간 서비스 예정이에요
+        </p>
+        <p className="text-xs text-black/50 dark:text-white/50">
+          귀엽고 멋진 기능으로 곧 찾아올게요 ✨
+        </p>
+      </div>
     </div>
   );
 }

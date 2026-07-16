@@ -92,7 +92,9 @@ export default async function HomePage() {
             {CATEGORY_TILES.map((t, i) => (
               <ScrollReveal key={t.href} delay={i * 40}>
                 <Link href={t.href} className="flex flex-col items-center gap-1.5">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-black/[0.04] shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md sm:h-16 sm:w-16">
+                  <span
+                    className={`flex h-14 w-14 items-center justify-center rounded-2xl shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md sm:h-16 sm:w-16 ${t.bg}`}
+                  >
                     <t.Icon className="h-8 w-8 sm:h-9 sm:w-9" />
                   </span>
                   <span className="text-center text-[11px] font-medium leading-tight sm:text-xs">
