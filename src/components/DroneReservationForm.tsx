@@ -104,6 +104,10 @@ export function DroneReservationForm() {
   const submittedCropType =
     mode === "map" ? summarizeCropTypes(parcels.map((p) => p.cropType)) : cropType;
 
+  const errorMessages = state.errors
+    ? Object.values(state.errors).flatMap((msgs) => msgs ?? [])
+    : [];
+
   return (
     <form
       action={formAction}
@@ -263,6 +267,17 @@ export function DroneReservationForm() {
             </span>
           </p>
         </div>
+
+        {errorMessages.length > 0 && (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
+            <p className="font-medium">입력값을 다시 확인해주세요</p>
+            <ul className="mt-1 list-disc space-y-0.5 pl-4">
+              {errorMessages.map((msg, i) => (
+                <li key={i}>{msg}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <button
           type="submit"
