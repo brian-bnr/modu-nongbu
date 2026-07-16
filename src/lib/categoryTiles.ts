@@ -7,6 +7,9 @@ import {
   FarmerIcon,
   PinIcon,
   CartIcon,
+  VideoIcon,
+  MegaphoneIcon,
+  NewsIcon,
 } from "@/components/icons/CategoryIcons";
 
 export type CategoryTile = {
@@ -62,5 +65,26 @@ export const CATEGORY_TILES: CategoryTile[] = [
     label: "농자재 쇼핑",
     comingSoon: true,
     bg: "bg-orange-100 dark:bg-orange-900/30",
+  },
+  {
+    href: "/bnr-videos",
+    Icon: VideoIcon,
+    label: "비엔알영상",
+    comingSoon: true,
+    bg: "bg-rose-100 dark:bg-rose-900/30",
+  },
+  {
+    href: "/news",
+    Icon: MegaphoneIcon,
+    label: "모두의농부소식",
+    comingSoon: true,
+    bg: "bg-yellow-100 dark:bg-yellow-900/30",
+  },
+  {
+    href: "/info",
+    Icon: NewsIcon,
+    label: "농업뉴스",
+    comingSoon: true,
+    bg: "bg-sky-100 dark:bg-sky-900/30",
   },
 ];

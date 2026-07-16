@@ -133,6 +133,26 @@ export function BankIcon({ className }: IconProps) {
   );
 }
 
+export function VideoIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
+      <rect x="5" y="11" width="30" height="26" rx="5" fill="#f43f5e" />
+      <path d="M35 20 44 15v18l-9-5z" fill="#e11d48" />
+      <path d="M17 18v12l11-6z" fill="#fff1f2" />
+    </svg>
+  );
+}
+
+export function MegaphoneIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
+      <path d="M6 19v10a3 3 0 0 0 3 3h4l16 9V7L13 16H9a3 3 0 0 0-3 3z" fill="#f59e0b" />
+      <path d="M29 7v33l10 5.5V1.5z" fill="#fbbf24" />
+      <path d="M13 32v6a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-3" fill="#b45309" />
+    </svg>
+  );
+}
+
 export function GradCapIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true">

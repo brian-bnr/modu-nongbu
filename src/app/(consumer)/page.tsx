@@ -93,9 +93,14 @@ export default async function HomePage() {
               <ScrollReveal key={t.href} delay={i * 40}>
                 <Link href={t.href} className="flex flex-col items-center gap-1.5">
                   <span
-                    className={`flex h-14 w-14 items-center justify-center rounded-2xl shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md sm:h-16 sm:w-16 ${t.bg}`}
+                    className={`relative flex h-14 w-14 items-center justify-center rounded-2xl shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md sm:h-16 sm:w-16 ${t.bg}`}
                   >
                     <t.Icon className="h-8 w-8 sm:h-9 sm:w-9" />
+                    {t.comingSoon && (
+                      <span className="absolute -bottom-1 rounded-full bg-black/70 px-1.5 py-0.5 text-[9px] font-medium text-white">
+                        준비중
+                      </span>
+                    )}
                   </span>
                   <span className="text-center text-[11px] font-medium leading-tight sm:text-xs">
                     {t.label}
