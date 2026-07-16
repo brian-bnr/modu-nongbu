@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { PostCard } from "@/components/PostCard";
 import { ScrollReveal } from "@/components/ScrollReveal";
@@ -44,54 +45,74 @@ const POPULAR_SERVICES_STUBS = [
   { title: "농업교육", href: "/education", Icon: GradCapIcon, gradient: "from-rose-500 to-rose-700" },
 ];
 
+const getHomeData = unstable_cache(
+  async (todayStr: string, sevenDaysAgoISO: string) => {
+    const sevenDaysAgo = new Date(sevenDaysAgoISO);
+
+    const [recentPosts, counts, popularPool, operators] = await Promise.all([
+      prisma.post.findMany({
+        take: 8,
+        orderBy: { createdAt: "desc" },
+        include: { author: true },
+      }),
+      prisma.$queryRaw<
+        {
+          post_count: bigint;
+          inquiry_count: bigint;
+          user_count: bigint;
+          today_visitors: bigint;
+          drone_unit_price: number | null;
+        }[]
+      >`
+        SELECT
+          (SELECT COUNT(*) FROM "Post") AS post_count,
+          (SELECT COUNT(*) FROM "Inquiry") AS inquiry_count,
+          (SELECT COUNT(*) FROM "User") AS user_count,
+          (SELECT COUNT(*) FROM "Visit" WHERE "visitDate" = ${todayStr}) AS today_visitors,
+          (SELECT "droneUnitPrice" FROM "PlatformSetting" WHERE id = 'singleton') AS drone_unit_price
+      `,
+      prisma.post.findMany({
+        take: 30,
+        where: { status: "OPEN" },
+        orderBy: [{ inquiries: { _count: "desc" } }, { createdAt: "desc" }],
+        include: { author: true, _count: { select: { inquiries: true } } },
+      }),
+      getApprovedOperatorsWithStats(),
+    ]);
+
+    const popularRealtime = popularPool.slice(0, 8);
+    const popularWeekly = popularPool.filter((p) => p.createdAt >= sevenDaysAgo).slice(0, 8);
+    const droneUnitPrice = counts[0].drone_unit_price ?? 3000;
+
+    const stats = {
+      postCount: Number(counts[0].post_count),
+      inquiryCount: Number(counts[0].inquiry_count),
+      userCount: Number(counts[0].user_count),
+      todayVisitors: Number(counts[0].today_visitors),
+    };
+
+    const topOperators =
+      operators.length > 0 ? operators.slice(0, 4).map(toOperatorCardData) : SAMPLE_OPERATORS;
+
+    return { recentPosts, popularRealtime, popularWeekly, droneUnitPrice, stats, topOperators };
+  },
+  ["home-page-data"],
+  { revalidate: 60 }
+);
+
 export default async function HomePage() {
   const todayStr = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-  const [recentPosts, counts, popularPool, operators] = await Promise.all([
-    prisma.post.findMany({
-      take: 8,
-      orderBy: { createdAt: "desc" },
-      include: { author: true },
-    }),
-    prisma.$queryRaw<
-      {
-        post_count: bigint;
-        inquiry_count: bigint;
-        user_count: bigint;
-        today_visitors: bigint;
-        drone_unit_price: number | null;
-      }[]
-    >`
-      SELECT
-        (SELECT COUNT(*) FROM "Post") AS post_count,
-        (SELECT COUNT(*) FROM "Inquiry") AS inquiry_count,
-        (SELECT COUNT(*) FROM "User") AS user_count,
-        (SELECT COUNT(*) FROM "Visit" WHERE "visitDate" = ${todayStr}) AS today_visitors,
-        (SELECT "droneUnitPrice" FROM "PlatformSetting" WHERE id = 'singleton') AS drone_unit_price
-    `,
-    prisma.post.findMany({
-      take: 30,
-      where: { status: "OPEN" },
-      orderBy: [{ inquiries: { _count: "desc" } }, { createdAt: "desc" }],
-      include: { author: true, _count: { select: { inquiries: true } } },
-    }),
-    getApprovedOperatorsWithStats(),
-  ]);
-
-  const popularRealtime = popularPool.slice(0, 8);
-  const popularWeekly = popularPool.filter((p) => p.createdAt >= sevenDaysAgo).slice(0, 8);
-  const droneUnitPrice = counts[0].drone_unit_price ?? 3000;
+  const { recentPosts, popularRealtime, popularWeekly, droneUnitPrice, stats, topOperators } =
+    await getHomeData(todayStr, sevenDaysAgo.toISOString());
 
   const STATS = [
-    { label: "등록된 매물", value: Number(counts[0].post_count) },
-    { label: "누적 문의", value: Number(counts[0].inquiry_count) },
-    { label: "함께하는 회원", value: Number(counts[0].user_count) },
-    { label: "오늘 방문자", value: Number(counts[0].today_visitors) },
+    { label: "등록된 매물", value: stats.postCount },
+    { label: "누적 문의", value: stats.inquiryCount },
+    { label: "함께하는 회원", value: stats.userCount },
+    { label: "오늘 방문자", value: stats.todayVisitors },
   ];
-
-  const topOperators =
-    operators.length > 0 ? operators.slice(0, 4).map(toOperatorCardData) : SAMPLE_OPERATORS;
 
   return (
     <div>
