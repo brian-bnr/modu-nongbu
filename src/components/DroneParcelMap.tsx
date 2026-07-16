@@ -20,7 +20,10 @@ export function DroneParcelMap({
 }) {
   const mapCanvasRef = useRef<MapCanvasHandle | null>(null);
   const parcelsRef = useRef<Map<string, SelectedParcel>>(new Map());
-  const [provider, setProvider] = useState<"naver" | "google">("naver");
+  // 구글 위성 지도가 설정돼 있으면 지적도를 더 정확히 볼 수 있는 위성 지도를 기본값으로 사용한다.
+  const [provider, setProvider] = useState<"naver" | "google">(
+    GOOGLE_MAPS_API_KEY ? "google" : "naver"
+  );
   const [loadingParcel, setLoadingParcel] = useState(false);
   const [error, setError] = useState("");
   const [parcels, setParcels] = useState<SelectedParcel[]>([]);
