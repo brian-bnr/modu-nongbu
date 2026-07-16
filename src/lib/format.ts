@@ -153,6 +153,13 @@ export const DISPUTE_STATUS_VARIANT: Record<DisputeStatus, "neutral" | "amber" |
   RESOLVED: "green",
 };
 
+export const PROVIDER_LABEL: Record<string, string> = {
+  credentials: "이메일",
+  kakao: "카카오",
+  naver: "네이버",
+  google: "구글",
+};
+
 export function formatPrice(price: number) {
   return `${price.toLocaleString("ko-KR")}원`;
 }

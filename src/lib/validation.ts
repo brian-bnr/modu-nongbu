@@ -32,6 +32,25 @@ export const userLoginSchema = z.object({
   password: z.string().min(1, "비밀번호를 입력해주세요."),
 });
 
+export const profileUpdateSchema = z.object({
+  name: z.string().min(1, "이름을 입력해주세요."),
+  phone: z
+    .string()
+    .min(1, "휴대폰 번호를 입력해주세요.")
+    .regex(/^[0-9-]{9,13}$/, "올바른 전화번호 형식이 아닙니다."),
+});
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "현재 비밀번호를 입력해주세요."),
+    newPassword: z.string().min(8, "비밀번호는 8자 이상이어야 합니다."),
+    newPasswordConfirm: z.string().min(1, "새 비밀번호 확인을 입력해주세요."),
+  })
+  .refine((data) => data.newPassword === data.newPasswordConfirm, {
+    message: "새 비밀번호가 일치하지 않습니다.",
+    path: ["newPasswordConfirm"],
+  });
+
 export const postSchema = z.object({
   postType: z.enum(POST_TYPES),
   title: z.string().min(1, "제목을 입력해주세요."),

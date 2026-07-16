@@ -44,6 +44,15 @@ export default async function MyPage() {
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <Link
+          href="/my/profile"
+          className="rounded-lg border border-black/10 p-4 transition hover:border-brand-600 dark:border-white/10"
+        >
+          <p className="font-medium">내 정보 관리</p>
+          <p className="mt-1 text-sm text-black/50 dark:text-white/50">
+            이름·연락처 수정, 비밀번호 변경, 회원 탈퇴
+          </p>
+        </Link>
+        <Link
           href="/my/posts"
           className="rounded-lg border border-black/10 p-4 transition hover:border-brand-600 dark:border-white/10"
         >
