@@ -4,28 +4,29 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #fffaf0;
-  --foreground: #2b2a25;
+  --background: #f8f6ef;
+  --foreground: #2d2d2d;
 
-  --color-brand-50: #f1faf0;
-  --color-brand-100: #dcf2d9;
-  --color-brand-200: #b9e6b3;
-  --color-brand-300: #8fd587;
-  --color-brand-400: #65c25e;
-  --color-brand-500: #45ab41;
-  --color-brand-600: #348a33;
-  --color-brand-700: #2b6f2c;
-  --color-brand-800: #245826;
-  --color-brand-900: #1d4720;
+  --color-brand-50: #f0f8f1;
+  --color-brand-100: #dceedf;
+  --color-brand-200: #b8dfbf;
+  --color-brand-300: #8fcc99;
+  --color-brand-400: #63b571;
+  --color-brand-500: #43a047;
+  --color-brand-600: #2e7d32;
+  --color-brand-700: #1f5d3a;
+  --color-brand-800: #17452c;
+  --color-brand-900: #102f1f;
 
-  --color-accent-50: #fff5e8;
-  --color-accent-100: #ffe6c2;
-  --color-accent-200: #ffd096;
-  --color-accent-300: #ffb466;
-  --color-accent-400: #fc9a42;
-  --color-accent-500: #f2812f;
-  --color-accent-600: #d76621;
-  --color-accent-700: #b0511b;
+  --color-accent-50: #fff8e1;
+  --color-accent-100: #ffecb3;
+  --color-accent-200: #ffe082;
+  --color-accent-300: #ffd54f;
+  --color-accent-400: #ffc824;
+  --color-accent-500: #ffb300;
+  --color-accent-600: #e6a100;
+  --color-accent-700: #c28900;
+  --color-accent-800: #9c6e00;
 }
 
 @theme inline {
@@ -49,6 +50,7 @@
   --color-accent-500: var(--color-accent-500);
   --color-accent-600: var(--color-accent-600);
   --color-accent-700: var(--color-accent-700);
+  --color-accent-800: var(--color-accent-800);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
