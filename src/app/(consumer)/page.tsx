@@ -92,17 +92,21 @@ export default async function HomePage() {
             {CATEGORY_TILES.map((t, i) => (
               <ScrollReveal key={t.href} delay={i * 40}>
                 <Link href={t.href} className="flex flex-col items-center gap-1.5">
-                  <span
-                    className={`relative flex h-14 w-14 items-center justify-center rounded-2xl shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md sm:h-16 sm:w-16 ${t.bg}`}
-                  >
-                    <t.Icon className="h-8 w-8 sm:h-9 sm:w-9" />
+                  <span className="relative flex h-16 w-16 items-center justify-center rounded-full shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md sm:h-20 sm:w-20">
+                    <Image
+                      src={t.iconSrc}
+                      alt=""
+                      width={80}
+                      height={80}
+                      className="h-full w-full rounded-full object-cover"
+                    />
                     {t.comingSoon && (
                       <span className="absolute -bottom-1 rounded-full bg-black/70 px-1.5 py-0.5 text-[9px] font-medium text-white">
                         준비중
                       </span>
                     )}
                   </span>
-                  <span className="w-14 break-keep text-center text-[10px] font-medium leading-tight sm:w-16 sm:text-xs">
+                  <span className="w-16 break-keep text-center text-[10px] font-medium leading-tight sm:w-20 sm:text-xs">
                     {t.label}
                   </span>
                 </Link>
