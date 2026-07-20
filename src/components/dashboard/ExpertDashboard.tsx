@@ -7,19 +7,27 @@ import { DashboardShell, type DashboardAction } from "@/components/dashboard/Das
 const SAMPLE_STATS = { newInquiries: 3, answered: 2 };
 
 const ACTIONS: DashboardAction[] = [
-  { label: "농산물 거래", href: "/products", iconSrc: "/icons/category/basket.png" },
-  { label: "문의 내역", href: "/my/inquiries", Icon: UserIcon },
-  { label: "내 정보", href: "/my", Icon: UserIcon },
-  { label: "전체 서비스", href: "/services", Icon: GridIcon },
+  { label: "농산물 거래", sublabel: "거래 둘러보기", href: "/products", iconSrc: "/icons/category/basket.png" },
+  { label: "문의 내역", sublabel: "받은 문의 확인", href: "/my/inquiries", Icon: UserIcon },
+  { label: "내 정보", sublabel: "정보 관리", href: "/my", Icon: UserIcon },
+  { label: "전체 서비스", sublabel: "서비스 둘러보기", href: "/services", Icon: GridIcon },
 ];
 
 export async function ExpertDashboard({ userId, name }: { userId: string; name: string }) {
   const profile = await prisma.expertProfile.findUnique({ where: { userId } });
 
   return (
-    <DashboardShell modeLabel="농업 전문가 모드" color="amber" name={name} actions={ACTIONS}>
+    <DashboardShell
+      modeLabel="농업 전문가 모드"
+      color="amber"
+      name={name}
+      heroTitle="농업 지식을 나누고 새로운 상담 기회를 만나보세요"
+      heroSubtitle="유통·농자재 전문가와 농민을 연결합니다"
+      heroHref="/my"
+      actions={ACTIONS}
+    >
       {profile && (
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mb-3 flex flex-wrap gap-2">
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
             {EXPERT_SPECIALTY_LABEL[profile.specialty] ?? profile.specialty} 분야
           </span>
@@ -31,8 +39,8 @@ export async function ExpertDashboard({ userId, name }: { userId: string; name: 
         </div>
       )}
 
-      <p className="mt-3 text-xs font-medium text-black/40 dark:text-white/40">오늘의 주문/문의</p>
-      <div className="mt-1.5 grid grid-cols-2 gap-2 text-center text-sm">
+      <h3 className="text-sm font-bold">오늘의 주문/문의</h3>
+      <div className="mt-2 grid grid-cols-2 gap-2 text-center text-sm">
         <div className="rounded-lg bg-black/[0.03] py-2 dark:bg-white/5">
           <p className="font-semibold">{SAMPLE_STATS.newInquiries}건</p>
           <p className="text-xs text-black/50 dark:text-white/50">오늘 신규 문의</p>

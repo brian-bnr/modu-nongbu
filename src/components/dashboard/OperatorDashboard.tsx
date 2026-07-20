@@ -1,5 +1,8 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { UserIcon, GridIcon } from "@/components/icons/NavIcons";
+import { Badge } from "@/components/Badge";
+import { DRONE_RESERVATION_STATUS_VARIANT, formatPrice } from "@/lib/format";
+import { UserIcon } from "@/components/icons/NavIcons";
 import { DashboardShell, type DashboardAction } from "@/components/dashboard/DashboardShell";
 
 const STATUS_COPY: Record<string, { title: string; body: string }> = {
@@ -17,31 +20,63 @@ const STATUS_COPY: Record<string, { title: string; body: string }> = {
   },
 };
 
-const ACTIONS: DashboardAction[] = [
-  { label: "작업 보기", href: "/drones/operator", iconSrc: "/icons/category/drone.png" },
-  { label: "방제사 목록", href: "/drones/operators", iconSrc: "/icons/roles/operator.png" },
-  { label: "내 정보", href: "/my", Icon: UserIcon },
-  { label: "전체 서비스", href: "/services", Icon: GridIcon },
-];
+function buildActions(operatorId: string | null): DashboardAction[] {
+  return [
+    { label: "오늘의 작업", sublabel: "일자리 목록", href: "/drones/operator", iconSrc: "/icons/category/drone.png" },
+    { label: "내 일정", sublabel: "일정 관리", href: "/drones/operator", iconSrc: "/icons/category/tractor.png" },
+    {
+      label: "정산 내역",
+      sublabel: "수익 확인",
+      href: "/drones/operator/settlements",
+      iconSrc: "/icons/category/bank.png",
+    },
+    operatorId
+      ? {
+          label: "내 프로필",
+          sublabel: "공개 페이지 보기",
+          href: `/drones/operators/${operatorId}`,
+          Icon: UserIcon,
+        }
+      : { label: "내 정보", sublabel: "정보 관리", href: "/my", Icon: UserIcon },
+  ];
+}
 
 export async function OperatorDashboard({ userId, name }: { userId: string; name: string }) {
   const operator = await prisma.droneOperator.findUnique({ where: { userId } });
 
   if (!operator) {
     return (
-      <DashboardShell modeLabel="방제사 모드" color="blue" name={name} actions={ACTIONS}>
-        <p className="mt-3 rounded-xl bg-black/5 p-3 text-sm text-black/60 dark:bg-white/10 dark:text-white/60">
+      <DashboardShell
+        modeLabel="방제사 모드"
+        color="blue"
+        name={name}
+        heroTitle="오늘의 일자리를 확인하고 효율적으로 일정을 관리하세요"
+        heroSubtitle="더 많은 일자리, 더 쉬운 관리"
+        heroHref="/drones/operator"
+        actions={buildActions(null)}
+      >
+        <p className="rounded-xl bg-black/5 p-3 text-sm text-black/60 dark:bg-white/10 dark:text-white/60">
           방제사 신청 내역을 찾을 수 없습니다. 마이페이지에서 다시 신청해주세요.
         </p>
       </DashboardShell>
     );
   }
 
+  const actions = buildActions(operator.id);
+
   if (operator.status !== "APPROVED") {
     const copy = STATUS_COPY[operator.status];
     return (
-      <DashboardShell modeLabel="방제사 모드" color="blue" name={name} actions={ACTIONS}>
-        <p className="mt-3 rounded-xl bg-black/5 p-3 text-sm text-black/60 dark:bg-white/10 dark:text-white/60">
+      <DashboardShell
+        modeLabel="방제사 모드"
+        color="blue"
+        name={name}
+        heroTitle="오늘의 일자리를 확인하고 효율적으로 일정을 관리하세요"
+        heroSubtitle="더 많은 일자리, 더 쉬운 관리"
+        heroHref="/drones/operator"
+        actions={actions}
+      >
+        <p className="rounded-xl bg-black/5 p-3 text-sm text-black/60 dark:bg-white/10 dark:text-white/60">
           <span className="block font-semibold text-black/80 dark:text-white/80">{copy.title}</span>
           <span className="mt-1 block">{copy.body}</span>
         </p>
@@ -49,47 +84,62 @@ export async function OperatorDashboard({ userId, name }: { userId: string; name
     );
   }
 
-  const now = new Date();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-
-  const [todayAssignedCount, inProgressCount, settlements] = await Promise.all([
-    prisma.droneReservation.count({
-      where: {
-        operatorId: operator.id,
-        desiredDate: { gte: todayStart, lt: todayEnd },
-        status: { in: ["ASSIGNED", "IN_PROGRESS", "COMPLETION_REQUESTED", "COMPLETED"] },
-      },
-    }),
-    prisma.droneReservation.count({
-      where: { operatorId: operator.id, status: "IN_PROGRESS" },
-    }),
-    prisma.settlement.findMany({
-      where: { operatorId: operator.id, createdAt: { gte: monthStart } },
-      select: { payoutAmount: true },
-    }),
-  ]);
-
-  const monthlyPayout = settlements.reduce((sum, s) => sum + s.payoutAmount, 0);
+  const todayJobs = await prisma.droneReservation.findMany({
+    where: {
+      operatorId: operator.id,
+      status: { in: ["ASSIGNED", "IN_PROGRESS", "COMPLETION_REQUESTED"] },
+    },
+    orderBy: { desiredDate: "asc" },
+    take: 3,
+  });
 
   return (
-    <DashboardShell modeLabel="방제사 모드" color="blue" name={name} actions={ACTIONS}>
-      <p className="mt-4 text-xs font-medium text-black/40 dark:text-white/40">오늘의 작업</p>
-      <div className="mt-1.5 grid grid-cols-3 gap-2 text-center text-sm">
-        <div className="rounded-lg bg-black/[0.03] py-2 dark:bg-white/5">
-          <p className="font-semibold">{todayAssignedCount}건</p>
-          <p className="text-xs text-black/50 dark:text-white/50">오늘 배정</p>
-        </div>
-        <div className="rounded-lg bg-black/[0.03] py-2 dark:bg-white/5">
-          <p className="font-semibold">{inProgressCount}건</p>
-          <p className="text-xs text-black/50 dark:text-white/50">작업중</p>
-        </div>
-        <div className="rounded-lg bg-black/[0.03] py-2 dark:bg-white/5">
-          <p className="font-semibold">{monthlyPayout.toLocaleString("ko-KR")}원</p>
-          <p className="text-xs text-black/50 dark:text-white/50">이번달 정산액</p>
-        </div>
+    <DashboardShell
+      modeLabel="방제사 모드"
+      color="blue"
+      name={name}
+      heroTitle="오늘의 일자리를 확인하고 효율적으로 일정을 관리하세요"
+      heroSubtitle="더 많은 일자리, 더 쉬운 관리"
+      heroHref="/drones/operator"
+      actions={actions}
+    >
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-bold">오늘의 일자리</h3>
+        <Link href="/drones/operator" className="text-xs text-brand-700 hover:underline dark:text-brand-400">
+          전체보기 →
+        </Link>
       </div>
+
+      {todayJobs.length === 0 ? (
+        <p className="mt-3 rounded-xl bg-black/5 p-3 text-sm text-black/50 dark:bg-white/10 dark:text-white/50">
+          배정된 작업이 없어요.
+        </p>
+      ) : (
+        <ul className="mt-3 space-y-2">
+          {todayJobs.map((job) => (
+            <li key={job.id}>
+              <Link
+                href={`/drones/operator/${job.id}`}
+                className="flex items-center justify-between gap-3 rounded-lg border border-black/5 p-3 text-sm transition hover:border-blue-500 dark:border-white/10"
+              >
+                <div className="min-w-0">
+                  <p className="truncate font-medium">
+                    {job.region}
+                    {job.regionDetail ? ` ${job.regionDetail}` : ""}
+                  </p>
+                  <p className="mt-0.5 text-xs text-black/50 dark:text-white/50">
+                    {job.areaPyeong.toLocaleString("ko-KR")}평 ·{" "}
+                    {job.desiredDate.toLocaleDateString("ko-KR")}
+                  </p>
+                </div>
+                <Badge variant={DRONE_RESERVATION_STATUS_VARIANT[job.status]}>
+                  {formatPrice(job.totalPrice)}
+                </Badge>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </DashboardShell>
   );
 }

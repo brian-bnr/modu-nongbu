@@ -6,19 +6,27 @@ import { DashboardShell, type DashboardAction } from "@/components/dashboard/Das
 const SAMPLE_STATS = { purchaseRequests: 5, contractsInProgress: 2 };
 
 const ACTIONS: DashboardAction[] = [
-  { label: "농산물 거래", href: "/products", iconSrc: "/icons/category/basket.png" },
-  { label: "문의 내역", href: "/my/inquiries", Icon: UserIcon },
-  { label: "내 정보", href: "/my", Icon: UserIcon },
-  { label: "전체 서비스", href: "/services", Icon: GridIcon },
+  { label: "농산물 거래", sublabel: "구매처 찾기", href: "/products", iconSrc: "/icons/category/basket.png" },
+  { label: "문의 내역", sublabel: "받은 문의 확인", href: "/my/inquiries", Icon: UserIcon },
+  { label: "내 정보", sublabel: "정보 관리", href: "/my", Icon: UserIcon },
+  { label: "전체 서비스", sublabel: "서비스 둘러보기", href: "/services", Icon: GridIcon },
 ];
 
 export async function CompanyDashboard({ userId, name }: { userId: string; name: string }) {
   const profile = await prisma.companyProfile.findUnique({ where: { userId } });
 
   return (
-    <DashboardShell modeLabel="업체 모드" color="purple" name={name} actions={ACTIONS}>
+    <DashboardShell
+      modeLabel="업체 모드"
+      color="purple"
+      name={name}
+      heroTitle="농산물 구매와 계약재배를 한 곳에서 관리하세요"
+      heroSubtitle="농가와 업체를 직접 연결합니다"
+      heroHref="/products"
+      actions={ACTIONS}
+    >
       {profile && (
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mb-3 flex flex-wrap gap-2">
           {profile.companyType && (
             <span className="rounded-full bg-purple-50 px-3 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900/20 dark:text-purple-300">
               {profile.companyType}
@@ -37,8 +45,8 @@ export async function CompanyDashboard({ userId, name }: { userId: string; name:
         </div>
       )}
 
-      <p className="mt-3 text-xs font-medium text-black/40 dark:text-white/40">오늘의 거래</p>
-      <div className="mt-1.5 grid grid-cols-2 gap-2 text-center text-sm">
+      <h3 className="text-sm font-bold">오늘의 거래</h3>
+      <div className="mt-2 grid grid-cols-2 gap-2 text-center text-sm">
         <div className="rounded-lg bg-black/[0.03] py-2 dark:bg-white/5">
           <p className="font-semibold">{SAMPLE_STATS.purchaseRequests}건</p>
           <p className="text-xs text-black/50 dark:text-white/50">구매 요청</p>

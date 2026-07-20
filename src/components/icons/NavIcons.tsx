@@ -78,6 +78,33 @@ export function TractorIcon({ className }: IconProps) {
   );
 }
 
+export function CalendarIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className} aria-hidden="true">
+      <rect x="3.5" y="5.5" width="17" height="15" rx="2" />
+      <path d="M3.5 10h17" />
+      <path d="M8 3.5v4M16 3.5v4" />
+    </svg>
+  );
+}
+
+export function WonIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className} aria-hidden="true">
+      <path d="M3.5 8.5 7 17l3-6.5 2 6.5 5.5-13" />
+      <path d="M3.5 11h17M4.5 13.5h15" />
+    </svg>
+  );
+}
+
+export function MessageIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className} aria-hidden="true">
+      <path d="M4 5.5h16v11H9l-4 3.5v-3.5H4z" />
+    </svg>
+  );
+}
+
 export function BellIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className} aria-hidden="true">

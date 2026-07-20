@@ -3,13 +3,43 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Role } from "@prisma/client";
-import { HomeIcon, GridIcon, SearchIcon, TractorIcon, UserIcon } from "@/components/icons/NavIcons";
+import type { ComponentType } from "react";
+import {
+  HomeIcon,
+  GridIcon,
+  SearchIcon,
+  UserIcon,
+  CalendarIcon,
+  WonIcon,
+  MessageIcon,
+} from "@/components/icons/NavIcons";
 
-const BASE_TABS = [
-  { href: "/", label: "홈", Icon: HomeIcon },
+type Tab = { href: string; label: string; Icon: ComponentType<{ className?: string }> };
+
+const HOME_TAB: Tab = { href: "/", label: "홈", Icon: HomeIcon };
+
+const ROLE_MIDDLE_TABS: Record<Role, Tab[]> = {
+  FARMER: [
+    { href: "/drones", label: "신청내역", Icon: CalendarIcon },
+    { href: "/my/inquiries", label: "메시지", Icon: MessageIcon },
+  ],
+  OPERATOR: [
+    { href: "/drones/operator", label: "일정", Icon: CalendarIcon },
+    { href: "/drones/operator/settlements", label: "수익", Icon: WonIcon },
+  ],
+  EXPERT: [
+    { href: "/my/inquiries", label: "문의", Icon: MessageIcon },
+    { href: "/services", label: "서비스", Icon: GridIcon },
+  ],
+  COMPANY: [
+    { href: "/products", label: "거래", Icon: CalendarIcon },
+    { href: "/my/inquiries", label: "메시지", Icon: MessageIcon },
+  ],
+};
+
+const GUEST_MIDDLE_TABS: Tab[] = [
   { href: "/services", label: "서비스", Icon: GridIcon },
   { href: "/search", label: "검색", Icon: SearchIcon },
-  { href: "/drones", label: "내농장", Icon: TractorIcon },
 ];
 
 const ROLE_ACTIVE_CLASS: Record<Role, string> = {
@@ -21,8 +51,10 @@ const ROLE_ACTIVE_CLASS: Record<Role, string> = {
 
 export function MobileTabBar({ loggedIn, role }: { loggedIn: boolean; role?: Role }) {
   const pathname = usePathname();
-  const tabs = [
-    ...BASE_TABS,
+  const middleTabs = loggedIn && role ? ROLE_MIDDLE_TABS[role] : GUEST_MIDDLE_TABS;
+  const tabs: Tab[] = [
+    HOME_TAB,
+    ...middleTabs,
     loggedIn
       ? { href: "/my", label: "마이페이지", Icon: UserIcon }
       : { href: "/login", label: "로그인", Icon: UserIcon },
