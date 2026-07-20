@@ -58,14 +58,20 @@ export async function FarmerDashboard({ userId, name }: { userId: string; name: 
       )}
 
       <div className="mt-4 grid grid-cols-2 gap-2 border-t border-black/10 pt-4 text-center text-sm dark:border-white/10">
-        <div>
+        <Link
+          href="/drones"
+          className="rounded-lg py-1 transition hover:bg-black/5 dark:hover:bg-white/10"
+        >
           <p className="font-semibold">{totalCount}건</p>
           <p className="text-xs text-black/50 dark:text-white/50">전체 방제 신청</p>
-        </div>
-        <div>
+        </Link>
+        <Link
+          href="/drones?status=COMPLETED"
+          className="rounded-lg py-1 transition hover:bg-black/5 dark:hover:bg-white/10"
+        >
           <p className="font-semibold">{completedCount}건</p>
           <p className="text-xs text-black/50 dark:text-white/50">완료</p>
-        </div>
+        </Link>
       </div>
     </div>
   );

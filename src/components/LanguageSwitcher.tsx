@@ -128,7 +128,14 @@ export function LanguageSwitcher() {
               : "opacity-60 ring-white/30 hover:opacity-100"
           } ${pending === code ? "animate-pulse" : ""}`}
         >
-          <Image src={flag} alt="" width={28} height={28} className="h-full w-full object-cover" />
+          <Image
+            src={flag}
+            alt=""
+            width={28}
+            height={28}
+            unoptimized
+            className="h-full w-full rounded-full object-cover"
+          />
         </button>
       ))}
     </div>
