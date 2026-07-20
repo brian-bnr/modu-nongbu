@@ -1,27 +1,38 @@
 type IconProps = { className?: string };
 
-// 모든 아이콘의 실제 그림 영역을 48x48 캔버스 안에서 동일한 크기로 맞추기 위해,
-// 각 아이콘의 원래 그림 중심을 구해 캔버스 중앙(24,24)으로 옮기고 동일한 비율로 확대한다.
 export function DroneSprayIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <g transform="translate(24 24) scale(1.17) translate(-24 -23.1)">
-        <g stroke="#15803d" strokeWidth="3" strokeLinecap="round">
-          <path d="M17 17 8 9" />
-          <path d="M31 17 40 9" />
-          <path d="M17 22 8 22" />
-          <path d="M31 22 40 22" />
-        </g>
-        <rect x="7" y="6" width="8" height="6" rx="2" fill="#16a34a" />
-        <rect x="33" y="6" width="8" height="6" rx="2" fill="#16a34a" />
-        <rect x="16" y="17" width="16" height="10" rx="3" fill="#16a34a" />
-        <circle cx="24" cy="22" r="2.6" fill="#dcfce7" />
-        <g fill="#4ade80">
-          <circle cx="17" cy="34" r="2.2" />
-          <circle cx="24" cy="38" r="2.2" />
-          <circle cx="31" cy="34" r="2.2" />
-        </g>
+      <g stroke="#166534" strokeWidth="3" strokeLinecap="round">
+        <path d="M18 16 9 8" />
+        <path d="M30 16 39 8" />
+        <path d="M18 21 8 21" />
+        <path d="M30 21 40 21" />
       </g>
+      <g fill="#94a3b8" opacity="0.55">
+        <ellipse cx="8" cy="7" rx="7" ry="2.2" />
+        <ellipse cx="40" cy="7" rx="7" ry="2.2" />
+        <ellipse cx="7" cy="21" rx="7" ry="2.2" />
+        <ellipse cx="41" cy="21" rx="7" ry="2.2" />
+      </g>
+      <rect x="6.5" y="5.5" width="7" height="5" rx="2" fill="#16a34a" />
+      <rect x="34.5" y="5.5" width="7" height="5" rx="2" fill="#16a34a" />
+      <rect x="15.5" y="16" width="17" height="10.5" rx="3.5" fill="#22c55e" />
+      <rect x="15.5" y="16" width="17" height="5" rx="3" fill="#4ade80" />
+      <circle cx="24" cy="21" r="2.6" fill="#f0fdf4" />
+      <path d="M22 27v3M26 27v3" stroke="#166534" strokeWidth="1.6" strokeLinecap="round" />
+      <g fill="#38bdf8" opacity="0.85">
+        <circle cx="19" cy="33" r="1.6" />
+        <circle cx="24" cy="37" r="1.8" />
+        <circle cx="29" cy="33" r="1.6" />
+      </g>
+      <path
+        d="M9 41c3-3 8-3 11 0M28 41c3-3 8-3 11 0"
+        stroke="#4ade80"
+        strokeWidth="2"
+        strokeLinecap="round"
+        fill="none"
+      />
     </svg>
   );
 }
@@ -29,16 +40,18 @@ export function DroneSprayIcon({ className }: IconProps) {
 export function TractorFlatIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <g transform="translate(24 24) scale(1.231) translate(-23.25 -25.75)">
-        <rect x="8" y="18" width="11" height="10" rx="1.5" fill="#15803d" />
-        <rect x="19" y="24" width="14" height="6" rx="1" fill="#15803d" />
-        <rect x="9" y="13" width="2.5" height="6" fill="#15803d" />
-        <circle cx="9" cy="12" r="2" fill="#15803d" />
-        <circle cx="15" cy="34" r="5.5" fill="#166534" />
-        <circle cx="15" cy="34" r="2" fill="#dcfce7" />
-        <circle cx="32" cy="34" r="7.5" fill="#166534" />
-        <circle cx="32" cy="34" r="3" fill="#dcfce7" />
-      </g>
+      <rect x="9" y="10" width="3" height="8" rx="1" fill="#166534" />
+      <rect x="8.5" y="8.5" width="4" height="2.5" rx="1" fill="#0f3d20" />
+      <path d="M8 18h12v-2a2 2 0 0 1 2-2h4l6 6h5a2 2 0 0 1 2 2v6H8z" fill="#22c55e" />
+      <path d="M24 14l6 6h-6z" fill="#bbf7d0" opacity="0.7" />
+      <rect x="10" y="20" width="9" height="6" rx="1" fill="#15803d" />
+      <rect x="8" y="27" width="26" height="4" rx="1.5" fill="#166534" />
+      <circle cx="32" cy="34" r="8" fill="#1f2937" />
+      <circle cx="32" cy="34" r="4.6" fill="#374151" />
+      <circle cx="32" cy="34" r="2" fill="#9ca3af" />
+      <circle cx="13" cy="34" r="5.5" fill="#1f2937" />
+      <circle cx="13" cy="34" r="3" fill="#374151" />
+      <circle cx="13" cy="34" r="1.3" fill="#9ca3af" />
     </svg>
   );
 }
@@ -46,12 +59,25 @@ export function TractorFlatIcon({ className }: IconProps) {
 export function SproutPotIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <g transform="translate(24 24) scale(1.465) translate(-24 -26.65)">
-        <path d="M14 28h20l-2.5 10a3 3 0 0 1-2.9 2.3H19.4a3 3 0 0 1-2.9-2.3z" fill="#166534" />
-        <path d="M24 28v-8" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M24 22c0-5-4-7-9-7 0 5.5 4 8 9 8" fill="#22c55e" />
-        <path d="M24 20c0-5 4-7 9-7 0 5.5-4 8-9 8" fill="#4ade80" />
-      </g>
+      <path
+        d="M13 26h22l-2.6 12.5a3 3 0 0 1-2.9 2.4H18.5a3 3 0 0 1-2.9-2.4z"
+        fill="#b45309"
+      />
+      <path d="M13 26h22l-.7 3.4H13.7z" fill="#92400e" />
+      <ellipse cx="24" cy="26" rx="11" ry="2.4" fill="#78350f" />
+      <path d="M24 26v-9" stroke="#15803d" strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M24 20c0-6-5-8-11-8 0 6.5 5 9.3 11 9.3" fill="#22c55e" />
+      <path d="M24 18c0-6 5-8 11-8 0 6.5-5 9.3-11 9.3" fill="#4ade80" />
+      <path
+        d="M17 15c3 .5 5.4 2.4 6.3 5"
+        stroke="#166534"
+        strokeWidth="1"
+        strokeLinecap="round"
+        fill="none"
+        opacity="0.6"
+      />
+      <circle cx="10" cy="30" r="1.6" fill="#a16207" />
+      <circle cx="14" cy="34" r="1.3" fill="#a16207" />
     </svg>
   );
 }
@@ -59,12 +85,32 @@ export function SproutPotIcon({ className }: IconProps) {
 export function BasketIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <g transform="translate(24 24) scale(1.27) translate(-24 -22.75)">
-        <circle cx="16" cy="14" r="4.5" fill="#f97316" />
-        <circle cx="24" cy="11" r="4" fill="#dc2626" />
-        <circle cx="32" cy="14" r="4.5" fill="#22c55e" />
-        <path d="M11 21h26l-3 15a3 3 0 0 1-3 2.5H17a3 3 0 0 1-3-2.5z" fill="#fbbf24" />
-        <path d="M10 21h28l1.5 4H8.5z" fill="#f59e0b" />
+      <path
+        d="M14 20c0-5 4.5-9 10-9s10 4 10 9"
+        stroke="#a16207"
+        strokeWidth="2.2"
+        fill="none"
+        strokeLinecap="round"
+      />
+      <path
+        d="M13 18c0-2.5 2-4.5 4.5-4.5S22 15.5 22 18c0 2.8-2 4-4.5 4S13 20.8 13 18z"
+        fill="#dc2626"
+      />
+      <path
+        d="M16.5 13.2c.4-1 1.4-1.6 2.4-1.4"
+        stroke="#16a34a"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+      <path d="M23 21l4-9 3 1.3-3.5 8.7z" fill="#f97316" />
+      <path d="M27 12.3l1.6-2.6" stroke="#16a34a" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M30 19c1-3 4-4.5 6.5-3.6-.6 3-3 5-6.5 3.6z" fill="#4ade80" />
+      <path d="M9 22h30l-3 15.5a3 3 0 0 1-3 2.5H15a3 3 0 0 1-3-2.5z" fill="#eab308" />
+      <path d="M7.5 22h33l1.3 3.6H6.2z" fill="#ca8a04" />
+      <g stroke="#a16207" strokeWidth="1" opacity="0.55">
+        <path d="M11 27h26" />
+        <path d="M12 32h24" />
+        <path d="M13 37h22" />
       </g>
     </svg>
   );
@@ -73,11 +119,23 @@ export function BasketIcon({ className }: IconProps) {
 export function FarmerIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <g transform="translate(24 24) scale(1.25) translate(-24 -24)">
-        <path d="M24 8c-6 0-10 3-11 7h22c-1-4-5-7-11-7z" fill="#166534" />
-        <circle cx="24" cy="18" r="6" fill="#22c55e" />
-        <path d="M13 40v-3c0-6 5-10 11-10s11 4 11 10v3z" fill="#16a34a" />
-      </g>
+      <ellipse cx="24" cy="13" rx="13" ry="3.2" fill="#a16207" />
+      <path d="M15 12.5c0-4.5 4-7.5 9-7.5s9 3 9 7.5z" fill="#ca8a04" />
+      <circle cx="24" cy="18.5" r="5.6" fill="#fbbf9a" />
+      <path
+        d="M19 17c1.5-1.6 8.5-1.6 10 0"
+        stroke="#78350f"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        fill="none"
+        opacity="0.5"
+      />
+      <path
+        d="M13 41v-3.5c0-6.2 5-10.5 11-10.5s11 4.3 11 10.5V41z"
+        fill="#16a34a"
+      />
+      <path d="M20 27.5v13.5M28 27.5v13.5" stroke="#15803d" strokeWidth="1.6" opacity="0.6" />
+      <path d="M20 27.5l1.5 4h5l1.5-4" fill="#f0fdf4" opacity="0.9" />
     </svg>
   );
 }
@@ -85,13 +143,18 @@ export function FarmerIcon({ className }: IconProps) {
 export function PinIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <g transform="translate(24 24) scale(1.111) translate(-24 -24)">
-        <path
-          d="M24 6c-7.7 0-14 6.3-14 14 0 10.5 14 22 14 22s14-11.5 14-22c0-7.7-6.3-14-14-14z"
-          fill="#166534"
-        />
-        <circle cx="24" cy="20" r="5.5" fill="#f0fdf4" />
-      </g>
+      <ellipse cx="24" cy="41" rx="7" ry="2" fill="#166534" opacity="0.25" />
+      <path
+        d="M24 6c-7.7 0-14 6.3-14 14 0 10.5 14 22 14 22s14-11.5 14-22c0-7.7-6.3-14-14-14z"
+        fill="#16a34a"
+      />
+      <path
+        d="M24 6c-7.7 0-14 6.3-14 14 0 1 .07 2 .2 3C11 14 16.7 8 24 8z"
+        fill="#4ade80"
+        opacity="0.55"
+      />
+      <circle cx="24" cy="20" r="5.6" fill="#f0fdf4" />
+      <circle cx="24" cy="20" r="2.4" fill="#16a34a" />
     </svg>
   );
 }
@@ -99,19 +162,50 @@ export function PinIcon({ className }: IconProps) {
 export function CartIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <g transform="translate(24 24) scale(1.29) translate(-23.5 -24)">
-        <path
-          d="M8 10h4l3.5 18h19"
-          stroke="#f97316"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-        />
-        <path d="M15 15h24l-2.5 12h-19z" fill="#fb923c" />
-        <circle cx="19" cy="36" r="3" fill="#c2410c" />
-        <circle cx="32" cy="36" r="3" fill="#c2410c" />
-        <path d="M24 15c0-4 2.5-6 6-6-.3 4-2.5 6-6 6" fill="#22c55e" />
+      <path
+        d="M8 9h4l3.6 19h20"
+        stroke="#c2410c"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+      <path d="M15 14h25l-2.6 13H17.5z" fill="#fb923c" />
+      <g stroke="#c2410c" strokeWidth="1" opacity="0.5">
+        <path d="M18 17h21" />
+        <path d="M19 21h19.5" />
+        <path d="M19.8 25h18" />
+      </g>
+      <circle cx="20" cy="36" r="3.2" fill="#1f2937" />
+      <circle cx="20" cy="36" r="1.2" fill="#9ca3af" />
+      <circle cx="33" cy="36" r="3.2" fill="#1f2937" />
+      <circle cx="33" cy="36" r="1.2" fill="#9ca3af" />
+      <path d="M25 14c0-4 2.4-6.4 6-6.6-.2 4-2.4 6.4-6 6.6" fill="#22c55e" />
+    </svg>
+  );
+}
+
+export function VideoIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
+      <rect x="7" y="10" width="30" height="26" rx="6" fill="#e11d48" />
+      <rect x="7" y="10" width="30" height="7" rx="6" fill="#fb7185" opacity="0.55" />
+      <path d="M32 20.5 41 15v18l-9-5.5z" fill="#be123c" />
+      <path d="M18 17.5v11l10-5.5z" fill="#fff1f2" />
+    </svg>
+  );
+}
+
+export function MegaphoneIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
+      <path d="M6 20v8a3 3 0 0 0 3 3h3l15 8V9L12 17H9a3 3 0 0 0-3 3z" fill="#f59e0b" />
+      <path d="M6 20v8a3 3 0 0 0 3 3h3v-14H9a3 3 0 0 0-3 3z" fill="#d97706" />
+      <path d="M27 8v33l11 6V2z" fill="#fbbf24" />
+      <path d="M12 34v5a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-2.3" fill="#92400e" />
+      <g stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" opacity="0.8" fill="none">
+        <path d="M41 15c2 2.5 2 7.5 0 10" />
+        <path d="M44.5 12c3 4 3 12.5 0 16.5" />
       </g>
     </svg>
   );
@@ -120,14 +214,13 @@ export function CartIcon({ className }: IconProps) {
 export function NewsIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <g transform="translate(24 24) scale(1.053) translate(-23 -25)">
-        <path d="M12 6h18l6 6v30a2 2 0 0 1-2 2H12a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" fill="#2563eb" />
-        <path d="M30 6v6h6z" fill="#1d4ed8" />
-        <g stroke="#dbeafe" strokeWidth="2" strokeLinecap="round">
-          <path d="M15 22h18" />
-          <path d="M15 27h18" />
-          <path d="M15 32h11" />
-        </g>
+      <path d="M11 6h19l7 7v29a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" fill="#2563eb" />
+      <path d="M30 6v7h7z" fill="#1d4ed8" />
+      <rect x="14" y="14" width="9" height="4.5" rx="1" fill="#93c5fd" />
+      <g stroke="#dbeafe" strokeWidth="2.2" strokeLinecap="round">
+        <path d="M14 22h20" />
+        <path d="M14 27.5h20" />
+        <path d="M14 33h13" />
       </g>
     </svg>
   );
@@ -146,28 +239,6 @@ export function BankIcon({ className }: IconProps) {
   );
 }
 
-export function VideoIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <g transform="translate(24 24) scale(1.25) translate(-24 -24)">
-        <rect x="8" y="9" width="32" height="30" rx="6" fill="#f43f5e" />
-        <path d="M19 18v12l12-6z" fill="#fff1f2" />
-      </g>
-    </svg>
-  );
-}
-
-export function MegaphoneIcon({ className }: IconProps) {
-  return (
-    <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <g transform="translate(24 24) scale(0.909) translate(-22.5 -23.5)">
-        <path d="M6 19v10a3 3 0 0 0 3 3h4l16 9V7L13 16H9a3 3 0 0 0-3 3z" fill="#f59e0b" />
-        <path d="M29 7v33l10 5.5V1.5z" fill="#fbbf24" />
-        <path d="M13 32v6a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-3" fill="#b45309" />
-      </g>
-    </svg>
-  );
-}
 
 export function GradCapIcon({ className }: IconProps) {
   return (
