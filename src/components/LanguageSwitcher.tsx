@@ -1,13 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 type LangCode = "ko" | "en" | "ja";
 
-const LANGS: { code: LangCode; short: string; label: string }[] = [
-  { code: "ko", short: "KOR", label: "한국어" },
-  { code: "en", short: "EN", label: "English" },
-  { code: "ja", short: "JP", label: "日本語" },
+const LANGS: { code: LangCode; flag: string; label: string }[] = [
+  { code: "ko", flag: "/flags/kr.svg", label: "한국어" },
+  { code: "en", flag: "/flags/us.svg", label: "English" },
+  { code: "ja", flag: "/flags/jp.svg", label: "日本語" },
 ];
 
 function readLangFromCookie(): LangCode {
@@ -110,9 +111,9 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="notranslate flex items-center gap-1">
+    <div className="notranslate flex items-center gap-1.5">
       <div id="google_translate_element" className="hidden" />
-      {LANGS.map(({ code, short, label }) => (
+      {LANGS.map(({ code, flag, label }) => (
         <button
           key={code}
           type="button"
@@ -121,13 +122,13 @@ export function LanguageSwitcher() {
           aria-label={label}
           aria-pressed={current === code}
           title={unavailable ? "번역 서비스를 불러올 수 없어요" : label}
-          className={`rounded-[4px] px-1.5 py-0.5 text-[10px] font-bold tracking-wide shadow-sm ring-1 transition disabled:opacity-40 sm:px-2 sm:py-1 sm:text-xs ${
+          className={`flex h-7 w-7 items-center justify-center overflow-hidden rounded-full shadow-sm ring-1 transition disabled:opacity-40 sm:h-8 sm:w-8 ${
             current === code
-              ? "bg-white text-brand-800 ring-white"
-              : "text-white/70 ring-white/30 opacity-70 hover:opacity-100"
+              ? "scale-110 ring-white"
+              : "opacity-60 ring-white/30 hover:opacity-100"
           } ${pending === code ? "animate-pulse" : ""}`}
         >
-          {short}
+          <Image src={flag} alt="" width={32} height={32} className="h-full w-full object-cover" />
         </button>
       ))}
     </div>

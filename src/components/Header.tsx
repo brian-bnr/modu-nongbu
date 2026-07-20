@@ -32,7 +32,7 @@ function HeaderAuthFallback() {
 
 export function Header() {
   return (
-    <header className="bg-brand-900">
+    <header className="bg-brand-700">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-8 sm:py-4">
         <Link
           href="/"
