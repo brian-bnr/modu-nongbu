@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { UserIcon, GridIcon } from "@/components/icons/NavIcons";
+import { UserIcon, GridIcon, MessageIcon } from "@/components/icons/NavIcons";
 import { DashboardShell, type DashboardAction } from "@/components/dashboard/DashboardShell";
 
 // 업체 구매·계약 매칭 기능이 아직 없어 실데이터가 없으므로, 화면 구성을 보여주기 위한 예시 수치입니다.
@@ -7,7 +7,7 @@ const SAMPLE_STATS = { purchaseRequests: 5, contractsInProgress: 2 };
 
 const ACTIONS: DashboardAction[] = [
   { label: "농산물 거래", sublabel: "구매처 찾기", href: "/products", iconSrc: "/icons/category/basket.png" },
-  { label: "문의 내역", sublabel: "받은 문의 확인", href: "/my/inquiries", Icon: UserIcon },
+  { label: "문의 내역", sublabel: "받은 문의 확인", href: "/my/inquiries", Icon: MessageIcon },
   { label: "내 정보", sublabel: "정보 관리", href: "/my", Icon: UserIcon },
   { label: "전체 서비스", sublabel: "서비스 둘러보기", href: "/services", Icon: GridIcon },
 ];

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
 import { DRONE_RESERVATION_STATUS_VARIANT, formatPrice } from "@/lib/format";
-import { UserIcon } from "@/components/icons/NavIcons";
+import { UserIcon, CalendarIcon } from "@/components/icons/NavIcons";
 import { DashboardShell, type DashboardAction } from "@/components/dashboard/DashboardShell";
 
 const STATUS_COPY: Record<string, { title: string; body: string }> = {
@@ -23,7 +23,7 @@ const STATUS_COPY: Record<string, { title: string; body: string }> = {
 function buildActions(operatorId: string | null): DashboardAction[] {
   return [
     { label: "오늘의 작업", sublabel: "일자리 목록", href: "/drones/operator", iconSrc: "/icons/category/drone.png" },
-    { label: "내 일정", sublabel: "일정 관리", href: "/drones/operator", iconSrc: "/icons/category/tractor.png" },
+    { label: "내 일정", sublabel: "일정 관리", href: "/drones/operator", Icon: CalendarIcon },
     {
       label: "정산 내역",
       sublabel: "수익 확인",

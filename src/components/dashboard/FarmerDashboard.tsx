@@ -2,17 +2,23 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
 import { DRONE_RESERVATION_STATUS_LABEL, DRONE_RESERVATION_STATUS_VARIANT, formatPrice } from "@/lib/format";
-import { UserIcon } from "@/components/icons/NavIcons";
+import { UserIcon, CalendarIcon, SearchIcon } from "@/components/icons/NavIcons";
 import { DashboardShell, type DashboardAction } from "@/components/dashboard/DashboardShell";
 
 const ACTIONS: DashboardAction[] = [
   { label: "방제 신청", sublabel: "방제 요청하기", href: "/drones/new", iconSrc: "/icons/category/drone.png" },
-  { label: "신청 내역", sublabel: "신청 내역 확인", href: "/drones", iconSrc: "/icons/category/basket.png" },
+  { label: "신청 내역", sublabel: "신청 내역 확인", href: "/drones", Icon: CalendarIcon },
+  {
+    label: "농산물 판매",
+    sublabel: "판매글 등록",
+    href: "/products/new?type=SELL_PRODUCT",
+    iconSrc: "/icons/category/basket.png",
+  },
   {
     label: "방제사 찾기",
     sublabel: "방제사 검색",
     href: "/drones/operators",
-    iconSrc: "/icons/roles/operator.png",
+    Icon: SearchIcon,
   },
   { label: "내 정보", sublabel: "정보 관리", href: "/my", Icon: UserIcon },
 ];

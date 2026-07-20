@@ -59,11 +59,15 @@ export function DashboardShell({
         href={heroHref}
         className={`mt-3 block rounded-xl p-5 text-white transition hover:brightness-110 ${HERO_GRADIENT_CLASS[color]}`}
       >
-        <p className="text-base font-bold leading-snug">{heroTitle}</p>
-        <p className="mt-1 text-xs text-white/80">{heroSubtitle}</p>
+        <p className="break-keep text-base font-bold leading-snug">{heroTitle}</p>
+        <p className="mt-1 break-keep text-xs text-white/80">{heroSubtitle}</p>
       </Link>
 
-      <div className="mt-4 grid grid-cols-4 gap-2 text-center">
+      <div
+        className={`mt-4 grid gap-2 text-center ${
+          actions.length === 5 ? "grid-cols-5" : "grid-cols-4"
+        }`}
+      >
         {actions.map((a) => (
           <Link
             key={a.label}
