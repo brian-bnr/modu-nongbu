@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { DroneReservationStatus } from "@prisma/client";
+import type { DroneReservationStatus, DroneOperatorStatus, Role } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
 import { ScrollReveal } from "@/components/ScrollReveal";
@@ -15,6 +15,8 @@ import {
   POST_TYPE_ICON,
   DRONE_RESERVATION_STATUS_LABEL,
   DRONE_RESERVATION_STATUS_VARIANT,
+  DRONE_OPERATOR_STATUS_LABEL,
+  ROLE_LABEL,
 } from "@/lib/format";
 
 const DRONE_STATUS_ORDER: DroneReservationStatus[] = [
@@ -27,6 +29,15 @@ const DRONE_STATUS_ORDER: DroneReservationStatus[] = [
   "CANCELLED",
   "DISPUTED",
 ];
+
+const ROLE_ORDER: Role[] = ["FARMER", "OPERATOR", "EXPERT", "COMPANY"];
+const OPERATOR_STATUS_ORDER: DroneOperatorStatus[] = ["PENDING", "APPROVED", "REJECTED", "SUSPENDED"];
+const OPERATOR_STATUS_BAR_CLASS: Record<DroneOperatorStatus, string> = {
+  PENDING: "bg-amber-500",
+  APPROVED: "bg-brand-600",
+  REJECTED: "bg-red-500",
+  SUSPENDED: "bg-red-500",
+};
 
 const VARIANT_BAR_CLASS: Record<string, string> = {
   neutral: "bg-black/25 dark:bg-white/30",
@@ -71,6 +82,8 @@ export default async function AdminDashboardPage() {
     visitRows,
     heldAgg,
     paidThisMonthAgg,
+    roleRows,
+    operatorStatusRows,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.post.count(),
@@ -97,6 +110,8 @@ export default async function AdminDashboardPage() {
       where: { status: "PAID", paidAt: { gte: monthStart } },
       _sum: { payoutAmount: true },
     }),
+    prisma.user.groupBy({ by: ["role"], _count: true }),
+    prisma.droneOperator.groupBy({ by: ["status"], _count: true }),
   ]);
 
   const visitMap = new Map(visitRows.map((row) => [row.visitDate, row._count]));
@@ -118,6 +133,17 @@ export default async function AdminDashboardPage() {
     label: DRONE_RESERVATION_STATUS_LABEL[s],
     value: droneStatusMap.get(s) ?? 0,
     colorClass: VARIANT_BAR_CLASS[DRONE_RESERVATION_STATUS_VARIANT[s]],
+  }));
+
+  const roleMap = new Map(roleRows.map((row) => [row.role, row._count]));
+  const roleStats = ROLE_ORDER.map((r) => ({ role: r, count: roleMap.get(r) ?? 0 }));
+
+  const operatorStatusMap = new Map(operatorStatusRows.map((row) => [row.status, row._count]));
+  const operatorStatusItems: BarListItem[] = OPERATOR_STATUS_ORDER.map((s) => ({
+    key: s,
+    label: DRONE_OPERATOR_STATUS_LABEL[s],
+    value: operatorStatusMap.get(s) ?? 0,
+    colorClass: OPERATOR_STATUS_BAR_CLASS[s],
   }));
 
   return (
@@ -178,6 +204,31 @@ export default async function AdminDashboardPage() {
           unit="원"
           delay={280}
         />
+      </div>
+
+      <div className="mt-8">
+        <h2 className="text-sm font-semibold text-black/60 dark:text-white/60">역할(모드)별 현황</h2>
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {roleStats.map(({ role, count }, i) => (
+            <StatTile
+              key={role}
+              label={`${ROLE_LABEL[role]} 모드`}
+              value={count}
+              color={["blue", "teal", "amber", "indigo"][i] as "blue" | "teal" | "amber" | "indigo"}
+              href="/admin/users"
+              delay={i * 40}
+            />
+          ))}
+        </div>
+        <div className="mt-4">
+          <SectionCard title="방제사 승인 현황" tone="teal" delay={0}>
+            {operatorStatusItems.every((item) => item.value === 0) ? (
+              <p className="text-sm text-black/50 dark:text-white/50">방제사 신청 내역이 없습니다.</p>
+            ) : (
+              <BarList items={operatorStatusItems} />
+            )}
+          </SectionCard>
+        </div>
       </div>
 
       <div className="mt-8">

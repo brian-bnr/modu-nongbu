@@ -10,6 +10,11 @@ import {
   POST_STATUS_LABEL,
   POST_STATUS_VARIANT,
   POST_TYPE_LABEL,
+  ROLE_LABEL,
+  ROLE_VARIANT,
+  DRONE_OPERATOR_STATUS_LABEL,
+  DRONE_OPERATOR_STATUS_VARIANT,
+  EXPERT_SPECIALTY_LABEL,
 } from "@/lib/format";
 
 const JOB_TYPES = new Set(["FIND_WORKER", "LOOKING_FOR_WORK"]);
@@ -28,6 +33,9 @@ export default async function AdminUserDetailPage({
     include: {
       posts: { orderBy: { createdAt: "desc" } },
       inquiries: { orderBy: { createdAt: "desc" }, include: { post: true } },
+      droneOperator: true,
+      expertProfile: true,
+      companyProfile: true,
     },
   });
 
@@ -49,6 +57,7 @@ export default async function AdminUserDetailPage({
       <div className="mt-2 rounded-lg border border-black/10 p-4 text-sm dark:border-white/10">
         <div className="flex items-center gap-2">
           <p className="text-lg font-semibold">{user.name}</p>
+          <Badge variant={ROLE_VARIANT[user.role]}>{ROLE_LABEL[user.role]} 모드</Badge>
           {isNew && <Badge variant="amber">신규</Badge>}
         </div>
         <p className="mt-1 text-black/60 dark:text-white/60">
@@ -60,6 +69,87 @@ export default async function AdminUserDetailPage({
           가입일 {formatDate(user.createdAt)}
         </p>
       </div>
+
+      {user.role === "FARMER" && (
+        <div className="mt-3 flex flex-wrap gap-2 text-xs">
+          <Badge variant="neutral">
+            논 {user.hasPaddyField === null ? "미입력" : user.hasPaddyField ? "있음" : "없음"}
+          </Badge>
+          <Badge variant="neutral">
+            밭 {user.hasUplandField === null ? "미입력" : user.hasUplandField ? "있음" : "없음"}
+          </Badge>
+        </div>
+      )}
+
+      {user.role === "OPERATOR" && (
+        <div className="mt-3 rounded-lg border border-black/10 p-4 text-sm dark:border-white/10">
+          <div className="flex items-center justify-between">
+            <p className="font-semibold">방제사 정보</p>
+            {user.droneOperator && (
+              <Badge variant={DRONE_OPERATOR_STATUS_VARIANT[user.droneOperator.status]}>
+                {DRONE_OPERATOR_STATUS_LABEL[user.droneOperator.status]}
+              </Badge>
+            )}
+          </div>
+          {user.droneOperator ? (
+            <div className="mt-2 space-y-1 text-black/60 dark:text-white/60">
+              {user.droneOperator.droneModel && <p>드론 기종: {user.droneOperator.droneModel}</p>}
+              {user.droneOperator.experienceYears != null && (
+                <p>경력: {user.droneOperator.experienceYears}년</p>
+              )}
+              {user.droneOperator.activityRegion && (
+                <p>활동 지역: {user.droneOperator.activityRegion}</p>
+              )}
+              {user.droneOperator.equipmentInfo && <p>비고: {user.droneOperator.equipmentInfo}</p>}
+            </div>
+          ) : (
+            <p className="mt-2 text-black/50 dark:text-white/50">방제사 신청 내역이 없습니다.</p>
+          )}
+          <Link
+            href="/admin/drones"
+            className="mt-3 inline-block text-brand-700 hover:underline dark:text-brand-400"
+          >
+            드론 예약 관리로 이동 →
+          </Link>
+        </div>
+      )}
+
+      {user.role === "EXPERT" && (
+        <div className="mt-3 rounded-lg border border-black/10 p-4 text-sm dark:border-white/10">
+          <p className="font-semibold">전문가 정보</p>
+          {user.expertProfile ? (
+            <div className="mt-2 space-y-1 text-black/60 dark:text-white/60">
+              <p>분야: {EXPERT_SPECIALTY_LABEL[user.expertProfile.specialty]}</p>
+              {user.expertProfile.activityRegion && (
+                <p>활동 지역: {user.expertProfile.activityRegion}</p>
+              )}
+              {user.expertProfile.bio && <p>소개: {user.expertProfile.bio}</p>}
+            </div>
+          ) : (
+            <p className="mt-2 text-black/50 dark:text-white/50">등록된 전문가 정보가 없습니다.</p>
+          )}
+        </div>
+      )}
+
+      {user.role === "COMPANY" && (
+        <div className="mt-3 rounded-lg border border-black/10 p-4 text-sm dark:border-white/10">
+          <p className="font-semibold">업체 정보</p>
+          {user.companyProfile ? (
+            <div className="mt-2 space-y-1 text-black/60 dark:text-white/60">
+              <p>업체 유형: {user.companyProfile.companyType}</p>
+              {user.companyProfile.mainItem && <p>취급 품목: {user.companyProfile.mainItem}</p>}
+              {user.companyProfile.activityRegion && (
+                <p>활동 지역: {user.companyProfile.activityRegion}</p>
+              )}
+              {user.companyProfile.businessInfo && (
+                <p>사업자 정보: {user.companyProfile.businessInfo}</p>
+              )}
+            </div>
+          ) : (
+            <p className="mt-2 text-black/50 dark:text-white/50">등록된 업체 정보가 없습니다.</p>
+          )}
+        </div>
+      )}
 
       <h2 className="mt-8 text-lg font-semibold">이 회원이 올린 글 {user.posts.length}건</h2>
       {user.posts.length === 0 ? (

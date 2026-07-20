@@ -7,7 +7,29 @@ import type {
   PaymentStatus,
   SettlementStatus,
   DisputeStatus,
+  Role,
+  ExpertSpecialty,
 } from "@prisma/client";
+
+export const ROLE_LABEL: Record<Role, string> = {
+  FARMER: "농민",
+  OPERATOR: "방제사",
+  EXPERT: "농업 전문가",
+  COMPANY: "업체",
+};
+
+export const ROLE_VARIANT: Record<Role, "neutral" | "green" | "amber" | "red" | "blue"> = {
+  FARMER: "green",
+  OPERATOR: "blue",
+  EXPERT: "amber",
+  COMPANY: "neutral",
+};
+
+export const EXPERT_SPECIALTY_LABEL: Record<ExpertSpecialty, string> = {
+  DISTRIBUTION: "유통",
+  SUPPLIES: "농자재",
+  OTHER: "기타",
+};
 
 export const POST_TYPE_LABEL: Record<PostType, string> = {
   SELL_PRODUCT: "농산물 판매",

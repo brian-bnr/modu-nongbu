@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
+import type { Role } from "@prisma/client";
 
 const SOCIAL_PROVIDERS = new Set(["google", "kakao", "naver"]);
 
@@ -65,7 +66,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
-        return { id: user.id, email: user.email, name: user.name, type: "user" };
+        return { id: user.id, email: user.email, name: user.name, type: "user", role: user.role };
       },
     }),
     Google({
@@ -105,18 +106,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       user.id = record.id;
       user.type = "user";
+      user.role = record.role;
       return true;
     },
     jwt({ token, user }) {
       if (user) {
         token.id = user.id as string;
         token.type = user.type;
+        token.role = user.role;
       }
       return token;
     },
     session({ session, token }) {
       session.user.id = token.id as string;
       session.user.type = token.type as "admin" | "user";
+      session.user.role = token.role as Role | undefined;
       return session;
     },
   },

@@ -20,6 +20,18 @@ export async function signupAction(
     email: formData.get("email"),
     password: formData.get("password"),
     region: formData.get("region"),
+    role: formData.get("role"),
+    hasPaddyField: formData.get("hasPaddyField") || undefined,
+    hasUplandField: formData.get("hasUplandField") || undefined,
+    droneModel: formData.get("droneModel"),
+    experienceYears: formData.get("experienceYears"),
+    activityRegion: formData.get("activityRegion"),
+    equipmentInfo: formData.get("equipmentInfo"),
+    specialty: formData.get("specialty") || undefined,
+    bio: formData.get("bio"),
+    companyType: formData.get("companyType"),
+    mainItem: formData.get("mainItem"),
+    businessInfo: formData.get("businessInfo"),
   });
 
   if (!parsed.success) {
@@ -31,20 +43,57 @@ export async function signupAction(
     return { errors: { email: ["이미 가입된 이메일입니다."] } };
   }
 
+  const data = parsed.data;
+
   await prisma.user.create({
     data: {
-      name: parsed.data.name,
-      phone: parsed.data.phone,
-      email: parsed.data.email,
-      passwordHash: await bcrypt.hash(parsed.data.password, 10),
-      region: parsed.data.region || null,
+      name: data.name,
+      phone: data.phone,
+      email: data.email,
+      passwordHash: await bcrypt.hash(data.password, 10),
+      region: data.region || null,
+      role: data.role,
+      hasPaddyField: data.role === "FARMER" ? data.hasPaddyField ?? null : null,
+      hasUplandField: data.role === "FARMER" ? data.hasUplandField ?? null : null,
+      droneOperator:
+        data.role === "OPERATOR"
+          ? {
+              create: {
+                droneModel: data.droneModel || null,
+                experienceYears: data.experienceYears ?? null,
+                activityRegion: data.activityRegion || null,
+                equipmentInfo: data.equipmentInfo || null,
+              },
+            }
+          : undefined,
+      expertProfile:
+        data.role === "EXPERT" && data.specialty
+          ? {
+              create: {
+                specialty: data.specialty,
+                activityRegion: data.activityRegion || null,
+                bio: data.bio || null,
+              },
+            }
+          : undefined,
+      companyProfile:
+        data.role === "COMPANY"
+          ? {
+              create: {
+                companyType: data.companyType || "",
+                mainItem: data.mainItem || null,
+                activityRegion: data.activityRegion || null,
+                businessInfo: data.businessInfo || null,
+              },
+            }
+          : undefined,
     },
   });
 
   try {
     await signIn("user", {
-      email: parsed.data.email,
-      password: parsed.data.password,
+      email: data.email,
+      password: data.password,
       redirectTo: "/",
     });
   } catch (error) {

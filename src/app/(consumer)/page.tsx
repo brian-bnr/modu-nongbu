@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { PostCard } from "@/components/PostCard";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { RankingTabs } from "@/components/RankingTabs";
@@ -13,6 +14,10 @@ import { SAMPLE_OPERATORS } from "@/lib/sampleOperators";
 import { formatPrice } from "@/lib/format";
 import { RICE_UNIT_PRICE } from "@/lib/cropPricing";
 import { TractorFlatIcon, CartIcon, GradCapIcon } from "@/components/icons/CategoryIcons";
+import { FarmerDashboard } from "@/components/dashboard/FarmerDashboard";
+import { OperatorDashboard } from "@/components/dashboard/OperatorDashboard";
+import { ExpertDashboard } from "@/components/dashboard/ExpertDashboard";
+import { CompanyDashboard } from "@/components/dashboard/CompanyDashboard";
 
 const HERO_SLIDES = [
   {
@@ -79,14 +84,33 @@ const getHomeData = unstable_cache(
 export default async function HomePage() {
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-  const { recentPosts, popularRealtime, popularWeekly, topOperators } =
-    await getHomeData(sevenDaysAgo.toISOString());
+  const [{ recentPosts, popularRealtime, popularWeekly, topOperators }, session] =
+    await Promise.all([getHomeData(sevenDaysAgo.toISOString()), auth()]);
+
+  const loggedInUser = session?.user?.type === "user" ? session.user : null;
 
   return (
     <div>
       <HeroCarousel slides={HERO_SLIDES} />
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
+        {loggedInUser && (
+          <section className="mb-8">
+            {loggedInUser.role === "OPERATOR" && (
+              <OperatorDashboard userId={loggedInUser.id} name={loggedInUser.name ?? "회원"} />
+            )}
+            {loggedInUser.role === "EXPERT" && (
+              <ExpertDashboard userId={loggedInUser.id} name={loggedInUser.name ?? "회원"} />
+            )}
+            {loggedInUser.role === "COMPANY" && (
+              <CompanyDashboard userId={loggedInUser.id} name={loggedInUser.name ?? "회원"} />
+            )}
+            {(!loggedInUser.role || loggedInUser.role === "FARMER") && (
+              <FarmerDashboard userId={loggedInUser.id} name={loggedInUser.name ?? "회원"} />
+            )}
+          </section>
+        )}
+
         <section>
           <div className="grid grid-cols-5 gap-x-2 gap-y-6 sm:grid-cols-5 lg:grid-cols-10">
             {CATEGORY_TILES.map((t, i) => (

@@ -16,16 +16,90 @@ export const POST_TYPES = [
   "DRONE_SERVICE",
 ] as const;
 
-export const signupSchema = z.object({
-  name: z.string().min(1, "이름을 입력해주세요."),
-  phone: z
-    .string()
-    .min(1, "연락처를 입력해주세요.")
-    .regex(/^[0-9-]{9,13}$/, "올바른 전화번호 형식이 아닙니다."),
-  email: z.string().email("올바른 이메일 형식이 아닙니다."),
-  password: z.string().min(8, "비밀번호는 8자 이상이어야 합니다."),
-  region: z.string().optional().or(z.literal("")),
-});
+export const ROLES = ["FARMER", "OPERATOR", "EXPERT", "COMPANY"] as const;
+export const EXPERT_SPECIALTIES = ["DISTRIBUTION", "SUPPLIES", "OTHER"] as const;
+
+const yesNo = z.enum(["yes", "no"]).transform((v) => v === "yes");
+
+export const signupSchema = z
+  .object({
+    name: z.string().min(1, "이름을 입력해주세요."),
+    phone: z
+      .string()
+      .min(1, "연락처를 입력해주세요.")
+      .regex(/^[0-9-]{9,13}$/, "올바른 전화번호 형식이 아닙니다."),
+    email: z.string().email("올바른 이메일 형식이 아닙니다."),
+    password: z.string().min(8, "비밀번호는 8자 이상이어야 합니다."),
+    region: z.string().optional().or(z.literal("")),
+    role: z.enum(ROLES, { message: "역할을 선택해주세요." }),
+
+    // 농민
+    hasPaddyField: yesNo.optional(),
+    hasUplandField: yesNo.optional(),
+
+    // 방제사
+    droneModel: z.string().optional().or(z.literal("")),
+    experienceYears: optionalInt,
+    activityRegion: z.string().optional().or(z.literal("")),
+    equipmentInfo: z.string().optional().or(z.literal("")),
+
+    // 전문가
+    specialty: z.enum(EXPERT_SPECIALTIES).optional(),
+    bio: z.string().optional().or(z.literal("")),
+
+    // 업체
+    companyType: z.string().optional().or(z.literal("")),
+    mainItem: z.string().optional().or(z.literal("")),
+    businessInfo: z.string().optional().or(z.literal("")),
+  })
+  .superRefine((data, ctx) => {
+    if (data.role === "FARMER") {
+      if (data.hasPaddyField === undefined) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["hasPaddyField"],
+          message: "논이 있으신지 선택해주세요.",
+        });
+      }
+      if (data.hasUplandField === undefined) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["hasUplandField"],
+          message: "밭이 있으신지 선택해주세요.",
+        });
+      }
+    }
+
+    if (data.role === "OPERATOR") {
+      if (!data.droneModel) {
+        ctx.addIssue({ code: "custom", path: ["droneModel"], message: "보유 드론 기종을 입력해주세요." });
+      }
+      if (data.experienceYears === undefined) {
+        ctx.addIssue({ code: "custom", path: ["experienceYears"], message: "방제 경력을 선택해주세요." });
+      }
+      if (!data.activityRegion) {
+        ctx.addIssue({ code: "custom", path: ["activityRegion"], message: "활동 지역을 선택해주세요." });
+      }
+    }
+
+    if (data.role === "EXPERT") {
+      if (!data.specialty) {
+        ctx.addIssue({ code: "custom", path: ["specialty"], message: "전문 분야를 선택해주세요." });
+      }
+      if (!data.activityRegion) {
+        ctx.addIssue({ code: "custom", path: ["activityRegion"], message: "활동 지역을 선택해주세요." });
+      }
+    }
+
+    if (data.role === "COMPANY") {
+      if (!data.companyType) {
+        ctx.addIssue({ code: "custom", path: ["companyType"], message: "업체 유형을 선택해주세요." });
+      }
+      if (!data.activityRegion) {
+        ctx.addIssue({ code: "custom", path: ["activityRegion"], message: "활동 지역을 선택해주세요." });
+      }
+    }
+  });
 
 export const userLoginSchema = z.object({
   email: z.string().email("올바른 이메일 형식이 아닙니다."),

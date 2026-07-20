@@ -63,7 +63,7 @@ export function Header() {
           </Suspense>
           <Link
             href="/admin"
-            className="hidden whitespace-nowrap text-white/40 hover:underline sm:inline"
+            className="whitespace-nowrap text-white/40 hover:underline"
           >
             운영자
           </Link>

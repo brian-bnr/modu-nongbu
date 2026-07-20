@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
 import { PageIntro, StatTile, SectionCard, GridCard } from "@/components/admin/AdminUI";
 import { requireAdmin } from "@/lib/auth";
-import { formatDate } from "@/lib/format";
+import { formatDate, ROLE_LABEL, ROLE_VARIANT } from "@/lib/format";
 
 const NEW_USER_WINDOW_MS = 5 * 24 * 60 * 60 * 1000;
 
@@ -38,6 +38,7 @@ export default async function AdminUsersPage() {
                   <GridCard key={user.id} href={`/admin/users/${user.id}`} delay={i * 30}>
                     <div className="flex items-center gap-2">
                       <p className="font-medium">{user.name}</p>
+                      <Badge variant={ROLE_VARIANT[user.role]}>{ROLE_LABEL[user.role]}</Badge>
                       {isNew && <Badge variant="amber">신규</Badge>}
                     </div>
                     <div>
