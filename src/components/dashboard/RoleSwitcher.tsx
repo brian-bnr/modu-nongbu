@@ -22,19 +22,13 @@ export function RoleSwitcher({ currentRole }: { currentRole: Role }) {
               aria-label={opt.label}
               aria-current={currentRole === opt.role}
               disabled={currentRole === opt.role}
-              className={`flex h-9 w-9 items-center justify-center rounded-full ring-2 transition ${
+              className={`relative block h-9 w-9 overflow-hidden rounded-full ring-2 transition ${
                 currentRole === opt.role
                   ? "ring-brand-600"
                   : "opacity-40 ring-transparent hover:opacity-100"
               }`}
             >
-              <Image
-                src={opt.icon}
-                alt=""
-                width={36}
-                height={36}
-                className="h-9 w-9 rounded-full object-cover"
-              />
+              <Image src={opt.icon} alt="" fill sizes="36px" className="object-cover" />
             </button>
           </form>
         ))}

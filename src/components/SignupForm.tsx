@@ -215,7 +215,9 @@ export function SignupForm() {
                 : "border-black/10 dark:border-white/15"
             }`}
           >
-            <Image src={opt.icon} alt="" width={44} height={44} className="h-11 w-11 shrink-0 rounded-lg" />
+            <span className="relative block h-11 w-11 shrink-0 overflow-hidden rounded-lg">
+              <Image src={opt.icon} alt="" fill sizes="44px" className="object-cover" />
+            </span>
             <span>
               <span className="block text-sm font-semibold">{opt.title}</span>
               <span className="block text-xs text-black/50 dark:text-white/50">{opt.description}</span>
