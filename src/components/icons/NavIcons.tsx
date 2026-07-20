@@ -78,14 +78,6 @@ export function TractorIcon({ className }: IconProps) {
   );
 }
 
-export function ChatIcon({ className }: IconProps) {
-  return (
-    <svg {...base} className={className} aria-hidden="true">
-      <path d="M4 5.5h16v11H9l-4 3.5v-3.5H4z" />
-    </svg>
-  );
-}
-
 export function ChevronLeftIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className} aria-hidden="true">
