@@ -122,20 +122,13 @@ export function LanguageSwitcher() {
           aria-label={label}
           aria-pressed={current === code}
           title={unavailable ? "번역 서비스를 불러올 수 없어요" : label}
-          className={`flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full shadow-sm ring-1 transition disabled:opacity-40 sm:h-7 sm:w-7 ${
+          className={`relative block h-6 w-6 shrink-0 overflow-hidden rounded-full shadow-sm ring-1 transition disabled:opacity-40 sm:h-7 sm:w-7 ${
             current === code
               ? "scale-110 ring-white"
               : "opacity-60 ring-white/30 hover:opacity-100"
           } ${pending === code ? "animate-pulse" : ""}`}
         >
-          <Image
-            src={flag}
-            alt=""
-            width={28}
-            height={28}
-            unoptimized
-            className="h-full w-full rounded-full object-cover"
-          />
+          <Image src={flag} alt="" fill unoptimized sizes="28px" className="object-cover" />
         </button>
       ))}
     </div>
