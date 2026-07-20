@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import type { NextFetchEvent } from "next/server";
+import type { NextFetchEvent, NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -46,9 +46,40 @@ function trackVisit(
   );
 }
 
+function checkInvestorAuth(req: NextRequest): NextResponse | null {
+  const expected = process.env.INVESTOR_PAGE_PASSWORD;
+  if (!expected) return null;
+
+  const authHeader = req.headers.get("authorization");
+  const valid =
+    !!authHeader &&
+    authHeader.startsWith("Basic ") &&
+    (() => {
+      try {
+        const decoded = atob(authHeader.slice(6));
+        const password = decoded.slice(decoded.indexOf(":") + 1);
+        return password === expected;
+      } catch {
+        return false;
+      }
+    })();
+
+  if (valid) return null;
+
+  return new NextResponse("Authentication required", {
+    status: 401,
+    headers: { "WWW-Authenticate": 'Basic realm="Investors"' },
+  });
+}
+
 export default auth((req, event: NextFetchEvent) => {
   const { pathname } = req.nextUrl;
   const session = req.auth;
+
+  if (pathname === "/investors" || pathname.startsWith("/investors/")) {
+    const challenge = checkInvestorAuth(req);
+    if (challenge) return challenge;
+  }
 
   let response: NextResponse;
 
