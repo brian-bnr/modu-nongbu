@@ -1,11 +1,29 @@
 "use client";
 
 import Image from "next/image";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { signupAction, type SignupActionState } from "@/app/(consumer)/signup/actions";
 import { REGIONS } from "@/lib/regions";
 
 const initialState: SignupActionState = {};
+
+const STEP_FIELDS = [
+  ["name", "phone", "email", "password"],
+  ["role"],
+  [
+    "hasPaddyField",
+    "hasUplandField",
+    "droneModel",
+    "experienceYears",
+    "activityRegion",
+    "equipmentInfo",
+    "specialty",
+    "bio",
+    "companyType",
+    "mainItem",
+    "businessInfo",
+  ],
+];
 
 const fieldClass =
   "mt-1 w-full rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent";
@@ -83,6 +101,19 @@ export function SignupForm() {
 
   const step0Valid = name && phone && email && password.length >= 8;
 
+  // 서버 검증 에러가 현재 보이지 않는 단계(예: 이메일 중복 에러가 1~3단계에 있는 동안
+  // 화면에는 안 보임)에 있으면, 에러 메시지가 실제로 보이는 단계로 자동 이동시킨다.
+  useEffect(() => {
+    const errorKeys = state.errors ? Object.keys(state.errors) : [];
+    if (errorKeys.length === 0) return;
+    const stepWithError = STEP_FIELDS.findIndex((fields) =>
+      errorKeys.some((key) => fields.includes(key))
+    );
+    if (stepWithError !== -1) {
+      setStep(stepWithError);
+    }
+  }, [state]);
+
   const yesNoButtonClass = (selected: boolean) =>
     `flex-1 rounded-full border px-4 py-2 text-sm font-medium transition ${
       selected
@@ -90,8 +121,19 @@ export function SignupForm() {
         : "border-black/10 text-black/70 hover:border-brand-700 dark:border-white/20 dark:text-white/70"
     }`;
 
+  const allErrorMessages = state.errors
+    ? Object.values(state.errors).flatMap((m) => m ?? [])
+    : [];
+
   return (
     <form action={formAction} className="space-y-4">
+      {allErrorMessages.length > 0 && (
+        <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
+          {allErrorMessages.map((msg) => (
+            <p key={msg}>{msg}</p>
+          ))}
+        </div>
+      )}
       {/* Step 0: 기본 정보 */}
       <div className={step === 0 ? "space-y-4" : "hidden"}>
         <div>

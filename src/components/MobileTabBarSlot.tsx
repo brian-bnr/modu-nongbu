@@ -4,5 +4,6 @@ import { MobileTabBar } from "@/components/MobileTabBar";
 export async function MobileTabBarSlot() {
   const session = await auth();
   const loggedIn = session?.user?.type === "user";
-  return <MobileTabBar loggedIn={loggedIn} />;
+  const role = loggedIn ? session?.user?.role : undefined;
+  return <MobileTabBar loggedIn={loggedIn} role={role} />;
 }

@@ -1,5 +1,6 @@
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { UserIcon, GridIcon } from "@/components/icons/NavIcons";
+import { DashboardShell, type DashboardAction } from "@/components/dashboard/DashboardShell";
 
 const STATUS_COPY: Record<string, { title: string; body: string }> = {
   PENDING: {
@@ -16,29 +17,35 @@ const STATUS_COPY: Record<string, { title: string; body: string }> = {
   },
 };
 
+const ACTIONS: DashboardAction[] = [
+  { label: "작업 보기", href: "/drones/operator", iconSrc: "/icons/category/drone.png" },
+  { label: "방제사 목록", href: "/drones/operators", iconSrc: "/icons/roles/operator.png" },
+  { label: "내 정보", href: "/my", Icon: UserIcon },
+  { label: "전체 서비스", href: "/services", Icon: GridIcon },
+];
+
 export async function OperatorDashboard({ userId, name }: { userId: string; name: string }) {
   const operator = await prisma.droneOperator.findUnique({ where: { userId } });
 
   if (!operator) {
     return (
-      <div className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
-        <p className="text-xs text-black/50 dark:text-white/50">방제사 모드</p>
-        <h2 className="mt-1 text-lg font-bold">방제사 정보가 없어요</h2>
-        <p className="mt-2 text-sm text-black/60 dark:text-white/60">
+      <DashboardShell modeLabel="방제사 모드" color="blue" name={name} actions={ACTIONS}>
+        <p className="mt-3 rounded-xl bg-black/5 p-3 text-sm text-black/60 dark:bg-white/10 dark:text-white/60">
           방제사 신청 내역을 찾을 수 없습니다. 마이페이지에서 다시 신청해주세요.
         </p>
-      </div>
+      </DashboardShell>
     );
   }
 
   if (operator.status !== "APPROVED") {
     const copy = STATUS_COPY[operator.status];
     return (
-      <div className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
-        <p className="text-xs text-black/50 dark:text-white/50">방제사 모드</p>
-        <h2 className="mt-1 text-lg font-bold">{name}님, {copy.title}</h2>
-        <p className="mt-2 text-sm text-black/60 dark:text-white/60">{copy.body}</p>
-      </div>
+      <DashboardShell modeLabel="방제사 모드" color="blue" name={name} actions={ACTIONS}>
+        <p className="mt-3 rounded-xl bg-black/5 p-3 text-sm text-black/60 dark:bg-white/10 dark:text-white/60">
+          <span className="block font-semibold text-black/80 dark:text-white/80">{copy.title}</span>
+          <span className="mt-1 block">{copy.body}</span>
+        </p>
+      </DashboardShell>
     );
   }
 
@@ -67,34 +74,22 @@ export async function OperatorDashboard({ userId, name }: { userId: string; name
   const monthlyPayout = settlements.reduce((sum, s) => sum + s.payoutAmount, 0);
 
   return (
-    <div className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs text-black/50 dark:text-white/50">방제사 모드</p>
-          <h2 className="text-lg font-bold">안녕하세요, {name}님!</h2>
-        </div>
-        <Link
-          href="/drones/operator"
-          className="rounded-full bg-brand-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-800"
-        >
-          작업 보기
-        </Link>
-      </div>
-
-      <div className="mt-4 grid grid-cols-3 gap-2 border-t border-black/10 pt-4 text-center text-sm dark:border-white/10">
-        <div>
+    <DashboardShell modeLabel="방제사 모드" color="blue" name={name} actions={ACTIONS}>
+      <p className="mt-4 text-xs font-medium text-black/40 dark:text-white/40">오늘의 작업</p>
+      <div className="mt-1.5 grid grid-cols-3 gap-2 text-center text-sm">
+        <div className="rounded-lg bg-black/[0.03] py-2 dark:bg-white/5">
           <p className="font-semibold">{todayAssignedCount}건</p>
           <p className="text-xs text-black/50 dark:text-white/50">오늘 배정</p>
         </div>
-        <div>
+        <div className="rounded-lg bg-black/[0.03] py-2 dark:bg-white/5">
           <p className="font-semibold">{inProgressCount}건</p>
           <p className="text-xs text-black/50 dark:text-white/50">작업중</p>
         </div>
-        <div>
+        <div className="rounded-lg bg-black/[0.03] py-2 dark:bg-white/5">
           <p className="font-semibold">{monthlyPayout.toLocaleString("ko-KR")}원</p>
           <p className="text-xs text-black/50 dark:text-white/50">이번달 정산액</p>
         </div>
       </div>
-    </div>
+    </DashboardShell>
   );
 }
