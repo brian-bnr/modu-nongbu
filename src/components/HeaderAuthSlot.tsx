@@ -10,7 +10,7 @@ export async function HeaderAuthSlot() {
       <>
         <Link
           href="/my"
-          className="hidden rounded-md border border-white/25 px-3 py-1.5 hover:bg-white/10 sm:block"
+          className="hidden shrink-0 rounded-md border border-white/25 px-3 py-1.5 hover:bg-white/10 sm:block"
         >
           마이페이지
         </Link>
@@ -19,6 +19,7 @@ export async function HeaderAuthSlot() {
             "use server";
             await signOut({ redirectTo: "/" });
           }}
+          className="shrink-0"
         >
           <button type="submit" className="whitespace-nowrap text-white/70 hover:underline">
             로그아웃
@@ -31,7 +32,7 @@ export async function HeaderAuthSlot() {
   return (
     <Link
       href="/login"
-      className="whitespace-nowrap rounded-md border border-white/25 px-2 py-1 hover:bg-white/10 sm:px-3 sm:py-1.5"
+      className="shrink-0 whitespace-nowrap rounded-md border border-white/25 px-2 py-1 hover:bg-white/10 sm:px-3 sm:py-1.5"
     >
       로그인
     </Link>

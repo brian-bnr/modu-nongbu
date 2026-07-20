@@ -14,7 +14,7 @@ function HeaderAuthFallback() {
   return (
     <Link
       href="/login"
-      className="whitespace-nowrap rounded-md border border-white/25 px-2 py-1 hover:bg-white/10 sm:px-3 sm:py-1.5"
+      className="shrink-0 whitespace-nowrap rounded-md border border-white/25 px-2 py-1 hover:bg-white/10 sm:px-3 sm:py-1.5"
     >
       로그인
     </Link>
@@ -41,10 +41,10 @@ export function Header() {
           </span>
           모두의농부
         </Link>
-        <nav className="flex items-center gap-1.5 text-xs text-white sm:gap-4 sm:text-sm">
+        <nav className="flex min-w-0 items-center gap-1.5 overflow-x-auto text-xs text-white [scrollbar-width:none] sm:gap-4 sm:text-sm [&::-webkit-scrollbar]:hidden">
           <div className="hidden items-center gap-4 sm:flex">
             {NAV_LINKS.map((link) => (
-              <Link key={link.href} href={link.href} className="hover:underline">
+              <Link key={link.href} href={link.href} className="shrink-0 hover:underline">
                 {link.label}
               </Link>
             ))}
@@ -54,12 +54,16 @@ export function Header() {
           </Suspense>
           <Link
             href="/admin"
-            className="whitespace-nowrap text-white/40 hover:underline"
+            className="notranslate shrink-0 whitespace-nowrap text-white/40 hover:underline"
           >
             운영자
           </Link>
           <LanguageSwitcher />
-          <Link href="/search" aria-label="검색" className="text-white hover:text-white/70">
+          <Link
+            href="/search"
+            aria-label="검색"
+            className="shrink-0 text-white hover:text-white/70"
+          >
             <SearchIcon className="h-5 w-5" />
           </Link>
         </nav>

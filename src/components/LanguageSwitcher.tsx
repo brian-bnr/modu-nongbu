@@ -111,7 +111,7 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="notranslate flex items-center gap-1.5">
+    <div className="notranslate flex shrink-0 items-center gap-1 sm:gap-1.5">
       <div id="google_translate_element" className="hidden" />
       {LANGS.map(({ code, flag, label }) => (
         <button
@@ -122,13 +122,13 @@ export function LanguageSwitcher() {
           aria-label={label}
           aria-pressed={current === code}
           title={unavailable ? "번역 서비스를 불러올 수 없어요" : label}
-          className={`flex h-7 w-7 items-center justify-center overflow-hidden rounded-full shadow-sm ring-1 transition disabled:opacity-40 sm:h-8 sm:w-8 ${
+          className={`flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full shadow-sm ring-1 transition disabled:opacity-40 sm:h-7 sm:w-7 ${
             current === code
               ? "scale-110 ring-white"
               : "opacity-60 ring-white/30 hover:opacity-100"
           } ${pending === code ? "animate-pulse" : ""}`}
         >
-          <Image src={flag} alt="" width={32} height={32} className="h-full w-full object-cover" />
+          <Image src={flag} alt="" width={28} height={28} className="h-full w-full object-cover" />
         </button>
       ))}
     </div>
