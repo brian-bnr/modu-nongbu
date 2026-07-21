@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { BrowseSections } from "@/components/BrowseSections";
@@ -39,14 +38,10 @@ export default async function HomePage() {
   const loggedInUser = session?.user?.type === "user" ? session.user : null;
 
   if (loggedInUser) {
-    // JWT에 저장된 role은 로그인 시점 기준이라 모드 전환 직후에는 값이 오래됐을 수 있으므로,
-    // 홈 화면 분기는 항상 DB에서 최신 role을 다시 읽어와 판단한다.
-    const dbUser = await prisma.user.findUnique({
-      where: { id: loggedInUser.id },
-      select: { role: true, name: true },
-    });
-    const role = dbUser?.role ?? "FARMER";
-    const name = dbUser?.name ?? loggedInUser.name ?? "회원";
+    // 역할 전환 시 switchRoleAction이 unstable_update로 JWT를 즉시 갱신하므로,
+    // 여기서는 DB를 다시 조회할 필요 없이 세션의 role을 그대로 신뢰한다.
+    const role = loggedInUser.role ?? "FARMER";
+    const name = loggedInUser.name ?? "회원";
 
     return (
       <div className="mx-auto max-w-2xl px-4 py-6 sm:px-8 sm:py-10">

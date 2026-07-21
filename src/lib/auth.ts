@@ -11,7 +11,7 @@ import type { Role } from "@prisma/client";
 
 const SOCIAL_PROVIDERS = new Set(["google", "kakao", "naver"]);
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   session: { strategy: "jwt" },
   pages: {
     signIn: "/admin/login",
@@ -109,11 +109,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       user.role = record.role;
       return true;
     },
-    jwt({ token, user }) {
+    jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id as string;
         token.type = user.type;
         token.role = user.role;
+      }
+      if (trigger === "update" && session?.user?.role) {
+        token.role = session.user.role;
       }
       return token;
     },
