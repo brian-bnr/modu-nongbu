@@ -38,25 +38,25 @@ const ROLE_OPTIONS: {
 }[] = [
   {
     key: "FARMER",
-    icon: "/icons/roles/farmer.png",
+    icon: "/icons/category/farmer.png",
     title: "농민입니다",
     description: "방제 신청, 위탁영농, 계약재배, 농산물 판매",
   },
   {
     key: "OPERATOR",
-    icon: "/icons/roles/operator.png",
+    icon: "/icons/category/drone.png",
     title: "방제사입니다",
     description: "작업 신청, 일정, 정산, 작업지 선택, 고객관리",
   },
   {
     key: "EXPERT",
-    icon: "/icons/roles/expert.png",
+    icon: "/icons/category/sprout.png",
     title: "농업 전문가입니다",
     description: "농업 정보 공유, 비료·병해충, 컨설팅",
   },
   {
     key: "COMPANY",
-    icon: "/icons/roles/company.png",
+    icon: "/icons/category/bank.png",
     title: "업체입니다",
     description: "농산물 구매, 계약재배, 기업화된 서비스",
   },

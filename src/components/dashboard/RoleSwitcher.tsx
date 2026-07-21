@@ -3,10 +3,10 @@ import type { Role } from "@prisma/client";
 import { switchRoleAction } from "@/lib/actions/role";
 
 const ROLE_OPTIONS: { role: Role; label: string; icon: string }[] = [
-  { role: "FARMER", label: "농민 모드", icon: "/icons/roles/farmer.png" },
-  { role: "OPERATOR", label: "방제사 모드", icon: "/icons/roles/operator.png" },
-  { role: "EXPERT", label: "전문가 모드", icon: "/icons/roles/expert.png" },
-  { role: "COMPANY", label: "업체 모드", icon: "/icons/roles/company.png" },
+  { role: "FARMER", label: "농민 모드", icon: "/icons/category/farmer.png" },
+  { role: "OPERATOR", label: "방제사 모드", icon: "/icons/category/drone.png" },
+  { role: "EXPERT", label: "전문가 모드", icon: "/icons/category/sprout.png" },
+  { role: "COMPANY", label: "업체 모드", icon: "/icons/category/bank.png" },
 ];
 
 export function RoleSwitcher({ currentRole }: { currentRole: Role }) {
