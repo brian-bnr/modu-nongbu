@@ -65,7 +65,11 @@ export function DashboardShell({
 
       <div
         className={`mt-4 grid gap-2 text-center ${
-          actions.length === 5 ? "grid-cols-5" : "grid-cols-4"
+          actions.length === 6
+            ? "grid-cols-3"
+            : actions.length === 5
+              ? "grid-cols-5"
+              : "grid-cols-4"
         }`}
       >
         {actions.map((a) => (

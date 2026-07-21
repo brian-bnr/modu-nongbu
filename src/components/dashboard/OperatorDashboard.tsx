@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
 import { DRONE_RESERVATION_STATUS_VARIANT, formatPrice } from "@/lib/format";
-import { UserIcon, CalendarIcon } from "@/components/icons/NavIcons";
+import { UserIcon, CalendarIcon, GridIcon } from "@/components/icons/NavIcons";
 import { DashboardShell, type DashboardAction } from "@/components/dashboard/DashboardShell";
 
 const STATUS_COPY: Record<string, { title: string; body: string }> = {
@@ -38,6 +38,7 @@ function buildActions(operatorId: string | null): DashboardAction[] {
           Icon: UserIcon,
         }
       : { label: "내 정보", sublabel: "정보 관리", href: "/my", Icon: UserIcon },
+    { label: "전체 서비스", sublabel: "서비스 둘러보기", href: "/services", Icon: GridIcon },
   ];
 }
 

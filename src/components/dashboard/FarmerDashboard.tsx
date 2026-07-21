@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
 import { DRONE_RESERVATION_STATUS_LABEL, DRONE_RESERVATION_STATUS_VARIANT, formatPrice } from "@/lib/format";
-import { UserIcon, CalendarIcon, SearchIcon } from "@/components/icons/NavIcons";
+import { UserIcon, CalendarIcon, SearchIcon, GridIcon } from "@/components/icons/NavIcons";
 import { DashboardShell, type DashboardAction } from "@/components/dashboard/DashboardShell";
 
 const ACTIONS: DashboardAction[] = [
@@ -21,6 +21,7 @@ const ACTIONS: DashboardAction[] = [
     Icon: SearchIcon,
   },
   { label: "내 정보", sublabel: "정보 관리", href: "/my", Icon: UserIcon },
+  { label: "전체 서비스", sublabel: "서비스 둘러보기", href: "/services", Icon: GridIcon },
 ];
 
 export async function FarmerDashboard({ userId, name }: { userId: string; name: string }) {
