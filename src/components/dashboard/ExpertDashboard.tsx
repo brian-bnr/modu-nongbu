@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { EXPERT_SPECIALTY_LABEL } from "@/lib/format";
 import { UserIcon, GridIcon, MessageIcon } from "@/components/icons/NavIcons";
@@ -41,14 +42,20 @@ export async function ExpertDashboard({ userId, name }: { userId: string; name: 
 
       <h3 className="text-sm font-bold">오늘의 주문/문의</h3>
       <div className="mt-2 grid grid-cols-2 gap-2 text-center text-sm">
-        <div className="rounded-lg bg-black/[0.03] py-2 dark:bg-white/5">
+        <Link
+          href="/expert-inquiries"
+          className="rounded-lg bg-black/[0.03] py-2 transition hover:bg-black/[0.06] dark:bg-white/5 dark:hover:bg-white/10"
+        >
           <p className="font-semibold">{SAMPLE_STATS.newInquiries}건</p>
           <p className="text-xs text-black/50 dark:text-white/50">오늘 신규 문의</p>
-        </div>
-        <div className="rounded-lg bg-black/[0.03] py-2 dark:bg-white/5">
+        </Link>
+        <Link
+          href="/expert-inquiries"
+          className="rounded-lg bg-black/[0.03] py-2 transition hover:bg-black/[0.06] dark:bg-white/5 dark:hover:bg-white/10"
+        >
           <p className="font-semibold">{SAMPLE_STATS.answered}건</p>
           <p className="text-xs text-black/50 dark:text-white/50">답변 완료</p>
-        </div>
+        </Link>
       </div>
 
       <p className="mt-3 rounded-xl bg-black/5 p-3 text-xs text-black/50 dark:bg-white/10 dark:text-white/50">

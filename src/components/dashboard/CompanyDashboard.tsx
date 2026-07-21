@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { UserIcon, GridIcon, MessageIcon } from "@/components/icons/NavIcons";
 import { DashboardShell, type DashboardAction } from "@/components/dashboard/DashboardShell";
@@ -47,14 +48,20 @@ export async function CompanyDashboard({ userId, name }: { userId: string; name:
 
       <h3 className="text-sm font-bold">오늘의 거래</h3>
       <div className="mt-2 grid grid-cols-2 gap-2 text-center text-sm">
-        <div className="rounded-lg bg-black/[0.03] py-2 dark:bg-white/5">
+        <Link
+          href="/company-deals"
+          className="rounded-lg bg-black/[0.03] py-2 transition hover:bg-black/[0.06] dark:bg-white/5 dark:hover:bg-white/10"
+        >
           <p className="font-semibold">{SAMPLE_STATS.purchaseRequests}건</p>
           <p className="text-xs text-black/50 dark:text-white/50">구매 요청</p>
-        </div>
-        <div className="rounded-lg bg-black/[0.03] py-2 dark:bg-white/5">
+        </Link>
+        <Link
+          href="/company-deals"
+          className="rounded-lg bg-black/[0.03] py-2 transition hover:bg-black/[0.06] dark:bg-white/5 dark:hover:bg-white/10"
+        >
           <p className="font-semibold">{SAMPLE_STATS.contractsInProgress}건</p>
           <p className="text-xs text-black/50 dark:text-white/50">계약 진행중</p>
-        </div>
+        </Link>
       </div>
 
       <p className="mt-3 rounded-xl bg-black/5 p-3 text-xs text-black/50 dark:bg-white/10 dark:text-white/50">
