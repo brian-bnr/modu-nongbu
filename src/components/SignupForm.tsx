@@ -7,6 +7,18 @@ import { REGIONS } from "@/lib/regions";
 
 const initialState: SignupActionState = {};
 
+const EMAIL_DOMAINS = ["gmail.com", "naver.com", "daum.net"];
+
+function formatPhoneNumber(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length < 4) return digits;
+  if (digits.length < 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  if (digits.length < 11) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
+}
+
 const STEP_FIELDS = [
   ["name", "phone", "email", "password"],
   ["role"],
@@ -78,7 +90,9 @@ export function SignupForm() {
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
+  const [emailLocal, setEmailLocal] = useState("");
+  const [emailDomain, setEmailDomain] = useState("");
+  const [isCustomDomain, setIsCustomDomain] = useState(true);
   const [password, setPassword] = useState("");
   const [region, setRegion] = useState("");
 
@@ -99,7 +113,23 @@ export function SignupForm() {
   const [mainItem, setMainItem] = useState("");
   const [businessInfo, setBusinessInfo] = useState("");
 
+  const email = emailLocal && emailDomain ? `${emailLocal}@${emailDomain}` : "";
   const step0Valid = name && phone && email && password.length >= 8;
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhone(formatPhoneNumber(e.target.value));
+  };
+
+  const handleEmailDomainSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    if (value === "") {
+      setIsCustomDomain(true);
+      setEmailDomain("");
+    } else {
+      setIsCustomDomain(false);
+      setEmailDomain(value);
+    }
+  };
 
   // 서버 검증 에러가 현재 보이지 않는 단계(예: 이메일 중복 에러가 1~3단계에 있는 동안
   // 화면에는 안 보임)에 있으면, 에러 메시지가 실제로 보이는 단계로 자동 이동시킨다.
@@ -138,29 +168,64 @@ export function SignupForm() {
       <div className={step === 0 ? "space-y-4" : "hidden"}>
         <div>
           <label className="block text-sm font-medium">이름</label>
-          <input name="name" value={name} onChange={(e) => setName(e.target.value)} className={fieldClass} />
+          <input
+            name="name"
+            autoComplete="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className={fieldClass}
+          />
           {state.errors?.name && <p className="mt-1 text-xs text-red-600">{state.errors.name[0]}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium">연락처</label>
           <input
-            name="phone"
+            type="tel"
+            inputMode="numeric"
+            autoComplete="tel"
             placeholder="010-0000-0000"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={handlePhoneChange}
+            maxLength={13}
             className={fieldClass}
           />
+          <input type="hidden" name="phone" value={phone} />
           {state.errors?.phone && <p className="mt-1 text-xs text-red-600">{state.errors.phone[0]}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium">이메일</label>
-          <input
-            name="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={fieldClass}
-          />
+          <div className="mt-1 flex flex-wrap items-center gap-1.5">
+            <input
+              type="text"
+              autoComplete="username"
+              placeholder="아이디"
+              value={emailLocal}
+              onChange={(e) => setEmailLocal(e.target.value)}
+              className="w-28 flex-1 rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+            />
+            <span className="text-sm text-black/50 dark:text-white/50">@</span>
+            <input
+              type="text"
+              placeholder="도메인"
+              value={emailDomain}
+              readOnly={!isCustomDomain}
+              onChange={(e) => setEmailDomain(e.target.value)}
+              className="w-28 flex-1 rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+            />
+            <select
+              value={isCustomDomain ? "" : emailDomain}
+              onChange={handleEmailDomainSelectChange}
+              className="rounded-md border border-black/10 px-2 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+            >
+              <option value="">직접 입력</option>
+              {EMAIL_DOMAINS.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+          </div>
+          <input type="hidden" name="email" value={email} />
           {state.errors?.email && <p className="mt-1 text-xs text-red-600">{state.errors.email[0]}</p>}
         </div>
         <div>
@@ -168,6 +233,7 @@ export function SignupForm() {
           <input
             name="password"
             type="password"
+            autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className={fieldClass}
