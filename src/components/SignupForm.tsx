@@ -7,7 +7,18 @@ import { REGIONS } from "@/lib/regions";
 
 const initialState: SignupActionState = {};
 
-const EMAIL_DOMAINS = ["gmail.com", "naver.com", "daum.net"];
+const EMAIL_DOMAINS = [
+  "naver.com",
+  "gmail.com",
+  "daum.net",
+  "hanmail.net",
+  "nate.com",
+  "kakao.com",
+  "outlook.com",
+  "hotmail.com",
+  "yahoo.com",
+  "icloud.com",
+];
 
 function formatPhoneNumber(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 11);
