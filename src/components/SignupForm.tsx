@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { signupAction, type SignupActionState } from "@/app/(consumer)/signup/actions";
 import { REGIONS } from "@/lib/regions";
 
@@ -20,15 +20,7 @@ const EMAIL_DOMAINS = [
   "icloud.com",
 ];
 
-function formatPhoneNumber(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 11);
-  if (digits.length < 4) return digits;
-  if (digits.length < 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  if (digits.length < 11) {
-    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
-  }
-  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
-}
+const PHONE_PREFIXES = ["010", "011", "016", "017", "018", "019"];
 
 const STEP_FIELDS = [
   ["name", "phone", "email", "password"],
@@ -100,7 +92,11 @@ export function SignupForm() {
   const [step, setStep] = useState(0);
 
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phonePrefix, setPhonePrefix] = useState("010");
+  const [phoneMiddle, setPhoneMiddle] = useState("");
+  const [phoneLast, setPhoneLast] = useState("");
+  const phoneMiddleRef = useRef<HTMLInputElement>(null);
+  const phoneLastRef = useRef<HTMLInputElement>(null);
   const [emailLocal, setEmailLocal] = useState("");
   const [emailDomain, setEmailDomain] = useState("");
   const [isCustomDomain, setIsCustomDomain] = useState(true);
@@ -124,11 +120,18 @@ export function SignupForm() {
   const [mainItem, setMainItem] = useState("");
   const [businessInfo, setBusinessInfo] = useState("");
 
+  const phone = phoneMiddle && phoneLast ? `${phonePrefix}-${phoneMiddle}-${phoneLast}` : "";
   const email = emailLocal && emailDomain ? `${emailLocal}@${emailDomain}` : "";
   const step0Valid = name && phone && email && password.length >= 8;
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPhone(formatPhoneNumber(e.target.value));
+  const handlePhoneMiddleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, "").slice(0, 4);
+    setPhoneMiddle(digits);
+    if (digits.length === 4) phoneLastRef.current?.focus();
+  };
+
+  const handlePhoneLastChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhoneLast(e.target.value.replace(/\D/g, "").slice(0, 4));
   };
 
   const handleEmailDomainSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -190,16 +193,43 @@ export function SignupForm() {
         </div>
         <div>
           <label className="block text-sm font-medium">연락처</label>
-          <input
-            type="tel"
-            inputMode="numeric"
-            autoComplete="tel"
-            placeholder="010-0000-0000"
-            value={phone}
-            onChange={handlePhoneChange}
-            maxLength={13}
-            className={fieldClass}
-          />
+          <div className="mt-1 flex items-center gap-1">
+            <select
+              value={phonePrefix}
+              onChange={(e) => setPhonePrefix(e.target.value)}
+              autoComplete="tel-country-code"
+              className="w-[70px] shrink-0 rounded-md border border-black/10 px-1 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+            >
+              {PHONE_PREFIXES.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+            <span className="shrink-0 text-sm text-black/50 dark:text-white/50">-</span>
+            <input
+              type="tel"
+              inputMode="numeric"
+              autoComplete="tel"
+              placeholder="0000"
+              maxLength={4}
+              value={phoneMiddle}
+              onChange={handlePhoneMiddleChange}
+              ref={phoneMiddleRef}
+              className="min-w-0 flex-1 rounded-md border border-black/10 px-2 py-2 text-center text-sm dark:border-white/20 dark:bg-transparent"
+            />
+            <span className="shrink-0 text-sm text-black/50 dark:text-white/50">-</span>
+            <input
+              type="tel"
+              inputMode="numeric"
+              placeholder="0000"
+              maxLength={4}
+              value={phoneLast}
+              onChange={handlePhoneLastChange}
+              ref={phoneLastRef}
+              className="min-w-0 flex-1 rounded-md border border-black/10 px-2 py-2 text-center text-sm dark:border-white/20 dark:bg-transparent"
+            />
+          </div>
           <input type="hidden" name="phone" value={phone} />
           {state.errors?.phone && <p className="mt-1 text-xs text-red-600">{state.errors.phone[0]}</p>}
         </div>
