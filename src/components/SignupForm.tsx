@@ -205,30 +205,30 @@ export function SignupForm() {
         </div>
         <div>
           <label className="block text-sm font-medium">이메일</label>
-          <div className="mt-1 flex flex-wrap items-center gap-1.5">
+          <div className="mt-1 flex items-center gap-1">
             <input
               type="text"
               autoComplete="username"
               placeholder="아이디"
               value={emailLocal}
               onChange={(e) => setEmailLocal(e.target.value)}
-              className="w-28 flex-1 rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+              className="min-w-0 flex-1 rounded-md border border-black/10 px-2 py-2 text-sm dark:border-white/20 dark:bg-transparent"
             />
-            <span className="text-sm text-black/50 dark:text-white/50">@</span>
+            <span className="shrink-0 text-sm text-black/50 dark:text-white/50">@</span>
             <input
               type="text"
               placeholder="도메인"
               value={emailDomain}
               readOnly={!isCustomDomain}
               onChange={(e) => setEmailDomain(e.target.value)}
-              className="w-28 flex-1 rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+              className="min-w-0 flex-1 rounded-md border border-black/10 px-2 py-2 text-sm dark:border-white/20 dark:bg-transparent"
             />
             <select
               value={isCustomDomain ? "" : emailDomain}
               onChange={handleEmailDomainSelectChange}
-              className="rounded-md border border-black/10 px-2 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+              className="w-[92px] shrink-0 rounded-md border border-black/10 px-1 py-2 text-xs dark:border-white/20 dark:bg-transparent"
             >
-              <option value="">직접 입력</option>
+              <option value="">직접입력</option>
               {EMAIL_DOMAINS.map((d) => (
                 <option key={d} value={d}>
                   {d}
