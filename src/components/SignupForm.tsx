@@ -20,8 +20,6 @@ const EMAIL_DOMAINS = [
   "icloud.com",
 ];
 
-const PHONE_PREFIXES = ["010", "011", "016", "017", "018", "019"];
-
 const STEP_FIELDS = [
   ["name", "phone", "email", "password"],
   ["role"],
@@ -92,7 +90,6 @@ export function SignupForm() {
   const [step, setStep] = useState(0);
 
   const [name, setName] = useState("");
-  const [phonePrefix, setPhonePrefix] = useState("010");
   const [phoneMiddle, setPhoneMiddle] = useState("");
   const [phoneLast, setPhoneLast] = useState("");
   const phoneMiddleRef = useRef<HTMLInputElement>(null);
@@ -120,7 +117,7 @@ export function SignupForm() {
   const [mainItem, setMainItem] = useState("");
   const [businessInfo, setBusinessInfo] = useState("");
 
-  const phone = phoneMiddle && phoneLast ? `${phonePrefix}-${phoneMiddle}-${phoneLast}` : "";
+  const phone = phoneMiddle && phoneLast ? `010-${phoneMiddle}-${phoneLast}` : "";
   const email = emailLocal && emailDomain ? `${emailLocal}@${emailDomain}` : "";
   const step0Valid = name && phone && email && password.length >= 8;
 
@@ -194,18 +191,9 @@ export function SignupForm() {
         <div>
           <label className="block text-sm font-medium">연락처</label>
           <div className="mt-1 flex items-center gap-1">
-            <select
-              value={phonePrefix}
-              onChange={(e) => setPhonePrefix(e.target.value)}
-              autoComplete="tel-country-code"
-              className="w-[70px] shrink-0 rounded-md border border-black/10 px-1 py-2 text-sm dark:border-white/20 dark:bg-transparent"
-            >
-              {PHONE_PREFIXES.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
+            <span className="w-[70px] shrink-0 rounded-md border border-black/10 px-2 py-2 text-center text-sm text-black/70 dark:border-white/20 dark:text-white/70">
+              010
+            </span>
             <span className="shrink-0 text-sm text-black/50 dark:text-white/50">-</span>
             <input
               type="tel"
