@@ -13,14 +13,40 @@ const NAV_LINKS = [
   { href: "/admin/settings", label: "설정", icon: "⚙️" },
 ];
 
-export function AdminNav() {
+export function AdminNav({ variant = "horizontal" }: { variant?: "horizontal" | "sidebar" }) {
   const pathname = usePathname();
 
+  const isActive = (href: string) =>
+    href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
+
+  if (variant === "sidebar") {
+    return (
+      <nav className="space-y-0.5 text-sm">
+        {NAV_LINKS.map((link) => {
+          const active = isActive(link.href);
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`flex items-center gap-2.5 rounded-md px-3 py-2 transition ${
+                active
+                  ? "bg-brand-700 font-medium text-white"
+                  : "text-black/65 hover:bg-black/5 dark:text-white/65 dark:hover:bg-white/10"
+              }`}
+            >
+              <span className="text-sm">{link.icon}</span>
+              {link.label}
+            </Link>
+          );
+        })}
+      </nav>
+    );
+  }
+
   return (
-    <nav className="mt-3 flex flex-wrap gap-1.5 text-sm">
+    <nav className="flex flex-wrap gap-1.5 text-sm">
       {NAV_LINKS.map((link) => {
-        const active =
-          link.href === "/admin" ? pathname === "/admin" : pathname.startsWith(link.href);
+        const active = isActive(link.href);
         return (
           <Link
             key={link.href}
