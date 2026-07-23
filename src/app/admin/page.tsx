@@ -47,15 +47,6 @@ const VARIANT_BAR_CLASS: Record<string, string> = {
   blue: "bg-blue-600",
 };
 
-const QUICK_LINKS = [
-  { href: "/admin/posts", label: "게시글 관리", icon: "📝", color: "bg-brand-50 dark:bg-brand-900/20" },
-  { href: "/admin/inquiries", label: "문의 관리", icon: "💬", color: "bg-amber-50 dark:bg-amber-900/20" },
-  { href: "/admin/users", label: "회원 관리", icon: "👥", color: "bg-blue-50 dark:bg-blue-900/20" },
-  { href: "/admin/drones", label: "드론 예약 관리", icon: "🚁", color: "bg-teal-50 dark:bg-teal-900/20" },
-  { href: "/admin/settlements", label: "정산 관리", icon: "💰", color: "bg-accent-50 dark:bg-accent-900/20" },
-  { href: "/admin/settings", label: "설정", icon: "⚙️", color: "bg-black/5 dark:bg-white/10" },
-];
-
 export default async function AdminDashboardPage() {
   await requireAdmin();
 
@@ -149,19 +140,6 @@ export default async function AdminDashboardPage() {
   return (
     <div>
       <PageIntro title="대시보드" subtitle={`실시간 현황 · ${formatDate(now)} 기준`} />
-
-      <div className="mt-5 grid grid-cols-3 gap-2 sm:grid-cols-6 sm:gap-3">
-        {QUICK_LINKS.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={`flex flex-col items-center gap-1.5 rounded-lg border border-black/5 ${link.color} px-2 py-3 text-center text-xs font-medium transition duration-200 hover:-translate-y-0.5 hover:shadow-md dark:border-white/10`}
-          >
-            <span className="text-xl">{link.icon}</span>
-            <span className="leading-tight">{link.label}</span>
-          </Link>
-        ))}
-      </div>
 
       <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatTile label="오늘 방문자" value={todayVisitorCount} color="purple" delay={0} />

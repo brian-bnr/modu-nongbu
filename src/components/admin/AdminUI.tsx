@@ -3,26 +3,50 @@ import { AnimatedNumber } from "@/components/admin/AnimatedNumber";
 import { ScrollReveal } from "@/components/ScrollReveal";
 
 export const TILE_STYLES = {
-  purple: { header: "bg-gradient-to-br from-purple-600 to-purple-800", icon: "👀" },
-  amber: { header: "bg-gradient-to-br from-amber-500 to-amber-700", icon: "💬" },
-  blue: { header: "bg-gradient-to-br from-blue-600 to-blue-800", icon: "👥" },
-  green: { header: "bg-gradient-to-br from-brand-500 to-brand-700", icon: "📝" },
-  teal: { header: "bg-gradient-to-br from-teal-500 to-teal-700", icon: "🚁" },
-  accent: { header: "bg-gradient-to-br from-accent-500 to-accent-700", icon: "💰" },
-  indigo: { header: "bg-gradient-to-br from-indigo-600 to-indigo-800", icon: "🔒" },
-  emerald: { header: "bg-gradient-to-br from-emerald-500 to-emerald-700", icon: "✅" },
+  purple: {
+    badge: "bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400",
+    icon: "👀",
+  },
+  amber: {
+    badge: "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400",
+    icon: "💬",
+  },
+  blue: {
+    badge: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400",
+    icon: "👥",
+  },
+  green: {
+    badge: "bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-400",
+    icon: "📝",
+  },
+  teal: {
+    badge: "bg-teal-50 text-teal-600 dark:bg-teal-500/10 dark:text-teal-400",
+    icon: "🚁",
+  },
+  accent: {
+    badge: "bg-accent-50 text-accent-700 dark:bg-accent-500/10 dark:text-accent-400",
+    icon: "💰",
+  },
+  indigo: {
+    badge: "bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400",
+    icon: "🔒",
+  },
+  emerald: {
+    badge: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400",
+    icon: "✅",
+  },
 } as const;
 
 export type TileColor = keyof typeof TILE_STYLES;
 
 const SECTION_TONES = {
-  brand: "bg-gradient-to-r from-brand-700 to-brand-800",
-  amber: "bg-gradient-to-r from-amber-600 to-amber-800",
-  blue: "bg-gradient-to-r from-blue-600 to-blue-800",
-  teal: "bg-gradient-to-r from-teal-600 to-teal-800",
-  accent: "bg-gradient-to-r from-accent-600 to-accent-700",
-  indigo: "bg-gradient-to-r from-indigo-600 to-indigo-800",
-  purple: "bg-gradient-to-r from-purple-600 to-purple-800",
+  brand: "border-l-brand-600 dark:border-l-brand-400",
+  amber: "border-l-amber-500 dark:border-l-amber-400",
+  blue: "border-l-blue-500 dark:border-l-blue-400",
+  teal: "border-l-teal-500 dark:border-l-teal-400",
+  accent: "border-l-accent-600 dark:border-l-accent-400",
+  indigo: "border-l-indigo-500 dark:border-l-indigo-400",
+  purple: "border-l-purple-500 dark:border-l-purple-400",
 } as const;
 
 export type SectionTone = keyof typeof SECTION_TONES;
@@ -63,16 +87,16 @@ export function StatTile({
 }) {
   const style = TILE_STYLES[color];
   const body = (
-    <div className="group h-full overflow-hidden rounded-lg border border-black/10 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-white/10 dark:bg-white/5">
-      <div
-        className={`flex items-center justify-between px-3 py-2 text-xs font-medium text-white sm:text-sm ${style.header}`}
-      >
-        <span>{label}</span>
-        <span className="text-sm opacity-90 transition-transform duration-300 group-hover:scale-125">
+    <div className="group flex h-full flex-col gap-3 rounded-xl border border-black/8 bg-white p-4 shadow-sm transition-shadow duration-200 hover:shadow-md dark:border-white/10 dark:bg-white/[0.03]">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-xs font-medium text-black/55 dark:text-white/55">{label}</span>
+        <span
+          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-sm transition-transform duration-200 group-hover:scale-110 ${style.badge}`}
+        >
           {icon ?? style.icon}
         </span>
       </div>
-      <div className="px-3 py-4 text-center text-2xl font-bold sm:py-6 sm:text-4xl">
+      <div className="text-2xl font-bold tracking-tight tabular-nums sm:text-3xl">
         <AnimatedNumber value={value} unit={unit} />
       </div>
     </div>
@@ -100,7 +124,7 @@ export function SectionHeader({
 }) {
   return (
     <div
-      className={`rounded-t-lg px-4 py-2.5 text-center text-sm font-semibold text-white ${SECTION_TONES[tone]}`}
+      className={`rounded-t-lg border-b border-l-4 border-black/8 bg-black/[0.015] px-4 py-2.5 text-sm font-semibold text-black/80 dark:border-white/10 dark:bg-white/[0.03] dark:text-white/85 ${SECTION_TONES[tone]}`}
     >
       {children}
     </div>
@@ -139,7 +163,7 @@ export function GridCard({
     <li className="animate-fade-in-up" style={{ animationDelay: `${delay}ms` }}>
       <Link
         href={href}
-        className="flex h-full flex-col justify-between gap-2 rounded-lg border border-black/10 bg-white p-3 text-sm shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand-600 hover:shadow-lg dark:border-white/10 dark:bg-white/5"
+        className="flex h-full flex-col justify-between gap-2 rounded-lg border border-black/10 bg-white p-3 text-sm shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-brand-600 hover:shadow-md dark:border-white/10 dark:bg-white/5"
       >
         {children}
       </Link>
