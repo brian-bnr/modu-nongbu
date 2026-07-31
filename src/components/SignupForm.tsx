@@ -98,6 +98,7 @@ export function SignupForm() {
   const [emailDomain, setEmailDomain] = useState("");
   const [isCustomDomain, setIsCustomDomain] = useState(true);
   const [password, setPassword] = useState("");
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [region, setRegion] = useState("");
 
   const [role, setRole] = useState<RoleKey | "">("");
@@ -274,9 +275,16 @@ export function SignupForm() {
             autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onFocus={() => setIsPasswordFocused(true)}
+            onBlur={() => setIsPasswordFocused(false)}
             className={fieldClass}
           />
-          {state.errors?.password && (
+          {isPasswordFocused && password.length < 8 && (
+            <p className="mt-1 text-xs text-black/50 dark:text-white/50">
+              비밀번호는 8자 이상이어야 합니다.
+            </p>
+          )}
+          {!isPasswordFocused && state.errors?.password && (
             <p className="mt-1 text-xs text-red-600">{state.errors.password[0]}</p>
           )}
         </div>
