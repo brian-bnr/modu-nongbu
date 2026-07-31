@@ -23,15 +23,15 @@ export async function signupAction(
     role: formData.get("role"),
     hasPaddyField: formData.get("hasPaddyField") || undefined,
     hasUplandField: formData.get("hasUplandField") || undefined,
-    droneModel: formData.get("droneModel"),
+    droneModel: formData.get("droneModel") || undefined,
     experienceYears: formData.get("experienceYears"),
-    activityRegion: formData.get("activityRegion"),
-    equipmentInfo: formData.get("equipmentInfo"),
+    activityRegion: formData.get("activityRegion") || undefined,
+    equipmentInfo: formData.get("equipmentInfo") || undefined,
     specialty: formData.get("specialty") || undefined,
-    bio: formData.get("bio"),
-    companyType: formData.get("companyType"),
-    mainItem: formData.get("mainItem"),
-    businessInfo: formData.get("businessInfo"),
+    bio: formData.get("bio") || undefined,
+    companyType: formData.get("companyType") || undefined,
+    mainItem: formData.get("mainItem") || undefined,
+    businessInfo: formData.get("businessInfo") || undefined,
   });
 
   if (!parsed.success) {

@@ -166,8 +166,17 @@ export function SignupForm() {
     ? Object.values(state.errors).flatMap((m) => m ?? [])
     : [];
 
+  // 마지막 단계(가입 완료 버튼)에 도달하기 전에는 Enter 키로 폼 전체가
+  // 조기 제출되지 않도록 막는다. 그렇지 않으면 아직 선택하지 않은 역할의
+  // 하위 필드들이 검증에 걸려 관련 없는 에러가 무더기로 표시된다.
+  const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === "Enter" && step !== 2) {
+      e.preventDefault();
+    }
+  };
+
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} onKeyDown={handleFormKeyDown} className="space-y-4">
       {allErrorMessages.length > 0 && (
         <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-400">
           {allErrorMessages.map((msg) => (
