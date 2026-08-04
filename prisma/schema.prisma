@@ -1,0 +1,345 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+enum Role {
+  FARMER
+  OPERATOR
+  EXPERT
+  COMPANY
+}
+
+model User {
+  id             String   @id @default(cuid())
+  name           String
+  phone          String?
+  email          String   @unique
+  passwordHash   String?
+  image          String?
+  provider       String   @default("credentials")
+  region         String?
+  role           Role     @default(FARMER)
+  hasPaddyField  Boolean?
+  hasUplandField Boolean?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  posts     Post[]
+  inquiries Inquiry[]
+
+  droneReservationsAsFarmer DroneReservation[] @relation("FarmerDroneReservations")
+  droneOperator             DroneOperator?
+  expertProfile             ExpertProfile?
+  companyProfile            CompanyProfile?
+  reviews                   Review[]
+}
+
+enum ExpertSpecialty {
+  DISTRIBUTION
+  SUPPLIES
+  OTHER
+}
+
+model ExpertProfile {
+  id             String          @id @default(cuid())
+  userId         String          @unique
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialty      ExpertSpecialty
+  activityRegion String?
+  bio            String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model CompanyProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyType    String
+  mainItem       String?
+  activityRegion String?
+  businessInfo   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Visit {
+  id        String   @id @default(cuid())
+  visitorId String
+  visitDate String
+  createdAt DateTime @default(now())
+
+  @@unique([visitorId, visitDate])
+  @@index([visitDate])
+}
+
+enum PostType {
+  SELL_PRODUCT
+  BUY_PRODUCT
+  FIND_WORKER
+  LOOKING_FOR_WORK
+  RENT_MACHINE
+  NEED_MACHINE
+  DRONE_REQUEST
+  DRONE_SERVICE
+}
+
+enum PostStatus {
+  OPEN
+  CLOSED
+}
+
+model Post {
+  id           String     @id @default(cuid())
+  postType     PostType
+  authorId     String
+  author       User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  title        String
+  category     String?
+  description  String?
+  price        Int?
+  unit         String?
+  region       String
+  regionDetail String?
+  imageUrl     String?
+  status       PostStatus @default(OPEN)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  inquiries Inquiry[]
+
+  @@index([postType])
+  @@index([authorId])
+  @@index([region])
+}
+
+enum InquiryStatus {
+  REQUESTED
+  ACCEPTED
+  COMPLETED
+  CANCELLED
+}
+
+model Inquiry {
+  id        String        @id @default(cuid())
+  postId    String
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String?
+  quantity  Int?
+  status    InquiryStatus @default(REQUESTED)
+  adminNote String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([postId])
+  @@index([userId])
+}
+
+enum DroneOperatorStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+model DroneOperator {
+  id              String              @id @default(cuid())
+  userId          String              @unique
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status          DroneOperatorStatus @default(PENDING)
+  equipmentInfo   String?
+  experienceYears Int?
+  droneModel      String?
+  activityRegion  String?
+  adminNote       String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  reservations DroneReservation[]
+  settlements  Settlement[]
+  reviews      Review[]
+
+  @@index([status])
+}
+
+enum DroneReservationStatus {
+  REQUESTED
+  PAID
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETION_REQUESTED
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+model DroneReservation {
+  id         String                 @id @default(cuid())
+  farmerId   String
+  farmer     User                   @relation("FarmerDroneReservations", fields: [farmerId], references: [id], onDelete: Cascade)
+  operatorId String?
+  operator   DroneOperator?         @relation(fields: [operatorId], references: [id])
+  status     DroneReservationStatus @default(REQUESTED)
+
+  region       String
+  regionDetail String?
+  areaPyeong   Int
+  cropType     String
+  desiredDate  DateTime
+  unitPrice    Int
+  totalPrice   Int
+
+  parcelPnu        String?
+  parcelJibun      String?
+  parcelAreaSqm    Float?
+  actualAreaPyeong Int?
+
+  startedAt DateTime?
+  startLat  Float?
+  startLng  Float?
+  endedAt   DateTime?
+  endLat    Float?
+  endLng    Float?
+
+  completionRequestedAt DateTime?
+  completedAt           DateTime?
+  cancelledAt           DateTime?
+  cancelReason          String?
+
+  adminNote String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  photos  DroneWorkPhoto[]
+  payment Payment?
+  dispute Dispute?
+  review  Review?
+
+  @@index([farmerId])
+  @@index([operatorId])
+  @@index([status])
+}
+
+model DroneWorkPhoto {
+  id            String           @id @default(cuid())
+  reservationId String
+  reservation   DroneReservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  url           String
+  lat           Float?
+  lng           Float?
+  createdAt     DateTime         @default(now())
+
+  @@index([reservationId])
+}
+
+enum PaymentStatus {
+  HELD
+  RELEASED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+model Payment {
+  id                        String           @id @default(cuid())
+  reservationId             String           @unique
+  reservation               DroneReservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  amount                    Int
+  method                    String
+  status                    PaymentStatus    @default(HELD)
+  isMock                    Boolean          @default(true)
+  pgTransactionId           String?
+  pgOrderId                 String?
+  refundAmount              Int?
+  additionalAmount          Int              @default(0)
+  additionalPaid            Boolean          @default(false)
+  additionalPgTransactionId String?
+  additionalPgOrderId       String?
+  createdAt                 DateTime         @default(now())
+  updatedAt                 DateTime         @updatedAt
+
+  settlement Settlement?
+
+  @@index([status])
+}
+
+enum SettlementStatus {
+  PENDING
+  PAID
+}
+
+model Settlement {
+  id               String           @id @default(cuid())
+  paymentId        String           @unique
+  payment          Payment          @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  operatorId       String
+  operator         DroneOperator    @relation(fields: [operatorId], references: [id])
+  grossAmount      Int
+  commissionRate   Int
+  commissionAmount Int
+  payoutAmount     Int
+  status           SettlementStatus @default(PENDING)
+  paidAt           DateTime?
+  adminNote        String?
+  createdAt        DateTime         @default(now())
+
+  @@index([status])
+  @@index([operatorId])
+}
+
+enum DisputeStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED
+}
+
+model Dispute {
+  id            String           @id @default(cuid())
+  reservationId String           @unique
+  reservation   DroneReservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  raisedById    String
+  reason        String
+  status        DisputeStatus    @default(OPEN)
+  resolution    String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@index([status])
+}
+
+model Review {
+  id            String           @id @default(cuid())
+  reservationId String           @unique
+  reservation   DroneReservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  operatorId    String
+  operator      DroneOperator    @relation(fields: [operatorId], references: [id], onDelete: Cascade)
+  farmerId      String
+  farmer        User             @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  rating        Int
+  comment       String?
+  createdAt     DateTime         @default(now())
+
+  @@index([operatorId])
+}
+
+model PlatformSetting {
+  id                  String   @id @default(cuid())
+  droneUnitPrice      Int      @default(3000)
+  droneCommissionRate Int      @default(10)
+  droneCancelFeeRate  Int      @default(20)
+  updatedAt           DateTime @updatedAt
+}
