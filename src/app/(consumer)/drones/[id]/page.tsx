@@ -174,8 +174,8 @@ export default async function DroneReservationDetailPage({
       {reservation.status === "REQUESTED" && (
         <div className="mt-6">
           <div className="mb-3 rounded-lg bg-brand-50 p-3 text-xs text-black/60 dark:bg-brand-900/20 dark:text-white/60">
-            🔒 결제하시면 대금은 예약이 보관되며, 방제사 배정 후 작업이 완료되고 승인하시면
-            정산됩니다.
+            🔒 결제하시면 대금은 에스크로(구매안전서비스)에 보관되며, 방제사 배정 후 작업이
+            완료되고 승인하시면 정산됩니다.
           </div>
           <NicepayPayButton
             reservationId={reservation.id}
