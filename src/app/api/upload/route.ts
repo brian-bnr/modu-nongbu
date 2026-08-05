@@ -15,7 +15,13 @@ const ALLOWED_CONTENT_TYPES = [
 
 const MAX_SIZE_BYTES = 10 * 1024 * 1024;
 
-const s3 = new S3Client({ region: process.env.AWS_REGION });
+const s3 = new S3Client({
+  region: process.env.S3_REGION,
+  credentials: {
+    accessKeyId: process.env.S3_ACCESS_KEY_ID ?? "",
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY ?? "",
+  },
+});
 
 export async function POST(request: Request): Promise<NextResponse> {
   const session = await auth();
@@ -52,7 +58,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
   try {
     const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 });
-    const url = `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+    const url = `https://${bucket}.s3.${process.env.S3_REGION}.amazonaws.com/${key}`;
 
     return NextResponse.json({ uploadUrl, url });
   } catch {
