@@ -55,35 +55,14 @@ export default async function HomePage() {
   }
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-
-  let homeData;
-  try {
-    homeData = await getHomeData(sevenDaysAgo.toISOString());
-  } catch (err) {
-    return (
-      <pre style={{ whiteSpace: "pre-wrap", padding: 20, fontSize: 12 }}>
-        [DEBUG getHomeData] {err instanceof Error ? `${err.message}\n${err.stack}` : String(err)}
-      </pre>
-    );
-  }
-
-  let rendered;
-  try {
-    rendered = BrowseSections(homeData);
-  } catch (err) {
-    return (
-      <pre style={{ whiteSpace: "pre-wrap", padding: 20, fontSize: 12 }}>
-        [DEBUG BrowseSections] {err instanceof Error ? `${err.message}\n${err.stack}` : String(err)}
-      </pre>
-    );
-  }
+  const homeData = await getHomeData(sevenDaysAgo.toISOString());
 
   return (
     <div>
       <HeroCarousel slides={HERO_SLIDES} />
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
-        {rendered}
+        <BrowseSections {...homeData} />
       </div>
     </div>
   );
