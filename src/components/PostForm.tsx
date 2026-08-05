@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { upload } from "@vercel/blob/client";
+import { uploadImage } from "@/lib/uploadImage";
 import type { Post, PostType } from "@prisma/client";
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
@@ -89,11 +89,8 @@ export function PostForm({
     setUploading(true);
     setUploadError("");
     try {
-      const blob = await upload(file.name, file, {
-        access: "public",
-        handleUploadUrl: "/api/upload",
-      });
-      setImageUrl(blob.url);
+      const url = await uploadImage(file);
+      setImageUrl(url);
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "업로드에 실패했습니다.");
     } finally {

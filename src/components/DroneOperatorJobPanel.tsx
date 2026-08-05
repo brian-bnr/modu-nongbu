@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { upload } from "@vercel/blob/client";
+import { uploadImage } from "@/lib/uploadImage";
 import { startWork, endWork, uploadWorkPhoto } from "@/lib/actions/droneReservation";
 import { Badge } from "@/components/Badge";
 import {
@@ -89,10 +89,7 @@ export function DroneOperatorJobPanel({
     setUploading(true);
     setError("");
     try {
-      const blob = await upload(file.name, file, {
-        access: "public",
-        handleUploadUrl: "/api/upload",
-      });
+      const url = await uploadImage(file);
 
       let lat: number | undefined;
       let lng: number | undefined;
@@ -104,13 +101,13 @@ export function DroneOperatorJobPanel({
         // 위치 확인 실패해도 사진 업로드는 계속 진행
       }
 
-      await uploadWorkPhoto(reservation.id, blob.url, lat, lng);
+      await uploadWorkPhoto(reservation.id, url, lat, lng);
       setPhotoList((prev) => [
         ...prev,
         {
-          id: blob.url,
+          id: url,
           reservationId: reservation.id,
-          url: blob.url,
+          url,
           lat: lat ?? null,
           lng: lng ?? null,
           createdAt: new Date(),

@@ -12,6 +12,7 @@ import type { Role } from "@prisma/client";
 const SOCIAL_PROVIDERS = new Set(["google", "kakao", "naver"]);
 
 export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
+  trustHost: true,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/admin/login",
