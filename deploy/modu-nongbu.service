@@ -1,0 +1,15 @@
+[Unit]
+Description=modu-nongbu Next.js app
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/modu-nongbu
+EnvironmentFile=/opt/modu-nongbu/.env.production
+ExecStart=/usr/bin/npm run start
+Restart=always
+RestartSec=5
+User=ec2-user
+
+[Install]
+WantedBy=multi-user.target
