@@ -44,7 +44,11 @@ export function Header() {
         <nav className="flex min-w-0 items-center gap-1.5 overflow-x-auto text-xs text-white [scrollbar-width:none] sm:gap-4 sm:text-sm [&::-webkit-scrollbar]:hidden">
           <div className="hidden items-center gap-4 sm:flex">
             {NAV_LINKS.map((link) => (
-              <Link key={link.href} href={link.href} className="shrink-0 hover:underline">
+              <Link
+                key={link.href}
+                href={link.href}
+                className="shrink-0 font-semibold text-white hover:underline"
+              >
                 {link.label}
               </Link>
             ))}
