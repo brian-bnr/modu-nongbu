@@ -47,7 +47,7 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="shrink-0 font-semibold text-white hover:underline"
+                className="shrink-0 font-bold text-white hover:underline"
               >
                 {link.label}
               </Link>
