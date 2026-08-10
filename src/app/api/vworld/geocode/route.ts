@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getRequestDomain } from "@/lib/request-domain";
 
 const VWORLD_ENDPOINT = "https://api.vworld.kr/req/search";
 
@@ -66,7 +67,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "검색할 주소를 입력해주세요." }, { status: 400 });
   }
 
-  const domain = new URL(request.url).hostname;
+  const domain = getRequestDomain(request);
 
   // 도로명/건물명(예: "안양판교로42 인덕원마을삼성아파트")을 우선 시도하고,
   // 결과가 없으면 지번 주소(예: "관양동 1510-1")로 다시 시도한다.

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { polygonAreaSqm, sqmToPyeong } from "@/lib/geo";
+import { getRequestDomain } from "@/lib/request-domain";
 
 const VWORLD_ENDPOINT = "https://api.vworld.kr/req/data";
 
@@ -52,7 +53,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "잘못된 좌표입니다." }, { status: 400 });
   }
 
-  const domain = new URL(request.url).hostname;
+  const domain = getRequestDomain(request);
 
   const url = new URL(VWORLD_ENDPOINT);
   url.searchParams.set("service", "data");

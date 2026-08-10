@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getRequestDomain } from "@/lib/request-domain";
 
 const VWORLD_WMS_ENDPOINT = "https://api.vworld.kr/req/wms";
 const TILE_SIZE = 256;
@@ -31,7 +32,7 @@ export async function GET(request: Request) {
   }
 
   const [minX, minY, maxX, maxY] = tileToBBox3857(x, y, z);
-  const domain = new URL(request.url).hostname;
+  const domain = getRequestDomain(request);
 
   const url = new URL(VWORLD_WMS_ENDPOINT);
   url.searchParams.set("service", "WMS");
