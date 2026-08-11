@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextFetchEvent, NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 
 const USER_ONLY_PATTERNS = [
   /^\/products\/new$/,
@@ -18,7 +17,8 @@ function trackVisit(
   pathname: string,
   cookieValue: string | undefined,
   response: NextResponse,
-  event: NextFetchEvent
+  event: NextFetchEvent,
+  origin: string
 ) {
   if (pathname.startsWith("/admin") || pathname.startsWith("/api")) return;
 
@@ -35,14 +35,14 @@ function trackVisit(
 
   const visitDate = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
 
+  // 미들웨어는 Edge 런타임에서 실행돼 Prisma Client를 직접 쓸 수 없다.
+  // Node.js 런타임에서 도는 Route Handler를 대신 호출해 DB에 기록한다.
   event.waitUntil(
-    prisma.visit
-      .upsert({
-        where: { visitorId_visitDate: { visitorId, visitDate } },
-        update: {},
-        create: { visitorId, visitDate },
-      })
-      .catch((err) => console.error("[trackVisit] upsert failed", err))
+    fetch(`${origin}/api/track-visit`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visitorId, visitDate }),
+    }).catch((err) => console.error("[trackVisit] fetch failed", err))
   );
 }
 
@@ -115,7 +115,7 @@ export default auth((req, event: NextFetchEvent) => {
     response = NextResponse.next();
   }
 
-  trackVisit(pathname, req.cookies.get(VISIT_COOKIE)?.value, response, event);
+  trackVisit(pathname, req.cookies.get(VISIT_COOKIE)?.value, response, event, req.nextUrl.origin);
 
   return response;
 });
