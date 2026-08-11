@@ -42,7 +42,7 @@ function trackVisit(
         update: {},
         create: { visitorId, visitDate },
       })
-      .catch(() => {})
+      .catch((err) => console.error("[trackVisit] upsert failed", err))
   );
 }
 

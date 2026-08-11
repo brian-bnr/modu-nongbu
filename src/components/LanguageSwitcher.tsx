@@ -51,6 +51,24 @@ function waitForCombo(timeoutMs = 8000): Promise<HTMLSelectElement | null> {
   });
 }
 
+function waitForTranslated(timeoutMs = 2500): Promise<boolean> {
+  return new Promise((resolve) => {
+    const check = () => document.documentElement.classList.contains("translated-ltr");
+    if (check()) {
+      resolve(true);
+      return;
+    }
+    const start = Date.now();
+    const timer = setInterval(() => {
+      const applied = check();
+      if (applied || Date.now() - start > timeoutMs) {
+        clearInterval(timer);
+        resolve(applied);
+      }
+    }, 100);
+  });
+}
+
 export function LanguageSwitcher() {
   const [current, setCurrent] = useState<LangCode>("ko");
   const [pending, setPending] = useState<LangCode | null>(null);
@@ -100,8 +118,7 @@ export function LanguageSwitcher() {
 
     // 구글 번역 위젯이 드롭다운 변경에 응답하지 않는 경우가 간헐적으로 있어,
     // 실제로 번역이 적용됐는지 확인하고 안 됐으면 쿠키+새로고침으로 재시도한다.
-    await new Promise((resolve) => setTimeout(resolve, 2500));
-    const applied = document.documentElement.classList.contains("translated-ltr");
+    const applied = await waitForTranslated();
     if (!applied) {
       window.location.reload();
       return;
