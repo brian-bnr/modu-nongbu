@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { approveNicepayPayment, derivePayMethod, verifyNicepaySignature } from "@/lib/nicepay";
+import { getRequestOrigin } from "@/lib/request-domain";
 
 // 나이스페이 인증 결과가 브라우저를 통해 이 URL로 POST(form-urlencoded)됩니다.
 // (AUTHNICE.requestPay의 returnUrl로 지정)
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
   const [orderKind, reservationId] = orderId.split("-");
   const redirectUrl = new URL(
     reservationId ? `/drones/${reservationId}` : "/drones",
-    request.url
+    getRequestOrigin(request)
   );
 
   if (authResultCode !== "0000") {
