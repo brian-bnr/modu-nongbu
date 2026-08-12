@@ -13,14 +13,21 @@ const USER_ONLY_PATTERNS = [
 
 const VISIT_COOKIE = "mn_vid";
 
+// 알려진 봇/크롤러/스캐너 User-Agent 패턴. 이런 요청은 방문자로 집계하지 않는다.
+const BOT_UA_PATTERN =
+  /bot|crawl|spider|slurp|bytespider|petalbot|mj12bot|ahrefsbot|semrushbot|dotbot|scanner|python-requests|curl\/|wget\/|headless|phantomjs|scrapy|go-http-client|libwww-perl|httpclient|okhttp|postmanruntime|masscan|nmap|nikto|sqlmap|zgrab/i;
+
 function trackVisit(
   pathname: string,
   cookieValue: string | undefined,
   response: NextResponse,
   event: NextFetchEvent,
-  origin: string
+  origin: string,
+  userAgent: string,
+  clientIp: string
 ) {
   if (pathname.startsWith("/admin") || pathname.startsWith("/api")) return;
+  if (BOT_UA_PATTERN.test(userAgent)) return;
 
   let visitorId = cookieValue;
   if (!visitorId) {
@@ -41,7 +48,7 @@ function trackVisit(
     fetch(`${origin}/api/track-visit`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ visitorId, visitDate }),
+      body: JSON.stringify({ visitorId, visitDate, clientIp }),
     }).catch((err) => console.error("[trackVisit] fetch failed", err))
   );
 }
@@ -115,7 +122,16 @@ export default auth((req, event: NextFetchEvent) => {
     response = NextResponse.next();
   }
 
-  trackVisit(pathname, req.cookies.get(VISIT_COOKIE)?.value, response, event, req.nextUrl.origin);
+  const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  trackVisit(
+    pathname,
+    req.cookies.get(VISIT_COOKIE)?.value,
+    response,
+    event,
+    req.nextUrl.origin,
+    req.headers.get("user-agent") ?? "",
+    clientIp
+  );
 
   return response;
 });
