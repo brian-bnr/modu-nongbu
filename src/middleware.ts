@@ -14,8 +14,10 @@ const USER_ONLY_PATTERNS = [
 const VISIT_COOKIE = "mn_vid";
 
 // 알려진 봇/크롤러/스캐너 User-Agent 패턴. 이런 요청은 방문자로 집계하지 않는다.
+// ELB-HealthChecker: ALB 대상 그룹 헬스체크가 쿠키 없이 "/"를 주기적으로 반복
+// 호출하면서 매번 새 방문자로 잡혀 방문자 수를 크게 부풀리는 주요 원인이었다.
 const BOT_UA_PATTERN =
-  /bot|crawl|spider|slurp|bytespider|petalbot|mj12bot|ahrefsbot|semrushbot|dotbot|scanner|python-requests|curl\/|wget\/|headless|phantomjs|scrapy|go-http-client|libwww-perl|httpclient|okhttp|postmanruntime|masscan|nmap|nikto|sqlmap|zgrab|yeti|daumoa|facebookexternalhit|kakaotalk-scrap|whatsapp|telegram/i;
+  /bot|crawl|spider|slurp|bytespider|petalbot|mj12bot|ahrefsbot|semrushbot|dotbot|scanner|python-requests|curl\/|wget\/|headless|phantomjs|scrapy|go-http-client|libwww-perl|httpclient|okhttp|postmanruntime|masscan|nmap|nikto|sqlmap|zgrab|yeti|daumoa|facebookexternalhit|kakaotalk-scrap|whatsapp|telegram|healthcheck|elb-health|pingdom|uptimerobot|statuscake|site24x7/i;
 
 function isPrefetchRequest(req: NextRequest) {
   // Next.js가 화면에 보이는 <Link>를 백그라운드로 미리 불러올 때 보내는 요청.
@@ -39,7 +41,9 @@ function trackVisit(
   clientIp: string
 ) {
   if (pathname.startsWith("/admin") || pathname.startsWith("/api")) return;
-  if (BOT_UA_PATTERN.test(userAgent)) return;
+  // 실제 브라우저는 항상 User-Agent를 보낸다. 헬스체크/모니터링 봇처럼
+  // UA가 비어있는 요청은 사람의 방문이 아니므로 집계에서 제외한다.
+  if (!userAgent || BOT_UA_PATTERN.test(userAgent)) return;
 
   let visitorId = cookieValue;
   if (!visitorId) {
