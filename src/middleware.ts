@@ -15,7 +15,19 @@ const VISIT_COOKIE = "mn_vid";
 
 // 알려진 봇/크롤러/스캐너 User-Agent 패턴. 이런 요청은 방문자로 집계하지 않는다.
 const BOT_UA_PATTERN =
-  /bot|crawl|spider|slurp|bytespider|petalbot|mj12bot|ahrefsbot|semrushbot|dotbot|scanner|python-requests|curl\/|wget\/|headless|phantomjs|scrapy|go-http-client|libwww-perl|httpclient|okhttp|postmanruntime|masscan|nmap|nikto|sqlmap|zgrab/i;
+  /bot|crawl|spider|slurp|bytespider|petalbot|mj12bot|ahrefsbot|semrushbot|dotbot|scanner|python-requests|curl\/|wget\/|headless|phantomjs|scrapy|go-http-client|libwww-perl|httpclient|okhttp|postmanruntime|masscan|nmap|nikto|sqlmap|zgrab|yeti|daumoa|facebookexternalhit|kakaotalk-scrap|whatsapp|telegram/i;
+
+function isPrefetchRequest(req: NextRequest) {
+  // Next.js가 화면에 보이는 <Link>를 백그라운드로 미리 불러올 때 보내는 요청.
+  // 실제 페이지뷰가 아니므로 방문자로 집계하면 안 된다. 쿠키가 없는 첫 방문자의
+  // 경우 이런 프리페치 요청이 쿠키 저장 전에 동시에 여러 개 날아가면서 매번 새
+  // 방문자 ID가 발급돼 방문자 수가 크게 부풀려지는 원인이 된다.
+  return (
+    req.headers.get("next-router-prefetch") === "1" ||
+    req.headers.get("purpose") === "prefetch" ||
+    req.headers.get("sec-purpose")?.includes("prefetch") === true
+  );
+}
 
 function trackVisit(
   pathname: string,
@@ -122,16 +134,18 @@ export default auth((req, event: NextFetchEvent) => {
     response = NextResponse.next();
   }
 
-  const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  trackVisit(
-    pathname,
-    req.cookies.get(VISIT_COOKIE)?.value,
-    response,
-    event,
-    req.nextUrl.origin,
-    req.headers.get("user-agent") ?? "",
-    clientIp
-  );
+  if (!isPrefetchRequest(req)) {
+    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    trackVisit(
+      pathname,
+      req.cookies.get(VISIT_COOKIE)?.value,
+      response,
+      event,
+      req.nextUrl.origin,
+      req.headers.get("user-agent") ?? "",
+      clientIp
+    );
+  }
 
   return response;
 });

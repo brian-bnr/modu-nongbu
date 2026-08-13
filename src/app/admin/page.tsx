@@ -96,7 +96,10 @@ export default async function AdminDashboardPage() {
       _count: true,
       where: { visitDate: { in: last14Days } },
     }),
-    prisma.payment.aggregate({ where: { status: "HELD" }, _sum: { amount: true } }),
+    prisma.payment.aggregate({
+      where: { status: "HELD", isMock: false },
+      _sum: { amount: true },
+    }),
     prisma.settlement.aggregate({
       where: { status: "PAID", paidAt: { gte: monthStart } },
       _sum: { payoutAmount: true },
