@@ -56,8 +56,12 @@ export default async function InvestorsPage() {
     gmvAgg,
     commissionAgg,
   ] = await Promise.all([
-    prisma.droneReservation.count(),
-    prisma.droneReservation.count({ where: { status: "COMPLETED" } }),
+    prisma.droneReservation.count({
+      where: { OR: [{ payment: null }, { payment: { isMock: false } }] },
+    }),
+    prisma.droneReservation.count({
+      where: { status: "COMPLETED", OR: [{ payment: null }, { payment: { isMock: false } }] },
+    }),
     prisma.user.count({ where: { role: "FARMER" } }),
     prisma.droneOperator.count({ where: { status: "APPROVED" } }),
     prisma.droneReservation.aggregate({
@@ -65,10 +69,14 @@ export default async function InvestorsPage() {
         status: {
           in: ["PAID", "ASSIGNED", "IN_PROGRESS", "COMPLETION_REQUESTED", "COMPLETED"],
         },
+        payment: { isMock: false },
       },
       _sum: { totalPrice: true },
     }),
-    prisma.settlement.aggregate({ _sum: { commissionAmount: true } }),
+    prisma.settlement.aggregate({
+      where: { payment: { isMock: false } },
+      _sum: { commissionAmount: true },
+    }),
   ]);
 
   const gmv = gmvAgg._sum.totalPrice ?? 0;

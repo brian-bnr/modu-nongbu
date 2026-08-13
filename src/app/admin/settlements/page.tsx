@@ -12,7 +12,10 @@ export default async function AdminSettlementsPage() {
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
   const [heldAgg, pendingCount, paidThisMonthAgg, pendingSettlements] = await Promise.all([
-    prisma.payment.aggregate({ where: { status: "HELD" }, _sum: { amount: true } }),
+    prisma.payment.aggregate({
+      where: { status: "HELD", isMock: false },
+      _sum: { amount: true },
+    }),
     prisma.settlement.count({ where: { status: "PENDING" } }),
     prisma.settlement.aggregate({
       where: { status: "PAID", paidAt: { gte: monthStart } },
