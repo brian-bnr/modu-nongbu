@@ -6,6 +6,8 @@ import {
   DRONE_RESERVATION_STATUS_LABEL,
   DRONE_RESERVATION_STATUS_VARIANT,
   PAYMENT_STATUS_LABEL,
+  SETTLEMENT_STATUS_LABEL,
+  SETTLEMENT_STATUS_VARIANT,
   DISPUTE_STATUS_LABEL,
   DISPUTE_STATUS_VARIANT,
   formatDate,
@@ -13,7 +15,11 @@ import {
 } from "@/lib/format";
 import { DroneAdminNoteForm } from "@/components/DroneAdminNoteForm";
 import { DisputeResolveForm } from "@/components/DisputeResolveForm";
+import { AdminAssignOperatorForm } from "@/components/AdminAssignOperatorForm";
+import { AdminCompleteReservationForm } from "@/components/AdminCompleteReservationForm";
 import { requireAdmin } from "@/lib/auth";
+
+const ASSIGNABLE_STATUSES = ["ASSIGNED", "IN_PROGRESS", "COMPLETION_REQUESTED"];
 
 export default async function AdminDroneDetailPage({
   params,
@@ -38,6 +44,14 @@ export default async function AdminDroneDetailPage({
   if (!reservation) {
     notFound();
   }
+
+  const approvedOperators =
+    reservation.status === "PAID"
+      ? await prisma.droneOperator.findMany({
+          where: { status: "APPROVED" },
+          include: { user: true },
+        })
+      : [];
 
   return (
     <div>
@@ -72,6 +86,16 @@ export default async function AdminDroneDetailPage({
         {reservation.payment && (
           <>
             <p>결제 상태: {PAYMENT_STATUS_LABEL[reservation.payment.status]}</p>
+            {reservation.payment.settlement && (
+              <p className="flex flex-wrap items-center gap-2">
+                정산:{" "}
+                <Badge variant={SETTLEMENT_STATUS_VARIANT[reservation.payment.settlement.status]}>
+                  {SETTLEMENT_STATUS_LABEL[reservation.payment.settlement.status]}
+                </Badge>
+                지급액 {formatPrice(reservation.payment.settlement.payoutAmount)} (수수료{" "}
+                {formatPrice(reservation.payment.settlement.commissionAmount)})
+              </p>
+            )}
             {reservation.payment.additionalAmount !== 0 && (
               <p>
                 면적 차액 정산:{" "}
@@ -96,6 +120,25 @@ export default async function AdminDroneDetailPage({
         )}
         {reservation.cancelReason && <p>취소 사유: {reservation.cancelReason}</p>}
       </div>
+
+      {reservation.status === "PAID" && (
+        <div className="mt-6 max-w-lg rounded-lg border border-black/10 p-4 dark:border-white/10">
+          <AdminAssignOperatorForm
+            reservationId={reservation.id}
+            operators={approvedOperators.map((op) => ({
+              id: op.id,
+              name: op.user.name,
+              region: op.user.region,
+            }))}
+          />
+        </div>
+      )}
+
+      {ASSIGNABLE_STATUSES.includes(reservation.status) && (
+        <div className="mt-6 max-w-lg rounded-lg border border-black/10 p-4 dark:border-white/10">
+          <AdminCompleteReservationForm reservationId={reservation.id} />
+        </div>
+      )}
 
       {reservation.photos.length > 0 && (
         <div className="mt-4">
