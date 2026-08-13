@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
 import { requireAdmin } from "@/lib/auth";
+import { AdminApproveOperatorForm } from "@/components/AdminApproveOperatorForm";
 import {
   formatDate,
   INQUIRY_STATUS_LABEL,
@@ -69,6 +70,21 @@ export default async function AdminUserDetailPage({
           가입일 {formatDate(user.createdAt)}
         </p>
       </div>
+
+      {(user.role !== "OPERATOR" || !user.droneOperator || user.droneOperator.status !== "APPROVED") && (
+        <div className="mt-3 rounded-lg border border-dashed border-black/20 p-4 text-sm dark:border-white/20">
+          <p className="font-semibold">방제사 전환</p>
+          <p className="mt-1 text-black/50 dark:text-white/50">
+            {user.role === "OPERATOR"
+              ? "방제사 신청이 접수되었지만 아직 승인되지 않았습니다."
+              : "이 회원을 방제사로 전환하고 즉시 승인 처리합니다. 전화 상담으로 등록하거나 테스트 계정을 준비할 때 사용하세요."}
+          </p>
+          <AdminApproveOperatorForm
+            userId={user.id}
+            label={user.role === "OPERATOR" ? "방제사 승인하기" : "방제사로 전환 (즉시 승인)"}
+          />
+        </div>
+      )}
 
       {user.role === "FARMER" && (
         <div className="mt-3 flex flex-wrap gap-2 text-xs">
