@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { finalizeCompletion } from "@/lib/droneCompletion";
 import { createSettlement } from "@/lib/settlementCore";
+import { sendSms } from "@/lib/sms";
+import { formatDate } from "@/lib/format";
 
 export type AdminActionState = {
   success?: boolean;
@@ -36,7 +38,10 @@ export async function adminAssignOperator(
     return { error: "결제완료 상태의 예약만 방제사를 배정할 수 있습니다." };
   }
 
-  const operator = await prisma.droneOperator.findUnique({ where: { id: operatorId } });
+  const operator = await prisma.droneOperator.findUnique({
+    where: { id: operatorId },
+    include: { user: true },
+  });
   if (!operator || operator.status !== "APPROVED") {
     return { error: "승인된 방제사만 배정할 수 있습니다." };
   }
@@ -45,6 +50,14 @@ export async function adminAssignOperator(
     where: { id: reservationId },
     data: { operatorId, status: "ASSIGNED" },
   });
+
+  if (operator.user.phone) {
+    const location = [reservation.region, reservation.regionDetail].filter(Boolean).join(" ");
+    await sendSms(
+      operator.user.phone,
+      `[모두의농부] 새 방제 작업이 배정되었습니다. ${location} · ${reservation.cropType} ${reservation.areaPyeong}평, 희망일 ${formatDate(reservation.desiredDate)}. 앱에서 확인해주세요.`
+    );
+  }
 
   revalidatePath(`/admin/drones/${reservationId}`);
   revalidatePath("/admin/drones");

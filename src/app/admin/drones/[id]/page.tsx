@@ -71,7 +71,8 @@ export default async function AdminDroneDetailPage({
         </p>
         {reservation.operator && (
           <p>
-            방제사: {reservation.operator.user.name} ({reservation.operator.user.email})
+            방제사: {reservation.operator.user.name} (
+            {[reservation.operator.user.phone, reservation.operator.user.email].filter(Boolean).join(" · ")})
           </p>
         )}
         {reservation.parcelJibun && <p>필지: {reservation.parcelJibun}</p>}
