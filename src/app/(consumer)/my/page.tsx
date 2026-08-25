@@ -62,11 +62,13 @@ export default async function MyPage() {
           </p>
         </Link>
         <Link
-          href="/my/inquiries"
+          href="/my/chats"
           className="rounded-lg border border-black/10 p-4 transition hover:border-brand-600 dark:border-white/10"
         >
-          <p className="font-medium">내 문의내역</p>
-          <p className="mt-1 text-sm text-black/50 dark:text-white/50">내가 보낸 문의·지원 확인</p>
+          <p className="font-medium">채팅</p>
+          <p className="mt-1 text-sm text-black/50 dark:text-white/50">
+            내가 보낸 채팅, 내 글에 온 채팅 확인
+          </p>
         </Link>
       </div>
     </div>

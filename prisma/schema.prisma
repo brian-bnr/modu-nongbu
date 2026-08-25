@@ -46,6 +46,10 @@ model User {
   expertProfile             ExpertProfile?
   companyProfile            CompanyProfile?
   reviews                   Review[]
+
+  chatThreadsAsBuyer  ChatThread[]  @relation("ChatThreadBuyer")
+  chatThreadsAsSeller ChatThread[]  @relation("ChatThreadSeller")
+  chatMessages        ChatMessage[]
 }
 
 enum ExpertSpecialty {
@@ -75,6 +79,37 @@ model CompanyProfile {
   businessInfo   String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+model ChatThread {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  buyerId   String
+  buyer     User     @relation("ChatThreadBuyer", fields: [buyerId], references: [id], onDelete: Cascade)
+  sellerId  String
+  seller    User     @relation("ChatThreadSeller", fields: [sellerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages ChatMessage[]
+
+  @@unique([postId, buyerId])
+  @@index([buyerId])
+  @@index([sellerId])
+}
+
+model ChatMessage {
+  id        String     @id @default(cuid())
+  threadId  String
+  thread    ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User       @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  content   String
+  readAt    DateTime?
+  createdAt DateTime   @default(now())
+
+  @@index([threadId])
 }
 
 model Visit {
@@ -120,7 +155,8 @@ model Post {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
-  inquiries Inquiry[]
+  inquiries   Inquiry[]
+  chatThreads ChatThread[]
 
   @@index([postType])
   @@index([authorId])

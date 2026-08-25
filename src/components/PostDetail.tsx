@@ -4,8 +4,8 @@ import type { PostType } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { Badge } from "@/components/Badge";
-import { InquiryForm } from "@/components/InquiryForm";
 import { PostImageLightbox } from "@/components/PostImageLightbox";
+import { startChatAction } from "@/lib/actions/chat";
 import {
   formatDate,
   formatPrice,
@@ -99,9 +99,9 @@ export async function PostDetail({
 
         <div>
           <div className="rounded-lg border border-black/10 p-5 dark:border-white/10">
-            <h2 className="text-lg font-semibold">문의하기</h2>
+            <h2 className="text-lg font-semibold">채팅 보내기</h2>
             <p className="mt-1 text-sm text-black/50 dark:text-white/50">
-              문의를 보내면 로그인 계정의 연락처가 작성자에게 전달됩니다.
+              작성자와 실시간 채팅으로 바로 대화를 나눌 수 있어요.
             </p>
             <div className="mt-4">
               {isOwner ? (
@@ -113,13 +113,20 @@ export async function PostDetail({
                   마감된 글입니다.
                 </p>
               ) : session?.user?.type === "user" ? (
-                <InquiryForm postId={post.id} postType={post.postType} />
+                <form action={startChatAction.bind(null, post.id)}>
+                  <button
+                    type="submit"
+                    className="w-full rounded-md bg-brand-700 px-4 py-2 text-sm font-medium text-white hover:bg-brand-800"
+                  >
+                    채팅 보내기
+                  </button>
+                </form>
               ) : (
                 <Link
                   href={`/login?callbackUrl=${basePath}/${post.id}`}
                   className="block rounded-md bg-brand-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-brand-800"
                 >
-                  로그인하고 문의하기
+                  로그인하고 채팅 보내기
                 </Link>
               )}
             </div>

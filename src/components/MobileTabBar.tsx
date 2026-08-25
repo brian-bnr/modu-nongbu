@@ -21,19 +21,19 @@ const HOME_TAB: Tab = { href: "/", label: "홈", Icon: HomeIcon };
 const ROLE_MIDDLE_TABS: Record<Role, Tab[]> = {
   FARMER: [
     { href: "/drones", label: "신청내역", Icon: CalendarIcon },
-    { href: "/my/inquiries", label: "메시지", Icon: MessageIcon },
+    { href: "/my/chats", label: "채팅", Icon: MessageIcon },
   ],
   OPERATOR: [
     { href: "/drones/operator", label: "일정", Icon: CalendarIcon },
     { href: "/drones/operator/settlements", label: "수익", Icon: WonIcon },
   ],
   EXPERT: [
-    { href: "/my/inquiries", label: "문의", Icon: MessageIcon },
+    { href: "/my/chats", label: "채팅", Icon: MessageIcon },
     { href: "/services", label: "서비스", Icon: GridIcon },
   ],
   COMPANY: [
     { href: "/products", label: "거래", Icon: CalendarIcon },
-    { href: "/my/inquiries", label: "메시지", Icon: MessageIcon },
+    { href: "/my/chats", label: "채팅", Icon: MessageIcon },
   ],
 };
 
