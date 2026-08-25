@@ -4,19 +4,19 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #eff1ed;
-  --foreground: #2b2620;
+  --background: #f8f6ef;
+  --foreground: #2d2d2d;
 
-  --color-brand-50: #faf4f0;
-  --color-brand-100: #f2e7de;
-  --color-brand-200: #e4cfbf;
-  --color-brand-300: #d0b095;
-  --color-brand-400: #b88861;
-  --color-brand-500: #946742;
-  --color-brand-600: #714e32;
-  --color-brand-700: #5a3e27;
-  --color-brand-800: #452e1c;
-  --color-brand-900: #302012;
+  --color-brand-50: #f0f8f1;
+  --color-brand-100: #dceedf;
+  --color-brand-200: #b8dfbf;
+  --color-brand-300: #8fcc99;
+  --color-brand-400: #63b571;
+  --color-brand-500: #43a047;
+  --color-brand-600: #2e7d32;
+  --color-brand-700: #1f5d3a;
+  --color-brand-800: #17452c;
+  --color-brand-900: #102f1f;
 
   --color-accent-50: #fff8e1;
   --color-accent-100: #ffecb3;
@@ -51,23 +51,14 @@
   --color-accent-600: var(--color-accent-600);
   --color-accent-700: var(--color-accent-700);
   --color-accent-800: var(--color-accent-800);
-  --font-sans: var(--font-body);
-  --font-display: var(--font-title);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-display);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Google Translate 위젯이 띄우는 상단 배너 등 모든 iframe/UI를 숨기고 body가 밀려 내려가지 않게 한다 (우측 상단 국기 버튼만 노출). */

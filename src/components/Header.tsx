@@ -6,6 +6,11 @@ import { HeaderAuthSlot } from "@/components/HeaderAuthSlot";
 import { SearchIcon } from "@/components/icons/NavIcons";
 import { getHeaderBarClass } from "@/lib/seasonalTheme";
 
+const NAV_LINKS = [
+  { href: "/products", label: "농산물" },
+  { href: "/jobs", label: "일자리" },
+];
+
 function HeaderAuthFallback() {
   return (
     <Link
@@ -39,16 +44,25 @@ export function Header() {
         </Link>
         <nav className="flex min-w-0 items-center gap-1.5 overflow-x-auto text-xs text-white [scrollbar-width:none] sm:gap-4 sm:text-sm [&::-webkit-scrollbar]:hidden">
           <div className="hidden items-center gap-4 sm:flex">
-            <Suspense fallback={<HeaderAuthFallback />}>
-              <HeaderAuthSlot />
-            </Suspense>
-            <Link
-              href="/admin"
-              className="notranslate shrink-0 whitespace-nowrap text-white/65 hover:text-white hover:underline"
-            >
-              운영자
-            </Link>
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="shrink-0 text-[1.1375rem] font-bold text-white hover:underline"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
+          <Suspense fallback={<HeaderAuthFallback />}>
+            <HeaderAuthSlot />
+          </Suspense>
+          <Link
+            href="/admin"
+            className="notranslate shrink-0 whitespace-nowrap text-white/40 hover:underline"
+          >
+            운영자
+          </Link>
           <LanguageSwitcher />
           <Link
             href="/search"

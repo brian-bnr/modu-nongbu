@@ -2,23 +2,25 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/Badge";
 import { DRONE_RESERVATION_STATUS_LABEL, DRONE_RESERVATION_STATUS_VARIANT, formatPrice } from "@/lib/format";
-import { BriefcaseIcon, GridIcon } from "@/components/icons/NavIcons";
+import { UserIcon, CalendarIcon, SearchIcon, GridIcon } from "@/components/icons/NavIcons";
 import { DashboardShell, type DashboardAction } from "@/components/dashboard/DashboardShell";
 
 const ACTIONS: DashboardAction[] = [
   { label: "방제 신청", sublabel: "방제 요청하기", href: "/drones/new", iconSrc: "/icons/category/drone.png" },
-  {
-    label: "일손요청",
-    sublabel: "일손 구하기",
-    href: "/jobs/new?type=FIND_WORKER",
-    Icon: BriefcaseIcon,
-  },
+  { label: "신청 내역", sublabel: "신청 내역 확인", href: "/drones", Icon: CalendarIcon },
   {
     label: "농산물 판매",
     sublabel: "판매글 등록",
     href: "/products/new?type=SELL_PRODUCT",
     iconSrc: "/icons/category/basket.png",
   },
+  {
+    label: "방제사 찾기",
+    sublabel: "방제사 검색",
+    href: "/drones/operators",
+    Icon: SearchIcon,
+  },
+  { label: "내 정보", sublabel: "정보 관리", href: "/my", Icon: UserIcon },
   { label: "전체 서비스", sublabel: "서비스 둘러보기", href: "/services", Icon: GridIcon },
 ];
 
@@ -47,21 +49,23 @@ export async function FarmerDashboard({ userId, name }: { userId: string; name: 
       </div>
 
       {recentReservations.length === 0 ? (
-        <p className="mt-3 text-sm text-black/50">아직 신청한 방제 예약이 없어요.</p>
+        <p className="mt-3 rounded-xl bg-black/5 p-3 text-sm text-black/50 dark:bg-white/10 dark:text-white/50">
+          아직 신청한 방제 예약이 없어요.
+        </p>
       ) : (
-        <ul className="mt-1">
+        <ul className="mt-3 space-y-2">
           {recentReservations.map((r) => (
-            <li key={r.id} className="border-b border-black/10 last:border-b-0">
+            <li key={r.id}>
               <Link
                 href={`/drones/${r.id}`}
-                className="flex items-center justify-between gap-3 py-3 text-sm transition hover:bg-black/[0.02]"
+                className="flex items-center justify-between gap-3 rounded-lg border border-black/5 p-3 text-sm transition hover:border-brand-600 dark:border-white/10"
               >
                 <div className="min-w-0">
                   <p className="truncate font-medium">
                     {r.region}
                     {r.regionDetail ? ` ${r.regionDetail}` : ""}
                   </p>
-                  <p className="mt-0.5 text-xs text-black/50">
+                  <p className="mt-0.5 text-xs text-black/50 dark:text-white/50">
                     {r.areaPyeong.toLocaleString("ko-KR")}평 · {formatPrice(r.totalPrice)}
                   </p>
                 </div>
