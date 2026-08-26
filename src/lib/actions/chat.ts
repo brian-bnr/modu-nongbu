@@ -6,7 +6,12 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { filterProfanity } from "@/lib/profanity";
 import { pusherServer } from "@/lib/pusher";
-import { chatChannelName, CHAT_MESSAGE_EVENT } from "@/lib/chatShared";
+import {
+  chatChannelName,
+  CHAT_MESSAGE_EVENT,
+  userChannelName,
+  NEW_CHAT_NOTIFICATION_EVENT,
+} from "@/lib/chatShared";
 
 export async function startChatAction(postId: string) {
   const session = await auth();
@@ -70,10 +75,51 @@ export async function sendChatMessage(
       content: message.content,
       createdAt: message.createdAt.toISOString(),
     });
+
+    // 상대방이 이 채팅방을 열어두고 있지 않아도(홈, 상품목록 등 다른 화면에 있어도)
+    // 안읽음 배지가 즉시 갱신되도록 개인 알림 채널에도 별도로 알린다.
+    const recipientId = thread.buyerId === session.user.id ? thread.sellerId : thread.buyerId;
+    await pusherServer.trigger(userChannelName(recipientId), NEW_CHAT_NOTIFICATION_EVENT, {
+      threadId: thread.id,
+    });
   }
 
   revalidatePath(`/chat/${thread.id}`);
   revalidatePath("/my/chats");
 
   return { status: "idle" };
+}
+
+export async function getUnreadChatCount(): Promise<number> {
+  const session = await auth();
+  if (session?.user?.type !== "user") {
+    return 0;
+  }
+
+  return prisma.chatMessage.count({
+    where: {
+      readAt: null,
+      senderId: { not: session.user.id },
+      thread: { OR: [{ buyerId: session.user.id }, { sellerId: session.user.id }] },
+    },
+  });
+}
+
+export async function markThreadReadAction(threadId: string) {
+  const session = await auth();
+  if (session?.user?.type !== "user") {
+    return;
+  }
+
+  await prisma.chatMessage.updateMany({
+    where: {
+      threadId,
+      readAt: null,
+      senderId: { not: session.user.id },
+      thread: { OR: [{ buyerId: session.user.id }, { sellerId: session.user.id }] },
+    },
+    data: { readAt: new Date() },
+  });
+
+  revalidatePath("/my/chats");
 }

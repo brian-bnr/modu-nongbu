@@ -13,6 +13,7 @@ import {
   WonIcon,
   MessageIcon,
 } from "@/components/icons/NavIcons";
+import { ChatUnreadBadge } from "@/components/chat/ChatUnreadBadge";
 
 type Tab = { href: string; label: string; Icon: ComponentType<{ className?: string }> };
 
@@ -49,7 +50,15 @@ const ROLE_ACTIVE_CLASS: Record<Role, string> = {
   COMPANY: "text-purple-700",
 };
 
-export function MobileTabBar({ loggedIn, role }: { loggedIn: boolean; role?: Role }) {
+export function MobileTabBar({
+  loggedIn,
+  role,
+  userId,
+}: {
+  loggedIn: boolean;
+  role?: Role;
+  userId?: string;
+}) {
   const pathname = usePathname();
   const middleTabs = loggedIn && role ? ROLE_MIDDLE_TABS[role] : GUEST_MIDDLE_TABS;
   const tabs: Tab[] = [
@@ -73,7 +82,10 @@ export function MobileTabBar({ loggedIn, role }: { loggedIn: boolean; role?: Rol
               active ? activeClass : "text-black/50"
             }`}
           >
-            <tab.Icon className="h-6 w-6" />
+            <span className="relative">
+              <tab.Icon className="h-6 w-6" />
+              {tab.label === "채팅" && userId && <ChatUnreadBadge userId={userId} />}
+            </span>
             {tab.label}
           </Link>
         );

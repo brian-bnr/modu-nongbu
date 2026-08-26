@@ -9,6 +9,6 @@ export function getPusherClient(): PusherClient | null {
 
   const key = process.env.NEXT_PUBLIC_PUSHER_KEY;
   const cluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER;
-  client = key && cluster ? new PusherClient(key, { cluster }) : null;
+  client = key && cluster ? new PusherClient(key, { cluster, authEndpoint: "/api/pusher/auth" }) : null;
   return client;
 }

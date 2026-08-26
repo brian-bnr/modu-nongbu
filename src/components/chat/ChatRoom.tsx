@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { sendChatMessage, type SendMessageState } from "@/lib/actions/chat";
+import { sendChatMessage, markThreadReadAction, type SendMessageState } from "@/lib/actions/chat";
 import { getPusherClient } from "@/lib/pusherClient";
 import { chatChannelName, CHAT_MESSAGE_EVENT } from "@/lib/chatShared";
 
@@ -59,6 +59,11 @@ export function ChatRoom({
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: "end" });
   }, [messages]);
+
+  useEffect(() => {
+    // 채팅방을 열어보고 있는 동안 상대방 메시지를 읽음 처리해서 안읽음 배지를 없앤다.
+    markThreadReadAction(threadId);
+  }, [threadId, messages]);
 
   useEffect(() => {
     if (state.status === "idle") {

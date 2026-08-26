@@ -21,6 +21,17 @@ export default async function MyChatsPage() {
     },
   });
 
+  const unreadCounts = await prisma.chatMessage.groupBy({
+    by: ["threadId"],
+    where: {
+      threadId: { in: threads.map((t) => t.id) },
+      readAt: null,
+      senderId: { not: session.user.id },
+    },
+    _count: { _all: true },
+  });
+  const unreadByThread = new Map(unreadCounts.map((u) => [u.threadId, u._count._all]));
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 sm:px-8 sm:py-10">
       <h1 className="text-xl font-bold">채팅</h1>
@@ -38,6 +49,7 @@ export default async function MyChatsPage() {
             const isBuyer = t.buyerId === session.user.id;
             const otherParty = isBuyer ? t.seller : t.buyer;
             const lastMessage = t.messages[0];
+            const unread = unreadByThread.get(t.id) ?? 0;
             return (
               <li key={t.id}>
                 <Link
@@ -45,7 +57,9 @@ export default async function MyChatsPage() {
                   className="block rounded-xl border border-black/10 bg-white p-4 transition hover:bg-black/[0.02] dark:border-white/10 dark:bg-white/5"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <p className="truncate text-sm font-semibold">{t.post.title}</p>
+                    <p className={`truncate text-sm ${unread > 0 ? "font-bold" : "font-semibold"}`}>
+                      {t.post.title}
+                    </p>
                     {lastMessage && (
                       <span className="shrink-0 text-[11px] text-black/40 dark:text-white/40">
                         {formatDate(lastMessage.createdAt)}
@@ -56,9 +70,18 @@ export default async function MyChatsPage() {
                     {otherParty.name}
                     {isBuyer ? " (판매자)" : " (문의자)"}
                   </p>
-                  <p className="mt-1 truncate text-sm text-black/60 dark:text-white/60">
-                    {lastMessage ? lastMessage.content : "대화를 시작해보세요."}
-                  </p>
+                  <div className="mt-1 flex items-center justify-between gap-2">
+                    <p
+                      className={`truncate text-sm ${unread > 0 ? "font-semibold text-foreground" : "text-black/60 dark:text-white/60"}`}
+                    >
+                      {lastMessage ? lastMessage.content : "대화를 시작해보세요."}
+                    </p>
+                    {unread > 0 && (
+                      <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-red-600 px-1.5 text-[11px] font-bold leading-none text-white">
+                        {unread > 9 ? "9+" : unread}
+                      </span>
+                    )}
+                  </div>
                 </Link>
               </li>
             );

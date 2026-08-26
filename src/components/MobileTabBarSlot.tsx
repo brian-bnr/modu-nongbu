@@ -5,5 +5,6 @@ export async function MobileTabBarSlot() {
   const session = await auth();
   const loggedIn = session?.user?.type === "user";
   const role = loggedIn ? (session?.user?.role ?? "FARMER") : undefined;
-  return <MobileTabBar loggedIn={loggedIn} role={role} />;
+  const userId = loggedIn ? session?.user?.id : undefined;
+  return <MobileTabBar loggedIn={loggedIn} role={role} userId={userId} />;
 }

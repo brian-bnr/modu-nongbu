@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getUnreadChatCount } from "@/lib/actions/chat";
 
 export default async function MyPage() {
   const session = await auth();
@@ -13,6 +14,8 @@ export default async function MyPage() {
   if (!user) {
     redirect("/login?callbackUrl=/my");
   }
+
+  const unreadChatCount = await getUnreadChatCount();
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-8">
@@ -65,7 +68,14 @@ export default async function MyPage() {
           href="/my/chats"
           className="rounded-lg border border-black/10 p-4 transition hover:border-brand-600 dark:border-white/10"
         >
-          <p className="font-medium">채팅</p>
+          <div className="flex items-center gap-1.5">
+            <p className="font-medium">채팅</p>
+            {unreadChatCount > 0 && (
+              <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-red-600 px-1.5 text-[11px] font-bold leading-none text-white">
+                {unreadChatCount > 9 ? "9+" : unreadChatCount}
+              </span>
+            )}
+          </div>
           <p className="mt-1 text-sm text-black/50 dark:text-white/50">
             내가 보낸 채팅, 내 글에 온 채팅 확인
           </p>
