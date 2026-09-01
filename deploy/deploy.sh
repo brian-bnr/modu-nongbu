@@ -8,5 +8,9 @@ aws ssm get-parameters-by-path --path /modu-nongbu/prod --with-decryption --regi
   node deploy/render-env.js > .env.production
 chmod 600 .env.production
 npm ci
+set -a
+source .env.production
+set +a
+npx prisma migrate deploy
 npm run build
 sudo systemctl restart modu-nongbu

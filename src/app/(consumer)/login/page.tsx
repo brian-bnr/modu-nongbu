@@ -27,9 +27,9 @@ const SOCIAL_BUTTONS = [
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ callbackUrl?: string }>;
+  searchParams: Promise<{ callbackUrl?: string; reset?: string }>;
 }) {
-  const { callbackUrl } = await searchParams;
+  const { callbackUrl, reset } = await searchParams;
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col lg:flex-row lg:items-stretch">
@@ -46,11 +46,21 @@ export default async function LoginPage({
           <p className="mt-1 text-sm text-black/50 dark:text-white/50">
             글쓰기, 문의하기는 로그인 후 이용할 수 있어요.
           </p>
+          {reset === "success" && (
+            <p className="mt-4 rounded-md bg-brand-700/10 px-3 py-2 text-sm text-brand-700 dark:text-brand-400">
+              비밀번호가 재설정되었습니다. 새 비밀번호로 로그인해주세요.
+            </p>
+          )}
           <div className="mt-6">
             <LoginForm action={userLoginAction}>
               <input type="hidden" name="callbackUrl" value={callbackUrl ?? "/"} />
             </LoginForm>
           </div>
+          <p className="mt-3 text-right text-sm">
+            <Link href="/forgot-password" className="text-black/50 hover:underline dark:text-white/50">
+              비밀번호를 잊으셨나요?
+            </Link>
+          </p>
           <div className="mt-6 flex items-center gap-3 text-xs text-black/40 dark:text-white/40">
             <span className="h-px flex-1 bg-black/10 dark:bg-white/10" />
             간편 로그인

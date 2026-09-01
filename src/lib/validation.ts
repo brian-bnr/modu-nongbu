@@ -114,6 +114,21 @@ export const profileUpdateSchema = z.object({
     .regex(/^[0-9-]{9,13}$/, "올바른 전화번호 형식이 아닙니다."),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("올바른 이메일 형식이 아닙니다."),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1),
+    newPassword: z.string().min(8, "비밀번호는 8자 이상이어야 합니다."),
+    newPasswordConfirm: z.string().min(1, "새 비밀번호 확인을 입력해주세요."),
+  })
+  .refine((data) => data.newPassword === data.newPasswordConfirm, {
+    message: "새 비밀번호가 일치하지 않습니다.",
+    path: ["newPasswordConfirm"],
+  });
+
 export const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, "현재 비밀번호를 입력해주세요."),
