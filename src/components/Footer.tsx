@@ -23,20 +23,35 @@ export function Footer() {
           <p className="font-semibold text-white">주식회사 비앤알월드</p>
 
           <div className="mt-0.5 space-y-0.5 sm:hidden">
-            <p>대표자 윤지환 · 대표번호 1600-5262</p>
-            <p>오시는길 인천광역시 서구 중봉대로 490 청라더리브티아모 353호(청라동)</p>
+            <p>대표 : 윤지환 · 전화 : 1600-5252</p>
+            <p>주소 : 인천광역시 서해구 중봉대로 490, 353호(청라더리브티아모, 청라동)</p>
+            <p>사업자등록번호 : 580-81-01218</p>
+            <p>통신판매업신고 : 제2024-인천강화-0074호</p>
+            <p>개인정보관리책임자 : 윤지환 · 이메일 : ceo@bnrworld.co.kr</p>
           </div>
 
           <p className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-x-2">
-            <span>대표자 윤지환</span>
+            <span>상호명 : 주식회사 비앤알월드</span>
             <span className="text-white/40">|</span>
-            <span>오시는길 인천광역시 서구 중봉대로 490 청라더리브티아모 353호(청라동)</span>
+            <span>주소 : 인천광역시 서해구 중봉대로 490, 353호(청라더리브티아모, 청라동)</span>
             <span className="text-white/40">|</span>
-            <span>대표번호 1600-5262</span>
+            <span>대표 : 윤지환</span>
+            <span className="text-white/40">|</span>
+            <span>전화 : 1600-5252</span>
+            <span className="text-white/40">|</span>
+            <span>사업자등록번호 : 580-81-01218</span>
+          </p>
+
+          <p className="hidden sm:flex sm:flex-wrap sm:items-center sm:gap-x-2">
+            <span>통신판매업신고 : 제2024-인천강화-0074호</span>
+            <span className="text-white/40">|</span>
+            <span>개인정보관리책임자 : 윤지환</span>
+            <span className="text-white/40">|</span>
+            <span>이메일 : ceo@bnrworld.co.kr</span>
           </p>
 
           <p className="mt-0.5 text-white/50 sm:mt-0">
-            Copyright ⓒ2025 by 주식회사 비앤알월드 ALL RIGHT RESERVED.
+            © All Rights Reserved.
           </p>
         </div>
       </div>
