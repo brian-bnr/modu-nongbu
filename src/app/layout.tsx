@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.mdfarm.co.kr"),
   title: "모두의농부",
   description: "전국 농가의 농산물을 찾고 농민에게 직접 구매요청을 보내는 플랫폼",
+  manifest: "/site.webmanifest",
   openGraph: {
     title: "모두의농부",
     description: "전국 농가의 농산물을 찾고 농민에게 직접 구매요청을 보내는 플랫폼",
