@@ -60,10 +60,12 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
               </span>
             </div>
             <div className="absolute inset-x-0 bottom-0 p-5">
-              <h1 className="text-xl font-bold leading-snug text-white sm:text-2xl">
+              <h1 className="text-lg font-bold leading-snug text-white sm:text-xl">
                 {slide.title}
               </h1>
-              <p className="mt-2 text-sm text-white/85">{slide.subtitle}</p>
+              <p className="mt-1.5 text-base font-semibold leading-snug text-white sm:text-lg">
+                {slide.subtitle}
+              </p>
             </div>
           </Link>
         ))}

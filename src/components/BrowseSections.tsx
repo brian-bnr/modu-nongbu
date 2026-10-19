@@ -7,12 +7,12 @@ import { OperatorCard } from "@/components/OperatorCard";
 import { CATEGORY_TILES } from "@/lib/categoryTiles";
 import { formatPrice } from "@/lib/format";
 import { RICE_UNIT_PRICE } from "@/lib/cropPricing";
-import { TractorFlatIcon, CartIcon, GradCapIcon } from "@/components/icons/CategoryIcons";
+import { GradCapIcon } from "@/components/icons/CategoryIcons";
 import type { getHomeData } from "@/lib/homeData";
 
+// 위탁영농(/consign-farming)·농자재 쇼핑(/farm-supplies)은 위 카테고리 아이콘 행과 동일한 링크라
+// 여기서는 그 행에 없는 서비스만 더해 같은 기능이 두 번 노출되지 않게 한다.
 const POPULAR_SERVICES_STUBS = [
-  { title: "위탁영농", href: "/consign-farming", Icon: TractorFlatIcon, gradient: "from-lime-600 to-lime-800" },
-  { title: "농자재 쇼핑", href: "/farm-supplies", Icon: CartIcon, gradient: "from-orange-500 to-orange-700" },
   { title: "농업교육", href: "/education", Icon: GradCapIcon, gradient: "from-rose-500 to-rose-700" },
 ];
 
