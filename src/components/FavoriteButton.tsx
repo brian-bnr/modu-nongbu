@@ -27,7 +27,6 @@ export function FavoriteButton({
       <button
         type="submit"
         aria-label={isFavorited ? "찜 해제" : "찜하기"}
-        onClick={(e) => e.stopPropagation()}
         className={`flex ${dimension} items-center justify-center rounded-full transition ${variantClass} ${
           isFavorited && variant === "inline" ? "text-red-500" : ""
         }`}
