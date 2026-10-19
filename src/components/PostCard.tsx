@@ -53,16 +53,19 @@ export function PostCard({
               {POST_STATUS_LABEL[post.status]}
             </Badge>
           </div>
-          {post.price != null && (
-            <p className="mt-1 text-base font-semibold text-brand-700 sm:mt-2 dark:text-brand-400">
-              {formatPrice(post.price)}
-              {post.unit && (
-                <span className="ml-1 text-xs font-normal text-black/50 dark:text-white/50">
-                  / {post.unit}
-                </span>
-              )}
-            </p>
-          )}
+          {/* 가격이 없는 글도 같은 줄 높이를 차지하게 해서, 한 줄에 놓인 카드들의 높이가 항상 통일되게 한다. */}
+          <p className="mt-1 min-h-6 text-base font-semibold text-brand-700 sm:mt-2 dark:text-brand-400">
+            {post.price != null && (
+              <>
+                {formatPrice(post.price)}
+                {post.unit && (
+                  <span className="ml-1 text-xs font-normal text-black/50 dark:text-white/50">
+                    / {post.unit}
+                  </span>
+                )}
+              </>
+            )}
+          </p>
         </div>
       </Link>
       {isFavorited !== undefined && (
