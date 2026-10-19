@@ -4,29 +4,32 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #f8f6ef;
-  --foreground: #2d2d2d;
+  /* DESIGN.md "새벽 흙빛(Dawn Soil)" 팔레트: 흙(Loam Umber)과 새벽안개(Dawn Mist)에서 가져온 절제된 색. */
+  --background: #eff1ed;
+  --foreground: #2b2620;
 
-  --color-brand-50: #f0f8f1;
-  --color-brand-100: #dceedf;
-  --color-brand-200: #b8dfbf;
-  --color-brand-300: #8fcc99;
-  --color-brand-400: #63b571;
-  --color-brand-500: #43a047;
-  --color-brand-600: #2e7d32;
-  --color-brand-700: #1f5d3a;
-  --color-brand-800: #17452c;
-  --color-brand-900: #102f1f;
+  /* brand-700 = Loam Umber(#5A3E27), 문서에 지정된 주조색. 나머지는 같은 흙빛 색상(hue)의 톤 스케일. */
+  --color-brand-50: #f7f3ee;
+  --color-brand-100: #ede4d8;
+  --color-brand-200: #dccbb2;
+  --color-brand-300: #c4a97e;
+  --color-brand-400: #a8824f;
+  --color-brand-500: #8a6539;
+  --color-brand-600: #6f4f2e;
+  --color-brand-700: #5a3e27;
+  --color-brand-800: #432d1c;
+  --color-brand-900: #2e1e12;
 
-  --color-accent-50: #fff8e1;
-  --color-accent-100: #ffecb3;
-  --color-accent-200: #ffe082;
-  --color-accent-300: #ffd54f;
-  --color-accent-400: #ffc824;
-  --color-accent-500: #ffb300;
-  --color-accent-600: #e6a100;
-  --color-accent-700: #c28900;
-  --color-accent-800: #9c6e00;
+  /* accent-800 = Soil Charcoal(#2B2620) 계열. 두 번째 원색 대신 같은 흙빛에서 파생된 무채색에 가까운 보조 톤. */
+  --color-accent-50: #f3f2f0;
+  --color-accent-100: #e6e3df;
+  --color-accent-200: #cfc9c2;
+  --color-accent-300: #afa79c;
+  --color-accent-400: #8c8276;
+  --color-accent-500: #6f665a;
+  --color-accent-600: #574f45;
+  --color-accent-700: #443d35;
+  --color-accent-800: #2b2620;
 }
 
 @theme inline {
@@ -51,14 +54,21 @@
   --color-accent-600: var(--color-accent-600);
   --color-accent-700: var(--color-accent-700);
   --color-accent-800: var(--color-accent-800);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), sans-serif;
+}
+
+/* DESIGN.md The No-Default-Sans Rule: 제목은 Gowun Batang(세리프)으로 분리해 본문 산세리프와 위계를 준다. */
+h1,
+h2,
+h3 {
+  font-family: var(--font-display), serif;
 }
 
 /* Google Translate 위젯이 띄우는 상단 배너 등 모든 iframe/UI를 숨기고 body가 밀려 내려가지 않게 한다 (우측 상단 국기 버튼만 노출). */

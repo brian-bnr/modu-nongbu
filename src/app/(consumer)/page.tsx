@@ -10,7 +10,7 @@ import { RoleSwitcher } from "@/components/dashboard/RoleSwitcher";
 
 const HERO_SLIDES = [
   {
-    image: "/hero-drone.png",
+    image: "/operator-sample-1.jpg",
     tag: "방제 예약 시작!",
     title: (
       <>

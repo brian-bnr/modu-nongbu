@@ -49,10 +49,10 @@ export function CartIcon({ className }: IconProps) {
 export function GradCapIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
-      <path d="M24 10 44 19 24 28 4 19z" fill="#db2777" />
-      <path d="M14 22.5V31c0 3 4.5 6 10 6s10-3 10-6v-8.5l-10 4.5z" fill="#f472b6" />
-      <path d="M44 19v9" stroke="#db2777" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="44" cy="30" r="2" fill="#db2777" />
+      <path d="M24 10 44 19 24 28 4 19z" fill="#ede4d8" />
+      <path d="M14 22.5V31c0 3 4.5 6 10 6s10-3 10-6v-8.5l-10 4.5z" fill="#c4a97e" />
+      <path d="M44 19v9" stroke="#ede4d8" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="44" cy="30" r="2" fill="#ede4d8" />
     </svg>
   );
 }
