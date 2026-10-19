@@ -7,12 +7,14 @@ import { OperatorCard } from "@/components/OperatorCard";
 import { CATEGORY_TILES } from "@/lib/categoryTiles";
 import { formatPrice } from "@/lib/format";
 import { RICE_UNIT_PRICE } from "@/lib/cropPricing";
-import { GradCapIcon } from "@/components/icons/CategoryIcons";
+import { TractorFlatIcon, CartIcon, GradCapIcon } from "@/components/icons/CategoryIcons";
 import type { getHomeData } from "@/lib/homeData";
 
-// 위탁영농(/consign-farming)·농자재 쇼핑(/farm-supplies)은 위 카테고리 아이콘 행과 동일한 링크라
-// 여기서는 그 행에 없는 서비스만 더해 같은 기능이 두 번 노출되지 않게 한다.
-const POPULAR_SERVICES_STUBS = [{ title: "농업교육", href: "/education", Icon: GradCapIcon }];
+const POPULAR_SERVICES_STUBS = [
+  { title: "위탁영농", href: "/consign-farming", Icon: TractorFlatIcon, gradient: "from-lime-600 to-lime-800" },
+  { title: "농자재 쇼핑", href: "/farm-supplies", Icon: CartIcon, gradient: "from-orange-500 to-orange-700" },
+  { title: "농업교육", href: "/education", Icon: GradCapIcon, gradient: "from-rose-500 to-rose-700" },
+];
 
 type HomeData = Awaited<ReturnType<typeof getHomeData>>;
 
@@ -65,7 +67,7 @@ export function BrowseSections({
               href="/drones/new"
               className="relative h-20 w-32 shrink-0 snap-start overflow-hidden rounded-xl shadow-sm sm:h-24 sm:w-40"
             >
-              <Image src="/operator-sample-3.jpg" alt="" fill sizes="160px" className="object-cover" />
+              <Image src="/hero-drone.png" alt="" fill sizes="160px" className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-2 text-white">
                 <p className="text-sm font-semibold">드론 방제</p>
@@ -76,10 +78,10 @@ export function BrowseSections({
               <Link
                 key={s.href}
                 href={s.href}
-                className="relative flex h-20 w-32 shrink-0 snap-start items-center justify-center overflow-hidden rounded-xl bg-brand-700 shadow-sm sm:h-24 sm:w-40"
+                className={`relative flex h-20 w-32 shrink-0 snap-start items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br shadow-sm sm:h-24 sm:w-40 ${s.gradient}`}
               >
                 <s.Icon className="h-9 w-9 opacity-90 sm:h-10 sm:w-10" />
-                <span className="absolute right-1.5 top-1.5 rounded-full bg-black/30 px-1.5 py-0.5 text-[9px] font-medium text-white">
+                <span className="absolute right-1.5 top-1.5 rounded-full bg-black/40 px-1.5 py-0.5 text-[9px] font-medium text-white">
                   준비중
                 </span>
                 <p className="absolute inset-x-0 bottom-0 p-2 text-sm font-semibold text-white">
