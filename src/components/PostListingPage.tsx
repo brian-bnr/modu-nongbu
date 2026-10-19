@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { PostType } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { PostCard } from "@/components/PostCard";
+import { getFavoritedPostIds } from "@/lib/actions/favorite";
 
 export async function PostListingPage({
   heading,
@@ -31,7 +33,10 @@ export async function PostListingPage({
       ? [{ inquiries: { _count: "desc" as const } }, { createdAt: "desc" as const }]
       : { createdAt: "desc" as const };
 
-  const [posts, categories, regions] = await Promise.all([
+  const session = await auth();
+  const userId = session?.user?.type === "user" ? session.user.id : null;
+
+  const [posts, categories, regions, favoritedIds] = await Promise.all([
     prisma.post.findMany({
       where: {
         AND: [
@@ -56,6 +61,7 @@ export async function PostListingPage({
       distinct: ["region"],
       orderBy: { region: "asc" },
     }),
+    userId ? getFavoritedPostIds(userId) : Promise.resolve(new Set<string>()),
   ]);
 
   function buildHref(overrides: Record<string, string | undefined>) {
@@ -177,7 +183,7 @@ export async function PostListingPage({
       ) : (
         <div className="mt-6 grid grid-cols-1 gap-0 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
           {posts.map((post) => (
-            <PostCard key={post.id} post={post} />
+            <PostCard key={post.id} post={post} isFavorited={favoritedIds.has(post.id)} />
           ))}
         </div>
       )}

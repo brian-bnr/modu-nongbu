@@ -16,6 +16,7 @@ export default async function MyPage() {
   }
 
   const unreadChatCount = await getUnreadChatCount();
+  const favoriteCount = await prisma.favorite.count({ where: { userId: session.user.id } });
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-8">
@@ -62,6 +63,22 @@ export default async function MyPage() {
           <p className="font-medium">내가 올린 글</p>
           <p className="mt-1 text-sm text-black/50 dark:text-white/50">
             판매·구매·구인·구직 글 관리
+          </p>
+        </Link>
+        <Link
+          href="/my/favorites"
+          className="rounded-lg border border-black/10 p-4 transition hover:border-brand-600 dark:border-white/10"
+        >
+          <div className="flex items-center gap-1.5">
+            <p className="font-medium">찜한 글</p>
+            {favoriteCount > 0 && (
+              <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-black/10 px-1.5 text-[11px] font-bold leading-none text-black/60 dark:bg-white/10 dark:text-white/60">
+                {favoriteCount > 99 ? "99+" : favoriteCount}
+              </span>
+            )}
+          </div>
+          <p className="mt-1 text-sm text-black/50 dark:text-white/50">
+            관심 있게 본 매물 모아보기
           </p>
         </Link>
         <Link

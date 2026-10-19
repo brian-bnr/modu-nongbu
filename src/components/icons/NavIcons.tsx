@@ -114,6 +114,19 @@ export function BellIcon({ className }: IconProps) {
   );
 }
 
+export function HeartIcon({ className, filled }: IconProps & { filled?: boolean }) {
+  return (
+    <svg
+      {...base}
+      fill={filled ? "currentColor" : "none"}
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M12 19.5s-7.5-4.6-9.5-9.2C1.2 7 2.8 4 6 4c2 0 3.4 1.2 4 2.3C10.6 5.2 12 4 14 4c3.2 0 4.8 3 3.5 6.3-2 4.6-9.5 9.2-9.5 9.2Z" />
+    </svg>
+  );
+}
+
 export function ChevronLeftIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className} aria-hidden="true">

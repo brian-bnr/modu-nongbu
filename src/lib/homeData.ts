@@ -5,7 +5,7 @@ import { SAMPLE_OPERATORS } from "@/lib/sampleOperators";
 export async function getHomeData(sevenDaysAgoISO: string) {
   const sevenDaysAgo = new Date(sevenDaysAgoISO);
 
-  const [recentPosts, popularPool, operators] = await Promise.all([
+  const [recentPosts, popularPool, operators, regions] = await Promise.all([
     prisma.post.findMany({
       take: 8,
       orderBy: { createdAt: "desc" },
@@ -18,6 +18,12 @@ export async function getHomeData(sevenDaysAgoISO: string) {
       include: { author: true, _count: { select: { inquiries: true } } },
     }),
     getApprovedOperatorsWithStats(),
+    prisma.post.findMany({
+      where: { postType: "SELL_PRODUCT" },
+      select: { region: true },
+      distinct: ["region"],
+      orderBy: { region: "asc" },
+    }),
   ]);
 
   const popularRealtime = popularPool.slice(0, 8);
@@ -26,5 +32,11 @@ export async function getHomeData(sevenDaysAgoISO: string) {
   const topOperators =
     operators.length > 0 ? operators.slice(0, 4).map(toOperatorCardData) : SAMPLE_OPERATORS;
 
-  return { recentPosts, popularRealtime, popularWeekly, topOperators };
+  return {
+    recentPosts,
+    popularRealtime,
+    popularWeekly,
+    topOperators,
+    regions: regions.map((r) => r.region),
+  };
 }

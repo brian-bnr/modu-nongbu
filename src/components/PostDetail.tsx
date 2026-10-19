@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { Badge } from "@/components/Badge";
 import { PostImageLightbox } from "@/components/PostImageLightbox";
+import { FavoriteButton } from "@/components/FavoriteButton";
+import { RecentlyViewedTracker } from "@/components/RecentlyViewedTracker";
 import { startChatAction } from "@/lib/actions/chat";
 import {
   formatDate,
@@ -35,9 +37,25 @@ export async function PostDetail({
 
   const session = await auth();
   const isOwner = session?.user?.type === "user" && session.user.id === post.authorId;
+  const isFavorited =
+    session?.user?.type === "user"
+      ? (await prisma.favorite.findUnique({
+          where: { userId_postId: { userId: session.user.id, postId: post.id } },
+        })) != null
+      : false;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
+      <RecentlyViewedTracker
+        item={{
+          id: post.id,
+          title: post.title,
+          price: post.price,
+          unit: post.unit,
+          imageUrl: post.imageUrl,
+          href: `${basePath}/${post.id}`,
+        }}
+      />
       <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
         <div>
           {post.imageUrl ? (
@@ -57,6 +75,14 @@ export async function PostDetail({
             <Badge variant={POST_STATUS_VARIANT[post.status]}>
               {POST_STATUS_LABEL[post.status]}
             </Badge>
+            {!isOwner && (
+              <FavoriteButton
+                postId={post.id}
+                isFavorited={isFavorited}
+                redirectTo={`${basePath}/${post.id}`}
+                variant="inline"
+              />
+            )}
           </div>
           {post.price != null && (
             <p className="mt-3 text-xl font-semibold text-brand-700 dark:text-brand-400">
