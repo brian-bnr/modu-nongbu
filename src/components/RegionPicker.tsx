@@ -31,7 +31,7 @@ export function RegionPicker({ current, regions }: { current: string; regions: s
         onChange={handleChange}
         disabled={isPending}
         aria-label="동네 설정"
-        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+        className="absolute inset-0 h-full w-full cursor-pointer text-black opacity-0"
       >
         <option value="">지역 선택</option>
         {regions.map((r) => (
