@@ -4,6 +4,7 @@ import { Badge } from "@/components/Badge";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import {
   formatPrice,
+  formatRelativeTime,
   POST_STATUS_LABEL,
   POST_STATUS_VARIANT,
   POST_TYPE_ICON,
@@ -53,6 +54,9 @@ export function PostCard({
               {POST_STATUS_LABEL[post.status]}
             </Badge>
           </div>
+          <p className="mt-1 text-xs text-black/40 dark:text-white/40">
+            {[post.region, formatRelativeTime(post.createdAt)].filter(Boolean).join(" · ")}
+          </p>
           {/* 가격이 없는 글도 같은 줄 높이를 차지하게 해서, 한 줄에 놓인 카드들의 높이가 항상 통일되게 한다. */}
           <p className="mt-1 min-h-6 text-base font-semibold text-brand-700 sm:mt-2 dark:text-brand-400">
             {post.price != null && (

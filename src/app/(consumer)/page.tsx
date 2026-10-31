@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { auth } from "@/lib/auth";
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { BrowseSections } from "@/components/BrowseSections";
@@ -55,14 +56,18 @@ export default async function HomePage() {
   }
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-  const homeData = await getHomeData(sevenDaysAgo.toISOString());
+  const [homeData, cookieStore] = await Promise.all([
+    getHomeData(sevenDaysAgo.toISOString()),
+    cookies(),
+  ]);
+  const defaultRegion = cookieStore.get("region")?.value;
 
   return (
     <div>
       <HeroCarousel slides={HERO_SLIDES} />
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
-        <BrowseSections {...homeData} />
+        <BrowseSections {...homeData} defaultRegion={defaultRegion} />
       </div>
     </div>
   );

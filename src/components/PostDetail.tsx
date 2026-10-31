@@ -44,8 +44,14 @@ export async function PostDetail({
         })) != null
       : false;
 
+  const canChat = !isOwner && post.status !== "CLOSED";
+
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
+    <div
+      className={`mx-auto max-w-7xl px-4 py-10 sm:px-8 ${
+        !isOwner ? "pb-32 sm:pb-24 lg:pb-10" : ""
+      }`}
+    >
       <RecentlyViewedTracker
         item={{
           id: post.id,
@@ -123,7 +129,7 @@ export async function PostDetail({
           )}
         </div>
 
-        <div>
+        <div className="hidden lg:block">
           <div className="rounded-lg border border-black/10 p-5 dark:border-white/10">
             <h2 className="text-lg font-semibold">채팅 보내기</h2>
             <p className="mt-1 text-sm text-black/50 dark:text-white/50">
@@ -159,6 +165,47 @@ export async function PostDetail({
           </div>
         </div>
       </div>
+
+      {/* 모바일·태블릿 전용 하단 고정 바: 채팅 CTA를 찾으려고 본문을 끝까지 내릴 필요가 없도록 가격·채팅 버튼을 항상 보이게 둔다. */}
+      {!isOwner && (
+        <div className="fixed inset-x-0 bottom-16 z-40 flex items-center gap-3 border-t border-black/10 bg-white px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] dark:border-white/10 dark:bg-neutral-900 sm:bottom-0 lg:hidden">
+          <div className="min-w-0 flex-1">
+            {post.price != null ? (
+              <p className="truncate text-base font-bold text-brand-700 dark:text-brand-400">
+                {formatPrice(post.price)}
+                {post.unit && (
+                  <span className="ml-1 text-xs font-normal text-black/50 dark:text-white/50">
+                    / {post.unit}
+                  </span>
+                )}
+              </p>
+            ) : (
+              <p className="truncate text-sm text-black/50 dark:text-white/50">가격 문의</p>
+            )}
+          </div>
+          {!canChat ? (
+            <span className="shrink-0 rounded-md bg-black/5 px-5 py-2.5 text-sm font-medium text-black/40 dark:bg-white/10 dark:text-white/40">
+              마감된 글
+            </span>
+          ) : session?.user?.type === "user" ? (
+            <form action={startChatAction.bind(null, post.id)}>
+              <button
+                type="submit"
+                className="shrink-0 rounded-md bg-brand-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-800"
+              >
+                채팅 보내기
+              </button>
+            </form>
+          ) : (
+            <Link
+              href={`/login?callbackUrl=${basePath}/${post.id}`}
+              className="shrink-0 rounded-md bg-brand-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-800"
+            >
+              로그인하고 채팅
+            </Link>
+          )}
+        </div>
+      )}
     </div>
   );
 }
