@@ -9,6 +9,7 @@ import { formatPrice } from "@/lib/format";
 import { RICE_UNIT_PRICE } from "@/lib/cropPricing";
 import { GradCapIcon } from "@/components/icons/CategoryIcons";
 import { RecentlyViewedSection } from "@/components/RecentlyViewedSection";
+import { HomeRegionFilter } from "@/components/HomeRegionFilter";
 import type { getHomeData } from "@/lib/homeData";
 
 // 위탁영농(/consign-farming)·농자재 쇼핑(/farm-supplies)은 위 카테고리 아이콘 행과 동일한 링크라
@@ -56,38 +57,7 @@ export function BrowseSections({
         </div>
       </section>
 
-      {regions.length > 0 && (
-        <form
-          method="get"
-          action="/products"
-          className="mt-6 flex items-center gap-2 rounded-xl border border-black/10 p-3 text-sm dark:border-white/10"
-        >
-          <label htmlFor="home-region" className="shrink-0 font-medium text-black/70 dark:text-white/70">
-            우리 지역 농산물 보기
-          </label>
-          <select
-            id="home-region"
-            name="region"
-            defaultValue=""
-            className="flex-1 rounded-md border border-black/10 px-3 py-1.5 dark:border-white/10 dark:bg-transparent"
-          >
-            <option value="" disabled>
-              지역 선택
-            </option>
-            {regions.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-          <button
-            type="submit"
-            className="shrink-0 rounded-md bg-brand-700 px-4 py-1.5 font-medium text-white hover:bg-brand-800"
-          >
-            보기
-          </button>
-        </form>
-      )}
+      {regions.length > 0 && <HomeRegionFilter regions={regions} />}
 
       <RecentlyViewedSection />
 
