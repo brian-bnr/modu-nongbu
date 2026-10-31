@@ -25,8 +25,7 @@ export function BrowseSections({
   popularWeekly,
   topOperators,
   regions,
-  defaultRegion,
-}: HomeData & { defaultRegion?: string }) {
+}: HomeData) {
   return (
     <>
       <section>
@@ -69,7 +68,7 @@ export function BrowseSections({
           <select
             id="home-region"
             name="region"
-            defaultValue={defaultRegion ?? ""}
+            defaultValue=""
             className="flex-1 rounded-md border border-black/10 px-3 py-1.5 dark:border-white/10 dark:bg-transparent"
           >
             <option value="" disabled>

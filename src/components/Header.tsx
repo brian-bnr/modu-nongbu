@@ -3,8 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { HeaderAuthSlot } from "@/components/HeaderAuthSlot";
-import { RegionPickerSlot } from "@/components/RegionPickerSlot";
-import { SearchIcon, MapPinIcon } from "@/components/icons/NavIcons";
+import { SearchIcon } from "@/components/icons/NavIcons";
 import { getHeaderBarClass } from "@/lib/seasonalTheme";
 
 const NAV_LINKS = [
@@ -20,15 +19,6 @@ function HeaderAuthFallback() {
     >
       로그인
     </Link>
-  );
-}
-
-function RegionPickerFallback() {
-  return (
-    <span className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-white/15 px-3 py-1.5 text-xs font-medium text-white sm:text-sm">
-      <MapPinIcon className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
-      지역 선택
-    </span>
   );
 }
 
@@ -79,9 +69,6 @@ export function Header() {
         </div>
 
         <div className="mt-3 flex items-center gap-2">
-          <Suspense fallback={<RegionPickerFallback />}>
-            <RegionPickerSlot />
-          </Suspense>
           <form
             action="/search"
             className="flex min-w-0 flex-1 items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 transition focus-within:bg-white/25"
