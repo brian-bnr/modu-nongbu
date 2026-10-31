@@ -29,7 +29,7 @@ export function HomeRegionFilter({ regions }: { regions: string[] }) {
       <span className="shrink-0 font-medium text-black/70 dark:text-white/70">
         우리 지역 농산물 보기
       </span>
-      <div ref={containerRef} className="relative flex-1">
+      <div ref={containerRef} className="relative w-32 sm:w-40">
         <button
           type="button"
           onClick={() => setIsOpen((v) => !v)}
